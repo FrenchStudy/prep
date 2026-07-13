@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF Prep • Vocabulaire de la Santé</title>
+    <style>
+        :root {
+            --blue: #0284C7;
+            --dark-blue: #0C4A6E;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            color: var(--dark);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .unlock-bar {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .unlock-btn {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .unlock-btn:hover { background: #D97706; }
+
+        .app-card {
+            background: white;
+            max-width: 900px;
+            width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 8px solid var(--blue);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 { font-size: 1.8rem; margin-bottom: 6px; }
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content { padding: 25px; }
+
+        .image-container {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 2px solid #CBD5E1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .visual-speaker-box {
+            background: #ECFDF5;
+            border: 2px dashed var(--green);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #065F46;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .category-title {
+            color: var(--dark-blue);
+            font-size: 1.2rem;
+            margin: 20px 0 12px 0;
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 6px;
+        }
+
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .vocab-btn {
+            background: var(--light);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vocab-btn:hover {
+            border-color: var(--blue);
+            background: #F0F9FF;
+            transform: translateY(-2px);
+        }
+
+        .vocab-btn .fr {
+            font-weight: bold;
+            color: var(--dark-blue);
+            display: block;
+        }
+
+        .vocab-btn .en {
+            font-size: 0.8rem;
+            color: #64748B;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .speaker-icon {
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="unlock-bar" id="audio-banner">
+    ⚠️ Click to activate the French speech engine for this lesson.
+    <button class="unlock-btn" onclick="forceUnlockAudio()">🔊 Enable Audio</button>
+</div>
+
+<div class="app-card">
+    <div class="header">
+        <span class="badge">TCF Canada • Topic 1</span>
+        <h1>La Santé et le Bien-être</h1>
+    </div>
+
+    <div class="content">
+        <!-- Visual Infographic Scene -->
+        <div class="image-container">
+            <img src="watermarked_img_9111239577104093022.png" alt="French Healthcare Scene">
+        </div>
+
+        <!-- Dynamic Sound Display -->
+        <div class="visual-speaker-box" id="visual-soundbox">
+            🔊 Pronouncing: <span id="visual-target">---</span>
+        </div>
+
+        <p style="color: #64748B; margin-bottom: 10px; font-size: 0.95rem;">
+            Click on any card below to hear native French pronunciation:
+        </p>
+
+        <!-- Category 1 -->
+        <div class="category-title">1. Santé & Bien-être (General Health)</div>
+        <div class="vocab-grid">
+            <button class="vocab-btn" onclick="say('La santé publique', 'Public health')">
+                <div><span class="fr">La santé publique</span><span class="en">Public health</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Le bien-être', 'Well-being')">
+                <div><span class="fr">Le bien-être</span><span class="en">Well-being</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('L\'espérance de vie', 'Life expectancy')">
+                <div><span class="fr">L'espérance de vie</span><span class="en">Life expectancy</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Le taux de mortalité', 'Mortality rate')">
+                <div><span class="fr">Le taux de mortalité</span><span class="en">Mortality rate</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Une hygiène de vie', 'Healthy lifestyle')">
+                <div><span class="fr">Une hygiène de vie</span><span class="en">Healthy lifestyle</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('La santé mentale', 'Mental health')">
+                <div><span class="fr">La santé mentale</span><span class="en">Mental health</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+        </div>
+
+        <!-- Category 2 -->
+        <div class="category-title">2. Système de santé & Soins (Medical Care)</div>
+        <div class="vocab-grid">
+            <button class="vocab-btn" onclick="say('Un médecin traitant', 'Primary doctor')">
+                <div><span class="fr">Un médecin traitant</span><span class="en">Primary doctor</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Une consultation', 'Doctor appointment')">
+                <div><span class="fr">Une consultation</span><span class="en">Doctor appointment</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Une ordonnance', 'Prescription')">
+                <div><span class="fr">Une ordonnance</span><span class="en">Prescription</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Un médicament', 'Medicine')">
+                <div><span class="fr">Un médicament</span><span class="en">Medicine</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Un examen médical', 'Medical check-up')">
+                <div><span class="fr">Un examen médical</span><span class="en">Medical check-up</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('L\'assurance maladie', 'Health insurance')">
+                <div><span class="fr">L'assurance maladie</span><span class="en">Health insurance</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+        </div>
+
+        <!-- Category 3 -->
+        <div class="category-title">3. Nutrition & Prévention (Lifestyle)</div>
+        <div class="vocab-grid">
+            <button class="vocab-btn" onclick="say('Une alimentation équilibrée', 'Balanced diet')">
+                <div><span class="fr">Une alimentation équilibrée</span><span class="en">Balanced diet</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('L\'activité physique', 'Physical activity')">
+                <div><span class="fr">L'activité physique</span><span class="en">Physical activity</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('Le sommeil', 'Sleep')">
+                <div><span class="fr">Le sommeil</span><span class="en">Sleep</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+            <button class="vocab-btn" onclick="say('La gestion du stress', 'Stress management')">
+                <div><span class="fr">La gestion du stress</span><span class="en">Stress management</span></div>
+                <span class="speaker-icon">🔊</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function forceUnlockAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance("Bienvenue au cours de santé");
+            u.lang = 'fr-FR';
+            u.rate = 0.85;
+            window.speechSynthesis.speak(u);
+            document.getElementById('audio-banner').style.backgroundColor = "#D1FAE5";
+            document.getElementById('audio-banner').style.borderColor = "#10B981";
+            document.getElementById('audio-banner').innerHTML = "✓ Engine Active! Tap any card to listen.";
+        }
+    }
+
+    function say(text, english) {
+        const box = document.getElementById('visual-soundbox');
+        const target = document.getElementById('visual-target');
+        box.style.display = "block";
+        target.innerText = `"${text}" (${english})`;
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); 
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR';
+            speech.rate = 0.85; 
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+
+</body>
+</html>
