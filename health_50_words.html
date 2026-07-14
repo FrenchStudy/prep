@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Interactive Practice</title>
+    <style>
+        :root {
+            --primary: #0055A5;
+            --dark-blue: #003A70;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body {
+            background-color: #E2E8F0;
+            color: var(--dark);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            max-width: 900px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-top: 8px solid var(--primary);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .coaches-banner {
+            display: flex;
+            gap: 15px;
+            background: #F0F7FF;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        /* Interactive Card Layout */
+        .vocab-card-interactive {
+            background: var(--light);
+            border: 2px solid #CBD5E1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.3rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+
+        .speaker-btn {
+            font-size: 1.4rem;
+            background: #E2E8F0;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .speaker-btn:hover { background: #CBD5E1; }
+
+        /* Example Sentence Section */
+        .example-box {
+            background: white;
+            border-left: 4px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 0.95rem;
+        }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; }
+
+        /* Interactive Mic Controls */
+        .mic-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-mic {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Feedback Box */
+        .feedback-container {
+            margin-top: 12px;
+            background: #ECFDF5;
+            border: 1px solid var(--green);
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🏥 Interactive Vocab Practice • Health</h1>
+        <p>Listen, repeat, and get instant feedback from your coaches!</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👩‍💻👨‍💼👩‍⚖️</span>
+        <div>
+            <strong>Interactive Coaching Mode:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to speak into your mic—<strong>Élodie</strong> will transcribe your speech and <strong>Léa</strong> will evaluate your pronunciation!
+            </span>
+        </div>
+    </div>
+
+    <!-- WORD 1 -->
+    <div class="vocab-card-interactive" id="card-1">
+        <div class="card-top">
+            <div>
+                <div class="word-fr">1. La santé</div>
+                <div class="word-phonetic">[lah sahn-tay]</div>
+                <div class="word-en">Health</div>
+            </div>
+            <button class="speaker-btn" onclick="say('La santé. Une bonne alimentation est essentielle pour la santé.')">🔊</button>
+        </div>
+
+        <!-- Sentence Example -->
+        <div class="example-box">
+            <div class="example-fr">💬 Example: « Une bonne alimentation est essentielle pour <strong>la santé</strong>. »</div>
+            <div class="example-en">A good diet is essential for health.</div>
+        </div>
+
+        <!-- Speech-to-Text Button -->
+        <div class="mic-section">
+            <button class="btn-mic" id="mic-btn-1" onclick="toggleRecord(1, 'la santé')">
+                🎙️ Practice Saying "La santé"
+            </button>
+        </div>
+
+        <!-- Coach Feedback Output -->
+        <div class="feedback-container" id="feedback-1">
+            <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-1">...</span></p>
+            <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-1">...</span></p>
+        </div>
+    </div>
+
+    <!-- WORD 2 -->
+    <div class="vocab-card-interactive" id="card-2">
+        <div class="card-top">
+            <div>
+                <div class="word-fr">2. Un médecin traitant</div>
+                <div class="word-phonetic">[ah med-sahn tray-tahn]</div>
+                <div class="word-en">Primary Care Physician</div>
+            </div>
+            <button class="speaker-btn" onclick="say('Un médecin traitant. Je dois consulter mon médecin traitant pour cette ordonnance.')">🔊</button>
+        </div>
+
+        <div class="example-box">
+            <div class="example-fr">💬 Example: « Je dois consulter mon <strong>médecin traitant</strong> pour cette ordonnance. »</div>
+            <div class="example-en">I need to consult my primary doctor for this prescription.</div>
+        </div>
+
+        <div class="mic-section">
+            <button class="btn-mic" id="mic-btn-2" onclick="toggleRecord(2, 'un médecin traitant')">
+                🎙️ Practice Saying "Un médecin traitant"
+            </button>
+        </div>
+
+        <div class="feedback-container" id="feedback-2">
+            <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-2">...</span></p>
+            <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-2">...</span></p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let recognition;
+    let isRecording = false;
+    let activeCardId = null;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, currentTargetWord);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) {
+                document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            }
+            isRecording = false;
+        };
+    }
+
+    let currentTargetWord = "";
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) {
+            alert("Speech recognition requires Chrome or Edge.");
+            return;
+        }
+
+        activeCardId = id;
+        currentTargetWord = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+
+        if (isRecording) {
+            recognition.stop();
+        } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording');
+            isRecording = true;
+            recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+
+        const evalSpan = document.getElementById(`eval-${id}`);
+        
+        // Match checking logic
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Your pronunciation matched the target term closely. Keep going!";
+            evalSpan.style.color = "#065F46";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Léa detected <em>"${spokenText}"</em>. Click the 🔊 button above to listen to Marc again, then retry!`;
+            evalSpan.style.color = "#991B1B";
+        }
+    }
+
+    function say(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR';
+            speech.rate = 0.85;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+
+</body>
+</html>

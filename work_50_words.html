@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Le Travail & Emploi</title>
+    <style>
+        :root {
+            --primary: #0055A5;
+            --dark-blue: #003A70;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F0F7FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>💼 TCF Canada • 50 Interactive Work Words</h1>
+        <p>S.W.E.E.T. C.H.E.F. P. Framework • Module W (Work)</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Labor Market
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 1, fr: "Le marché du travail", phon: "luh mar-shay doo trah-vay", en: "Labor market", exFr: "Le marché du travail évolue rapidement avec la technologie.", exEn: "The labor market is evolving rapidly with technology.", target: "marché du travail" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 2, fr: "Le taux de chômage", phon: "luh toh duh shoh-mahzh", en: "Unemployment rate", exFr: "Le taux de chômage a baissé ce trimestre.", exEn: "The unemployment rate decreased this quarter.", target: "taux de chômage" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 3, fr: "La pénurie de main-d'œuvre", phon: "lah pay-noo-ree duh mahn duhv-ruh", en: "Labor shortage", exFr: "La pénurie de main-d'œuvre touche plusieurs secteurs.", exEn: "The labor shortage affects several sectors.", target: "pénurie" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 4, fr: "Un emploi stable", phon: "ah nahm-plwah stah-bluh", en: "Stable job", exFr: "Il cherche un emploi stable pour l'avenir.", exEn: "He is looking for a stable job for the future.", target: "emploi stable" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 5, fr: "Un contrat à durée indéterminée", phon: "ah kohn-trah ah doo-ray ahn-day-tair-mee-nay", en: "Permanent contract (CDI)", exFr: "Signer un contrat à durée indéterminée offre de la sécurité.", exEn: "Signing a permanent contract offers security.", target: "contrat" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 6, fr: "La recherche d'emploi", phon: "lah ruh-shairsh dahm-plwah", en: "Job search", exFr: "La recherche d'emploi demande de la persévérance.", exEn: "Job search requires perseverance.", target: "recherche d'emploi" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 7, fr: "Le recrutement", phon: "luh ruh-kroot-mahn", en: "Recruitment", exFr: "Le processus de recrutement comporte trois étapes.", exEn: "The recruitment process consists of three steps.", target: "recrutement" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 8, fr: "Un demandeur d'emploi", phon: "ah duh-mahn-duhr dahm-plwah", en: "Job seeker", exFr: "Un demandeur d'emploi peut suivre des formations.", exEn: "A job seeker can attend training courses.", target: "demandeur d'emploi" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 9, fr: "La réinsertion professionnelle", phon: "lah ray-ahn-sair-syon proh-fay-syon-nel", en: "Professional reintegration", exFr: "Ce programme aide à la réinsertion professionnelle.", exEn: "This program helps with professional reintegration.", target: "réinsertion" },
+        { deck: 1, deckTitle: "Deck 1 • Labor Market & Employment", id: 10, fr: "L'embauche", phon: "lahm-bohsh", en: "Hiring / Employment", exFr: "L'entreprise annonce l'embauche de dix ingénieurs.", exEn: "The company announces the hiring of ten engineers.", target: "embauche" },
+
+        // DECK 2: Workplace Dynamics
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 11, fr: "Le télétravail", phon: "luh tay-lay-trah-vay", en: "Remote work", exFr: "Le télétravail offre plus de flexibilité aux salariés.", exEn: "Remote work offers more flexibility to employees.", target: "télétravail" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 12, fr: "L'équilibre vie pro-vie perso", phon: "lay-kee-lee-bruh vee pro vee pair-soh", en: "Work-life balance", exFr: "L'équilibre vie pro-vie perso réduit le stress.", exEn: "Work-life balance reduces stress.", target: "équilibre" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 13, fr: "Le travail d'équipe", phon: "luh trah-vay dey-keep", en: "Teamwork", exFr: "Le travail d'équipe garantit la réussite du projet.", exEn: "Teamwork guarantees project success.", target: "travail d'équipe" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 14, fr: "Un horaire flexible", phon: "ah noh-rair flehk-see-bluh", en: "Flexible working hours", exFr: "Un horaire flexible facilite la gestion familiale.", exEn: "Flexible hours facilitate family management.", target: "horaire flexible" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 15, fr: "Le climat de travail", phon: "luh klee-mah duh trah-vay", en: "Workplace climate / atmosphere", exFr: "Un bon climat de travail stimule la motivation.", exEn: "A good workplace climate boosts motivation.", target: "climat de travail" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 16, fr: "La productivité", phon: "lah proh-dook-tee-vee-tay", en: "Productivity", exFr: "L'automatisation a augmenté la productivité globale.", exEn: "Automation increased overall productivity.", target: "productivité" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 17, fr: "Un espace de travail", phon: "ah nehs-pahss duh trah-vay", en: "Workspace", exFr: "Chaque employé dispose d'un espace de travail ergonomique.", exEn: "Each employee has an ergonomic workspace.", target: "espace de travail" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 18, fr: "La surcharge de travail", phon: "lah soor-sharzh duh trah-vay", en: "Work overload", exFr: "La surcharge de travail peut être néfaste.", exEn: "Work overload can be harmful.", target: "surcharge" },
+        { deck: 1, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 19, fr: "La culture d'entreprise", phon: "lah kool-toor dahn-truh-preez", en: "Corporate culture", exFr: "La culture d'entreprise valorise la créativité.", exEn: "The corporate culture values creativity.", target: "culture d'entreprise" },
+        { deck: 2, deckTitle: "Deck 2 • Workplace Dynamics & Environment", id: 20, fr: "Le travail hybride", phon: "luh trah-vay ee-breed", en: "Hybrid work", exFr: "Le travail hybride combine bureau et domicile.", exEn: "Hybrid work combines office and home.", target: "travail hybride" },
+
+        // DECK 3: Skills & Professional Development
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 21, fr: "Les compétences", phon: "lay kohn-pay-tahns", en: "Skills / Competencies", exFr: "Il possède les compétences requises pour le poste.", exEn: "He possesses the skills required for the role.", target: "compétences" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 22, fr: "La formation continue", phon: "lah for-mah-syon kohn-tee-noo", en: "Lifelong learning / Ongoing training", exFr: "La formation continue permet de mettre à jour ses connaissances.", exEn: "Ongoing training allows updating one's knowledge.", target: "formation continue" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 23, fr: "La reconversion professionnelle", phon: "lah ruh-kohn-vair-syon", en: "Career change / retraining", exFr: "Elle a réussi sa reconversion professionnelle dans l'informatique.", exEn: "She succeeded in her career change into IT.", target: "reconversion" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 24, fr: "La montée en compétences", phon: "lah mohn-tay ahn kohn-pay-tahns", en: "Upskilling", exFr: "L'entreprise encourage la montée en compétences.", exEn: "The company encourages upskilling.", target: "montée en compétences" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 25, fr: "Un stage", phon: "ah stahzh", en: "An internship", exFr: "Ce stage de six mois offre une expérience précieuse.", exEn: "This six-month internship offers valuable experience.", target: "stage" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 26, fr: "L'apprentissage", phon: "lah-prahn-tee-sahzh", en: "Apprenticeship / Learning", exFr: "L'apprentissage associe théorie et pratique.", exEn: "Apprenticeship combines theory and practice.", target: "apprentissage" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 27, fr: "Les compétences comportementales", phon: "lay kohn-pay-tahns kohn-por-tuh-mahn-tahl", en: "Soft skills", exFr: "Les compétences comportementales sont très appréciées.", exEn: "Soft skills are highly appreciated.", target: "soft skills" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 28, fr: "Un bilan de compétences", phon: "ah bee-lahn duh kohn-pay-tahns", en: "Skills assessment", exFr: "Faire un bilan de compétences clarifie ses objectifs.", exEn: "Doing a skills assessment clarifies one's goals.", target: "bilan" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 29, fr: "La qualification", phon: "lah kah-lee-fee-kah-syon", en: "Qualification", exFr: "Ce diplôme atteste de sa qualification.", exEn: "This diploma attests to his qualification.", target: "qualification" },
+        { deck: 3, deckTitle: "Deck 3 • Skills & Training", id: 30, fr: "Le perfectionnement", phon: "luh pair-fehk-syon-mahn", en: "Professional improvement / Advanced training", exFr: "Ce cours propose un perfectionnement en gestion.", exEn: "This course offers advanced training in management.", target: "perfectionnement" },
+
+        // DECK 4: Salary & Management
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 31, fr: "La rémunération", phon: "lah ray-moo-nay-rah-syon", en: "Remuneration / Compensation", exFr: "La rémunération globale comprend le salaire et les primes.", exEn: "Global compensation includes salary and bonuses.", target: "rémunération" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 32, fr: "Le salaire minimum", phon: "luh sah-lair mee-nee-moom", en: "Minimum wage", exFr: "Le gouvernement a revalorisé le salaire minimum.", exEn: "The government raised the minimum wage.", target: "salaire minimum" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 33, fr: "Les avantages sociaux", phon: "lay zah-vahn-tahzh soh-syoh", en: "Employee benefits", exFr: "L'entreprise offre d'excellents avantages sociaux.", exEn: "The company offers excellent employee benefits.", target: "avantages sociaux" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 34, fr: "L'avancement de carrière", phon: "lah-vahns-mahn duh kah-ryair", en: "Career advancement", exFr: "L'avancement de carrière dépend des performances.", exEn: "Career advancement depends on performance.", target: "avancement" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 35, fr: "Une promotion", phon: "ewn proh-moh-syon", en: "A promotion", exFr: "Elle a obtenu une promotion méritée.", exEn: "She obtained a well-deserved promotion.", target: "promotion" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 36, fr: "Les congés payés", phon: "lay kohn-zhay pay-yay", en: "Paid leave / Vacation", exFr: "Chaque salarié a droit à des congés payés.", exEn: "Every employee is entitled to paid leave.", target: "congés payés" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 37, fr: "La retraite", phon: "lah ruh-tret", en: "Retirement", exFr: "Il prépare son départ à la retraite.", exEn: "He is preparing his transition to retirement.", target: "retraite" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 38, fr: "Le pouvoir d'achat", phon: "luh poo-vwahr dah-shah", en: "Purchasing power", exFr: "L'augmentation des salaires protège le pouvoir d'achat.", exEn: "Increasing salaries protects purchasing power.", target: "pouvoir d'achat" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 39, fr: "La négociation salariale", phon: "lah nay-goh-syah-syon sah-lah-ryahl", en: "Salary negotiation", exFr: "La négociation salariale aura lieu fin décembre.", exEn: "Salary negotiation will take place in late December.", target: "négociation" },
+        { deck: 4, deckTitle: "Deck 4 • Salary, Benefits & Rights", id: 40, fr: "La démission", phon: "lah day-mee-syon", en: "Resignation", exFr: "Il a présenté sa démission pour fonder sa société.", exEn: "He handed in his resignation to start his company.", target: "démission" },
+
+        // DECK 5: Key Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Postuler", phon: "pohss-too-lay", en: "To apply (for a job)", exFr: "Je vais postuler à cet offre d'emploi dès ce soir.", exEn: "I will apply for this job posting tonight.", target: "postuler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Embaucher", phon: "ahm-boh-shay", en: "To hire", exFr: "L'entreprise souhaite embaucher de nouveaux talents.", exEn: "The company wishes to hire new talent.", target: "embaucher" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Démissionner", phon: "day-mee-syoh-nay", en: "To resign", exFr: "Elle a décidé de démissionner le mois dernier.", exEn: "She decided to resign last month.", target: "démissionner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Négocier", phon: "nay-goh-syay", en: "To negotiate", exFr: "Savoir négocier son salaire est très important.", exEn: "Knowing how to negotiate one's salary is very important.", target: "négocier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Collaborer", phon: "koh-lah-boh-ray", en: "To collaborate", exFr: "Les équipes doivent collaborer pour réussir.", exEn: "Teams must collaborate to succeed.", target: "collaborer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Promouvoir", phon: "proh-moo-vwahr", en: "To promote", exFr: "La direction cherche à promouvoir l'innovation.", exEn: "Management seeks to promote innovation.", target: "promouvoir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Se qualifier", phon: "suh kah-lee-fee-yay", en: "To qualify / become skilled", exFr: "Ce programme aide les jeunes à se qualifier.", exEn: "This program helps young people become skilled.", target: "qualifier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Gérer", phon: "zhay-ray", en: "To manage", exFr: "Il sait bien gérer son temps au quotidien.", exEn: "He knows how to manage his time daily.", target: "gérer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Licencier", phon: "lee-sahn-syay", en: "To lay off / dismiss", exFr: "L'entreprise évite de licencier ses employés.", exEn: "The company avoids laying off its employees.", target: "licencier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Valoriser", phon: "vah-loh-ree-zay", en: "To add value / emphasize", exFr: "Il faut valoriser le travail accompli.", exEn: "One must value the work accomplished.", target: "valoriser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • L'Environnement</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --dark-green: #064E3B;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #ECFDF5; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-green); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-green); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #059669; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🌱 TCF Canada • 50 Interactive Environment Words</h1>
+        <p>S.W.E.E.T. C.H.E.F. P. Framework • Module E (Environment)</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Climate Change
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 1, fr: "Le changement climatique", phon: "luh shahn-zhuh-mahn klee-mah-teek", en: "Climate change", exFr: "Le changement climatique menace les écosystèmes.", exEn: "Climate change threatens ecosystems.", target: "changement climatique" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 2, fr: "Le réchauffement climatique", phon: "luh ray-shohf-mahn klee-mah-teek", en: "Global warming", exFr: "Le réchauffement climatique entraîne la fonte des glaces.", exEn: "Global warming leads to melting ice.", target: "réchauffement" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 3, fr: "L'effet de serre", phon: "lay-feh duh sair", en: "Greenhouse effect", exFr: "L'effet de serre retient la chaleur terrestre.", exEn: "The greenhouse effect retains terrestrial heat.", target: "effet de serre" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 4, fr: "L'empreinte carbone", phon: "lahm-prahnt kar-bohn", en: "Carbon footprint", exFr: "Réduire notre empreinte carbone est prioritaire.", exEn: "Reducing our carbon footprint is a priority.", target: "empreinte carbone" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 5, fr: "Les gaz à effet de serre", phon: "lay gahz ah ay-feh duh sair", en: "Greenhouse gases", exFr: "Les transports émettent des gaz à effet de serre.", exEn: "Transport emits greenhouse gases.", target: "gaz à effet de serre" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 6, fr: "La neutralité carbone", phon: "lah nuh-trah-lee-tay kar-bohn", en: "Carbon neutrality", exFr: "L'objectif est d'atteindre la neutralité carbone d'ici 2050.", exEn: "The goal is to reach carbon neutrality by 2050.", target: "neutralité carbone" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 7, fr: "La fonte des glaciers", phon: "lah fohnt dey glah-syay", en: "Melting of glaciers", exFr: "La fonte des glaciers fait monter le niveau de la mer.", exEn: "The melting of glaciers raises sea levels.", target: "fonte des glaciers" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 8, fr: "La montée des eaux", phon: "lah mohn-tay dey zoh", en: "Sea level rise", exFr: "La montée des eaux menace les villes côtières.", exEn: "Sea level rise threatens coastal cities.", target: "montée des eaux" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 9, fr: "Les événements météorologiques extrêmes", phon: "lay zay-vehn-mahn may-tay-oh-roh-loh-zheek", en: "Extreme weather events", exFr: "Les événements météorologiques extrêmes se multiplient.", exEn: "Extreme weather events are multiplying.", target: "extrêmes" },
+        { deck: 1, deckTitle: "Deck 1 • Climate Change & Global Warming", id: 10, fr: "La sécheresse", phon: "lah seysh-ress", en: "Drought", exFr: "La sécheresse nuit gravement à l'agriculture.", exEn: "Drought severely harms agriculture.", target: "sécheresse" },
+
+        // DECK 2: Ecology & Biodiversity
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 11, fr: "La biodiversité", phon: "lah bee-oh-dee-vair-see-tay", en: "Biodiversity", exFr: "La préservation de la biodiversité est essentielle.", exEn: "Preserving biodiversity is essential.", target: "biodiversité" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 12, fr: "L'écosystème", phon: "lay-koh-sees-tehm", en: "Ecosystem", exFr: "Chaque espèce joue un rôle dans l'écosystème.", exEn: "Every species plays a role in the ecosystem.", target: "écosystème" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 13, fr: "La déforestation", phon: "lah day-for-ehss-tah-syon", en: "Deforestation", exFr: "La déforestation détruit l'habitat des animaux.", exEn: "Deforestation destroys animal habitats.", target: "déforestation" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 14, fr: "Les espèces en danger", phon: "lay zehs-pehss ahn dahn-zhay", en: "Endangered species", exFr: "Plusieurs espèces en danger sont protégées.", exEn: "Several endangered species are protected.", target: "espèces" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 15, fr: "La faune et la flore", phon: "lah fohnt ay lah flor", en: "Fauna and flora", exFr: "Ce parc naturel abrite une faune et une flore riches.", exEn: "This natural park houses rich fauna and flora.", target: "faune" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 16, fr: "Un habitat naturel", phon: "ah nah-bee-tah nah-too-rel", en: "Natural habitat", exFr: "La pollution dégrade l'habitat naturel des oiseaux.", exEn: "Pollution degrades the natural habitat of birds.", target: "habitat" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 17, fr: "La disparition des espèces", phon: "lah dee-pah-ree-syon", en: "Extinction / Disappearance of species", exFr: "La disparition des espèces s'accélère.", exEn: "The disappearance of species is accelerating.", target: "disparition" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 18, fr: "La préservation", phon: "lah pray-zair-vah-syon", en: "Preservation", exFr: "La préservation des forêts aide le climat.", exEn: "Forest preservation helps the climate.", target: "préservation" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 19, fr: "Une réserve naturelle", phon: "ewn ray-zairv nah-too-rel", en: "Nature reserve", exFr: "Cette réserve naturelle interdit la chasse.", exEn: "This nature reserve prohibits hunting.", target: "réserve naturelle" },
+        { deck: 2, deckTitle: "Deck 2 • Ecology & Biodiversity", id: 20, fr: "Le reboisement", phon: "luh ruh-bwahz-mahn", en: "Reforestation", exFr: "Le reboisement aide à capturer le carbone.", exEn: "Reforestation helps capture carbon.", target: "reboisement" },
+
+        // DECK 3: Energy & Waste Management
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 21, fr: "Les énergies renouvelables", phon: "lay zay-nair-zhee ruh-noo-veh-lah-bluh", en: "Renewable energies", exFr: "Les énergies renouvelables remplacent le pétrole.", exEn: "Renewable energies are replacing oil.", target: "renouvelables" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 22, fr: "L'énergie solaire", phon: "lay-nair-zhee soh-lair", en: "Solar energy", exFr: "L'énergie solaire est propre et inépuisable.", exEn: "Solar energy is clean and inexhaustible.", target: "énergie solaire" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 23, fr: "L'énergie éolienne", phon: "lay-nair-zhee ay-oh-lyen", en: "Wind energy", exFr: "L'énergie éolienne se développe rapidement.", exEn: "Wind energy is expanding rapidly.", target: "éolienne" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 24, fr: "Le tri sélectif", phon: "luh tree say-lehk-teef", en: "Waste sorting", exFr: "Le tri sélectif facilite le recyclage.", exEn: "Waste sorting facilitates recycling.", target: "tri sélectif" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 25, fr: "Le recyclage", phon: "luh ruh-see-klahzh", en: "Recycling", exFr: "Le recyclage évite l'accumulation de plastique.", exEn: "Recycling prevents plastic accumulation.", target: "recyclage" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 26, fr: "Les déchets plastiques", phon: "lay day-shay plahs-teek", en: "Plastic waste", exFr: "Les déchets plastiques polluent les océans.", exEn: "Plastic waste pollutes oceans.", target: "déchets" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 27, fr: "La sobriété énergétique", phon: "lah soh-bree-ay-tay zay-nair-zhee-teek", en: "Energy restraint / sobriety", exFr: "La sobriété énergétique réduit les factures.", exEn: "Energy restraint reduces bills.", target: "sobriété" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 28, fr: "L'économie circulaire", phon: "lay-koh-noh-mee seer-koo-lair", en: "Circular economy", exFr: "L'économie circulaire réutilise les ressources.", exEn: "The circular economy reuses resources.", target: "économie circulaire" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 29, fr: "Le gaspillage alimentaire", phon: "luh gahss-pee-yahzh ah-lee-mahn-tair", en: "Food waste", exFr: "Réduire le gaspillage alimentaire évite les pertes.", exEn: "Reducing food waste prevents loss.", target: "gaspillage" },
+        { deck: 3, deckTitle: "Deck 3 • Energy & Waste Management", id: 30, fr: "Les combustibles fossiles", phon: "lay kohn-boos-tee-bluh foh-seel", en: "Fossil fuels", exFr: "Il faut réduire l'usage des combustibles fossiles.", exEn: "We must reduce the use of fossil fuels.", target: "fossiles" },
+
+        // DECK 4: Transition & Sustainability
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 31, fr: "La transition écologique", phon: "lah trahn-zee-syon ay-koh-loh-zheek", en: "Ecological transition", exFr: "La transition écologique exige des investissements.", exEn: "The ecological transition requires investments.", target: "transition écologique" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 32, fr: "Le développement durable", phon: "luh day-vlohp-mahn doo-rah-bluh", en: "Sustainable development", exFr: "Le développement durable concilie économie et écologie.", exEn: "Sustainable development balances economy and ecology.", target: "développement durable" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 33, fr: "L'écoresponsabilité", phon: "lay-koh-rehss-pohn-sah-bee-lee-tay", en: "Eco-responsibility", exFr: "L'écoresponsabilité guide les choix des citoyens.", exEn: "Eco-responsibility guides citizens' choices.", target: "écoresponsabilité" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 34, fr: "La consommation responsable", phon: "lah kohn-soh-mah-syon", en: "Responsible consumption", exFr: "La consommation responsable privilégie les produits locaux.", exEn: "Responsible consumption favors local products.", target: "consommation" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 35, fr: "Les transports propres", phon: "lay trahn-spor proh-pruh", en: "Clean transportation", exFr: "Les transports propres réduisent la pollution urbaine.", exEn: "Clean transportation reduces urban pollution.", target: "transports propres" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 36, fr: "La taxe carbone", phon: "lah tahks kar-bohn", en: "Carbon tax", exFr: "La taxe carbone incite à moins polluer.", exEn: "The carbon tax encourages polluting less.", target: "taxe carbone" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 37, fr: "La sensibilisation", phon: "lah sahn-see-bee-lee-zah-syon", en: "Awareness raising", exFr: "La sensibilisation à l'environnement commence à l'école.", exEn: "Environmental awareness raising begins at school.", target: "sensibilisation" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 38, fr: "L'agriculture biologique", phon: "lah-gree-kool-toor bee-oh-loh-zheek", en: "Organic farming", exFr: "L'agriculture biologique évite les pesticides.", exEn: "Organic farming avoids pesticides.", target: "biologique" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 39, fr: "Les réseaux d'eau", phon: "lay ray-zoh doh", en: "Water networks / supply", exFr: "La préservation des réseaux d'eau est cruciale.", exEn: "Preserving water supply systems is crucial.", target: "eau" },
+        { deck: 4, deckTitle: "Deck 4 • Sustainability & Transition", id: 40, fr: "L'écoblanchiment", phon: "lay-koh-blahn-shee-mahn", en: "Greenwashing", exFr: "Certaines publicités tombent dans l'écoblanchiment.", exEn: "Some advertisements fall into greenwashing.", target: "écoblanchiment" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Polluer", phon: "poh-loo-yay", en: "To pollute", exFr: "Les usines ne doivent plus polluer les rivières.", exEn: "Factories must no longer pollute rivers.", target: "polluer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Préserver", phon: "pray-zair-vay", en: "To preserve", exFr: "Chaque geste compte pour préserver la nature.", exEn: "Every action counts to preserve nature.", target: "préserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Recycler", phon: "ruh-see-klay", en: "To recycle", exFr: "Il faut apprendre à recycler tous ses déchets.", exEn: "One must learn to recycle all their waste.", target: "recycler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Réduire", phon: "ray-dweer", en: "To reduce", exFr: "Nous devons réduire notre consommation d'énergie.", exEn: "We must reduce our energy consumption.", target: "réduire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Économiser", phon: "ay-koh-noh-mee-zay", en: "To save / economize", exFr: "Économiser l'eau est vital pendant l'été.", exEn: "Saving water is vital during the summer.", target: "économiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "Il faut sensibiliser les citoyens aux enjeux écologiques.", exEn: "We must raise citizens' awareness of ecological stakes.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Protéger", phon: "proh-tay-zhay", en: "To protect", exFr: "Des lois strictes sont votées pour protéger les forêts.", exEn: "Strict laws are passed to protect forests.", target: "protéger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Dégrader", phon: "day-grah-day", en: "To degrade / damage", exFr: "La pollution risque de dégrader la qualité de l'air.", exEn: "Pollution risks degrading air quality.", target: "dégrader" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Restauration", phon: "rehss-toh-rah-syon", en: "Restoration", exFr: "La restauration des zones humides avance bien.", exEn: "The restoration of wetlands is progressing well.", target: "restauration" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Inciter", phon: "ahn-see-tay", en: "Incentivize / Encourage", exFr: "Le gouvernement doit inciter les entreprises à verdir.", exEn: "The government must incentivize companies to go green.", target: "inciter" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}.${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}.${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍generator Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

@@ -7,9 +7,11 @@
     <style>
         :root {
             --primary: #0055A5;
+            --dark-blue: #003A70;
             --accent: #EF4135;
             --dark: #0F172A;
             --light: #F8FAFC;
+            --green: #10B981;
         }
 
         * {
@@ -40,22 +42,38 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #003A70 0%, #0055A5 100%);
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%);
             color: white;
-            padding: 35px;
+            padding: 35px 25px;
             text-align: center;
         }
 
         .header h1 { font-size: 2.2rem; margin-bottom: 8px; }
-        .header p { opacity: 0.9; font-size: 1rem; }
+        .header p { opacity: 0.95; font-size: 1rem; }
 
-        .content { padding: 30px; }
+        .coaches-banner {
+            display: flex;
+            gap: 15px;
+            background: #F0F7FF;
+            border-left: 5px solid var(--primary);
+            padding: 16px 20px;
+            margin: 25px 30px 10px 30px;
+            border-radius: 12px;
+            align-items: center;
+        }
+
+        .content { padding: 25px 30px 35px 30px; }
+
+        .content h2 {
+            font-size: 1.3rem;
+            color: var(--dark-blue);
+            margin-bottom: 15px;
+        }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 16px;
-            margin-top: 20px;
         }
 
         .topic-card {
@@ -79,7 +97,7 @@
         }
 
         .topic-card.disabled {
-            opacity: 0.5;
+            opacity: 0.55;
             pointer-events: none;
             border-style: dashed;
         }
@@ -102,13 +120,14 @@
         .card-desc {
             font-size: 0.85rem;
             color: #64748B;
+            line-height: 1.35;
         }
 
         .status {
             margin-top: 15px;
             font-size: 0.8rem;
             font-weight: 600;
-            color: #10B981;
+            color: var(--green);
         }
 
         .status.coming-soon {
@@ -121,49 +140,80 @@
 <div class="hub-card">
     <div class="header">
         <h1>🇨🇦 TCF Canada Prep Hub</h1>
-        <p>Interactive Audio-Visual Learning Modules</p>
+        <p>Interactive Audio-Visual Modules • <strong>S.W.E.E.T. C.H.E.F. P.</strong> Framework</p>
+    </div>
+
+    <!-- Coaching Staff Banner -->
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Meet Your Virtual AI Coaches:</strong><br>
+            <span style="color: #475569; font-size: 0.88rem;">
+                <strong>Marc</strong> models native pronunciation • <strong>Élodie</strong> transcribes your microphone input • <strong>Léa</strong> provides live voice feedback!
+            </span>
+        </div>
     </div>
 
     <div class="content">
         <h2>📚 Topic Modules (S.W.E.E.T. C.H.E.F. P.)</h2>
         
         <div class="grid">
-            <!-- Health Module (Active) -->
-            <a href="sante_vocabulary.html" class="topic-card">
+            <!-- HEALTH MODULE (H) -->
+            <a href="health_50_words.html" class="topic-card">
                 <div>
-                    <span class="card-tag">Topic • Health</span>
-                    <div class="card-title">🏥 La Santé et le Bien-être</div>
-                    <div class="card-desc">Medical systems, lifestyle, risk factors, and core vocabulary with native audio.</div>
+                    <span class="card-tag">Module H • Health</span>
+                    <div class="card-title">🏥 La Santé & Bien-être</div>
+                    <div class="card-desc">50 words on healthcare systems, prevention, lifestyle factors, and key verbs.</div>
                 </div>
-                <div class="status">✓ Active Module</div>
+                <div class="status">✓ 50 Words Active</div>
             </a>
 
-            <!-- Work Module (Placeholder) -->
-            <a href="travail_vocabulary.html" class="topic-card disabled">
+            <!-- WORK MODULE (W) -->
+            <a href="work_50_words.html" class="topic-card">
                 <div>
-                    <span class="card-tag">Topic • Work</span>
+                    <span class="card-tag">Module W • Work</span>
                     <div class="card-title">💼 Le Travail & Emploi</div>
-                    <div class="card-desc">Labor market, upskilling, core competencies, and career dynamics.</div>
+                    <div class="card-desc">50 words on labor markets, remote work, upskilling, and professional rights.</div>
                 </div>
-                <div class="status coming-soon">⏳ Coming Soon</div>
+                <div class="status">✓ 50 Words Active</div>
             </a>
 
-            <!-- Environment Module (Placeholder) -->
-            <a href="environnement_vocabulary.html" class="topic-card disabled">
+            <!-- ENVIRONMENT MODULE (E) -->
+            <a href="environment_50_words.html" class="topic-card">
                 <div>
-                    <span class="card-tag">Topic • Environment</span>
+                    <span class="card-tag">Module E • Environment</span>
                     <div class="card-title">🌱 L'Environnement</div>
-                    <div class="card-desc">Ecological footprint, biodiversity, CO₂ emissions, and climate policies.</div>
+                    <div class="card-desc">50 words on climate change, carbon footprint, renewables, and ecology.</div>
+                </div>
+                <div class="status">✓ 50 Words Active</div>
+            </a>
+
+            <!-- EDUCATION MODULE (E) -->
+            <a href="#" class="topic-card disabled">
+                <div>
+                    <span class="card-tag">Module E • Education</span>
+                    <div class="card-title">🎓 Éducation & Formation</div>
+                    <div class="card-desc">Academic systems, knowledge transfer, and digital learning.</div>
                 </div>
                 <div class="status coming-soon">⏳ Coming Soon</div>
             </a>
 
-            <!-- Education Module (Placeholder) -->
-            <a href="education_vocabulary.html" class="topic-card disabled">
+            <!-- ECONOMY MODULE (E) -->
+            <a href="#" class="topic-card disabled">
                 <div>
-                    <span class="card-tag">Topic • Education</span>
-                    <div class="card-title">🎓 Éducation & Formation</div>
-                    <div class="card-desc">Knowledge transfer, academic systems, and lifelong learning.</div>
+                    <span class="card-tag">Module E • Economy</span>
+                    <div class="card-title">📊 Économie & Finances</div>
+                    <div class="card-desc">Trade, fiscal prudence, market trends, and purchasing power.</div>
+                </div>
+                <div class="status coming-soon">⏳ Coming Soon</div>
+            </a>
+
+            <!-- SOCIETY MODULE (S) -->
+            <a href="#" class="topic-card disabled">
+                <div>
+                    <span class="card-tag">Module S • Society</span>
+                    <div class="card-title">🏛️ Société & Integration</div>
+                    <div class="card-desc">Civic engagement, multiculturalism, social cohesion, and demographic shifts.</div>
                 </div>
                 <div class="status coming-soon">⏳ Coming Soon</div>
             </a>
