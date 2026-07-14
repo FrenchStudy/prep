@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Logement & Urbanisme</title>
+    <style>
+        :root {
+            --primary: #D97706;
+            --dark-orange: #B45309;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-orange) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #FFFBEB; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-orange); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-orange); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #D97706; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🏡 TCF Canada • 50 Interactive Housing Words</h1>
+        <p>Logement, Immobilier & Aménagement Urbain</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Real Estate & Rental Market
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 1, fr: "Un marché immobilier", phon: "ah mar-shay ee-moh-bee-lyay", en: "Real estate market", exFr: "Le marché immobilier connaît une hausse importante.", exEn: "The real estate market is seeing a major increase.", target: "immobilier" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 2, fr: "Le loyer mensuel", phon: "luh lwah-yay mohn-soo-el", en: "Monthly rent", exFr: "Le loyer mensuel absorbe la moitié de son revenu.", exEn: "Monthly rent absorbs half of their income.", target: "loyer" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 3, fr: "Le contrôle des loyers", phon: "luh kohn-trohl day lwah-yay", en: "Rent control", exFr: "Le contrôle des loyers protège les locataires.", exEn: "Rent control protects tenants.", target: "contrôle" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 4, fr: "La crise du logement", phon: "lah kreez doo lohzh-mahn", en: "Housing crisis", exFr: "La crise du logement touche plusieurs grandes villes.", exEn: "The housing crisis affects several major cities.", target: "crise" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 5, fr: "Un propriétaire", phon: "ah proh-pree-ay-tair", en: "Landlord / Property owner", exFr: "Le propriétaire doit entretenir le bâtiment.", exEn: "The landlord must maintain the building.", target: "propriétaire" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 6, fr: "Un locataire", phon: "ah loh-kah-tair", en: "Tenant", exFr: "Le locataire paie son loyer au début du mois.", exEn: "The tenant pays their rent at the beginning of the month.", target: "locataire" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 7, fr: "Un bail de location", phon: "ah bahy duh loh-kah-syon", en: "Rental lease", exFr: "Ils ont signé un bail de location de trois ans.", exEn: "They signed a three-year rental lease.", target: "bail" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 8, fr: "La caution", phon: "lah koh-syon", en: "Security deposit", exFr: "La caution est restituée à la fin du séjour.", exEn: "The security deposit is refunded at the end of the stay.", target: "caution" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 9, fr: "Le pouvoir d'achat immobilier", phon: "luh poo-vwahr dah-shah", en: "Real estate purchasing power", exFr: "La hausse des taux réduit le pouvoir d'achat immobilier.", exEn: "Rising rates reduce real estate purchasing power.", target: "pouvoir" },
+        { deck: 1, deckTitle: "Deck 1 • Real Estate & Rental Market", id: 10, fr: "L'accessibilité financière", phon: "lahk-seh-see-bee-lee-tay", en: "Affordability", exFr: "L'accessibilité financière est au cœur des débats.", exEn: "Affordability is at the heart of debates.", target: "accessibilité" },
+
+        // DECK 2: Urban Planning & City Life
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 11, fr: "L'aménagement urbain", phon: "lah-may-nahzh-mahn oor-bahn", en: "Urban planning", exFr: "L'aménagement urbain privilégie les zones piétonnes.", exEn: "Urban planning favors pedestrian zones.", target: "aménagement" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 12, fr: "La gentrification", phon: "lah zhahn-tree-fee-kah-syon", en: "Gentrification", exFr: "La gentrification transforme la démographie du quartier.", exEn: "Gentrification transforms the neighborhood's demographics.", target: "gentrification" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 13, fr: "Les espaces verts", phon: "lay zess-pahss vair", en: "Green spaces", exFr: "Les espaces verts améliorent la qualité de l'air.", exEn: "Green spaces improve air quality.", target: "espaces verts" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 14, fr: "La densité de population", phon: "lah dahn-see-tay", en: "Population density", exFr: "Une forte densité de population exige des services adaptés.", exEn: "High population density requires tailored services.", target: "densité" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 15, fr: "La banlieue", phon: "lah bahn-lyuh", en: "Suburbs", exFr: "Il habite en banlieue et travaille au centre-ville.", exEn: "He lives in the suburbs and works downtown.", target: "banlieue" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 16, fr: "Le centre-ville", phon: "luh sahn-truh veel", en: "Downtown / City center", exFr: "Le centre-ville est très animé le week-end.", exEn: "Downtown is very lively on weekends.", target: "centre-ville" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 17, fr: "L'étalement urbain", phon: "lay-tahl-mahn oor-bahn", en: "Urban sprawl", exFr: "L'étalement urbain consomme de nombreuses terres agricoles.", exEn: "Urban sprawl consumes a lot of agricultural land.", target: "étalement" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 18, fr: "Les logements sociaux", phon: "lay lohzh-mahn soh-syoh", en: "Public / Social housing", exFr: "La ville augmente le nombre de logements sociaux.", exEn: "The city is increasing the number of social housing units.", target: "logements sociaux" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 19, fr: "La mixité sociale", phon: "lah meeks-ee-tay soh-syahl", en: "Social diversity in housing", exFr: "La mixité sociale favorise le vivre-ensemble.", exEn: "Social diversity promotes living together.", target: "mixité" },
+        { deck: 2, deckTitle: "Deck 2 • Urban Planning & City Life", id: 20, fr: "La rénovation urbaine", phon: "lah ray-noh-vah-syon", en: "Urban renewal", exFr: "Ce projet de rénovation urbaine modernise le quartier.", exEn: "This urban renewal project modernizes the neighborhood.", target: "rénovation" },
+
+        // DECK 3: Architecture & Energy Efficiency
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 21, fr: "L'efficacité énergétique", phon: "leh-fee-kah-see-tay", en: "Energy efficiency", exFr: "Renforcer l'efficacité énergétique réduit les factures.", exEn: "Boosting energy efficiency reduces bills.", target: "efficacité" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 22, fr: "L'isolation thermique", phon: "lee-zoh-lah-syon tair-meek", en: "Thermal insulation", exFr: "Une bonne isolation thermique préserve la chaleur.", exEn: "Good thermal insulation preserves heat.", target: "isolation" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 23, fr: "Une passerelle piétonne", phon: "ewn pahss-rel pyay-tonn", en: "Pedestrian walkway", exFr: "La passerelle piétonne relie les deux rives du fleuve.", exEn: "The pedestrian walkway connects the two riverbanks.", target: "passerelle" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 24, fr: "Les écoquartiers", phon: "lay zay-koh-kar-tyay", en: "Eco-neighborhoods", exFr: "Les écoquartiers intègrent des énergies propres.", exEn: "Eco-neighborhoods integrate clean energies.", target: "écoquartiers" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 25, fr: "L'empreinte écologique du bâtiment", phon: "lahm-prahnt ay-koh-loh-zheek", en: "Building's ecological footprint", exFr: "Réduire l'empreinte écologique du bâtiment est urgent.", exEn: "Reducing the building's ecological footprint is urgent.", target: "empreinte" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 26, fr: "Les énergies renouvelables", phon: "lay zay-nair-zhee", en: "Renewable energy", exFr: "L'immeuble utilise des énergies renouvelables pour le chauffage.", exEn: "The building uses renewable energy for heating.", target: "renouvelables" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 27, fr: "Un bâtiment à haute performance", phon: "ah bah-tee-mahn", en: "High-performance building", exFr: "Ce bâtiment à haute performance consomme peu d'électricité.", exEn: "This high-performance building consumes little electricity.", target: "performance" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 28, fr: "La salubrité du logement", phon: "lah sah-loo-bree-tay", en: "Housing sanitation / Livability", exFr: "Les autorités contrôlent la salubrité du logement.", exEn: "Authorities check housing sanitation.", target: "salubrité" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 29, fr: "La dégradation urbaine", phon: "lah day-grah-dah-syon", en: "Urban decay", exFr: "L'abandon des usines entraîne une dégradation urbaine.", exEn: "Factory abandonment leads to urban decay.", target: "dégradation" },
+        { deck: 3, deckTitle: "Deck 3 • Architecture & Energy Efficiency", id: 30, fr: "Les nuisances sonores", phon: "lay nwee-zahns soh-nor", en: "Noise pollution", exFr: "Les nuisances sonores gênent le sommeil des résidents.", exEn: "Noise pollution disrupts residents' sleep.", target: "nuisances" },
+
+        // DECK 4: Rural vs. Urban Living
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 31, fr: "L'odeur de la campagne", phon: "loh-duhr duh lah kahm-pahn-yuh", en: "Rural environment", exFr: "Certains citadins recherchent l'odeur de la campagne.", exEn: "Some city dwellers seek out the rural lifestyle.", target: "campagne" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 32, fr: "L'exode rural", phon: "lehks-ohd roo-rahl", en: "Rural exodus", exFr: "L'exode rural a dépeuplé de nombreux villages.", exEn: "The rural exodus depopulated many villages.", target: "exode" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 33, fr: "Le retour à la terre", phon: "luh ruh-toor ah lah tair", en: "Return to rural living", exFr: "Le retour à la terre attire de jeunes familles.", exEn: "Returning to rural living attracts young families.", target: "retour" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 34, fr: "L'isolement géographique", phon: "lee-zohl-mahn", en: "Geographic isolation", exFr: "L'isolement géographique peut être un frein à l'emploi.", exEn: "Geographic isolation can be a barrier to employment.", target: "isolement" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 35, fr: "La désertification médicale", phon: "lah day-zair-tee-fee-kah-syon", en: "Shortage of doctors", exFr: "La désertification médicale inquiète les communes rurales.", exEn: "The shortage of doctors worries rural municipalities.", target: "désertification" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 36, fr: "La qualité de vie", phon: "lah kah-lee-tay duh vee", en: "Quality of life", exFr: "Vivre au calme offre une excellente qualité de vie.", exEn: "Living in quiet offers an excellent quality of life.", target: "qualité" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 37, fr: "La proximité des services", phon: "lah prohk-see-mee-tay", en: "Proximity to services", exFr: "La proximité des services est un critère de choix.", exEn: "Proximity to services is a decision criterion.", target: "proximité" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 38, fr: "Les réseaux de transport", phon: "lay ray-zoh", en: "Transit networks", exFr: "Les réseaux de transport facilitent les déplacements.", exEn: "Transit networks facilitate travel.", target: "réseaux" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 39, fr: "La vie de quartier", phon: "lah vee duh kar-tyay", en: "Neighborhood life", exFr: "Les petits commerces animent la vie de quartier.", exEn: "Small businesses liven up neighborhood life.", target: "quartier" },
+        { deck: 4, deckTitle: "Deck 4 • Rural vs. Urban Living", id: 40, fr: "Le coût de la vie", phon: "luh koo duh lah vee", en: "Cost of living", exFr: "Le coût de la vie est souvent plus élevé en ville.", exEn: "The cost of living is often higher in the city.", target: "coût" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Louer", phon: "loo-ay", en: "To rent", exFr: "Ils ont décidé de louer un appartement au centre-ville.", exEn: "They decided to rent an apartment downtown.", target: "louer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Acheter", phon: "ah-shtay", en: "To buy", exFr: "Acheter un bien demande une capacité d'emprunt.", exEn: "Buying property requires borrowing capacity.", target: "acheter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Bâtir", phon: "bah-teer", en: "To build", exFr: "La ville souhaite bâtir un nouvel écoquartier.", exEn: "The city wishes to build a new eco-neighborhood.", target: "bâtir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Rénover", phon: "ray-noh-vay", en: "To renovate", exFr: "Rénover son logement permet d'économiser l'énergie.", exEn: "Renovating one's home saves energy.", target: "rénover" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Déménager", phon: "day-may-nah-zhay", en: "To move", exFr: "Nous allons déménager à la fin du mois.", exEn: "We are going to move at the end of the month.", target: "déménager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Urbaniser", phon: "oor-bah-nee-zay", en: "To urbanize", exFr: "Il faut éco-urbaniser les espaces périurbains.", exEn: "Peri-urban areas must be eco-urbanized.", target: "urbaniser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Loger", phon: "loh-zhay", en: "To house / accommodate", exFr: "Cette résidence permet de loger des centaines d'étudiants.", exEn: "This residence can house hundreds of students.", target: "loger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Revaloriser", phon: "ruh-vah-loh-ree-zay", en: "To redevelop / increase value", exFr: "Le projet vise à revaloriser les friches industrielles.", exEn: "The project aims to redevelop brownfield sites.", target: "revaloriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Aménager", phon: "ah-may-nah-zhay", en: "To plan / lay out", exFr: "La mairie veut aménager un nouveau parc.", exEn: "City hall wants to lay out a new park.", target: "aménager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Cohabiter", phon: "koh-ah-bee-tay", en: "To cohabit", exFr: "Plusieurs générations peuvent cohabiter sous le même toit.", exEn: "Several generations can cohabit under the same roof.", target: "cohabiter" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

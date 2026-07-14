@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Culture & Patrimoine</title>
+    <style>
+        :root {
+            --primary: #9333EA;
+            --dark-purple: #7E22CE;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-purple) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #FAF5FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-purple); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-purple); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #9333EA; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🎭 TCF Canada • 50 Interactive Culture Words</h1>
+        <p>Culture, Patrimoine, Musées & Subventions</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Cultural Policy & Subsidies
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 1, fr: "Les subventions culturelles", phon: "lay soob-vahn-syon kool-too-rel", en: "Cultural subsidies", exFr: "Les subventions culturelles soutiennent les théâtres indépendants.", exEn: "Cultural subsidies support independent theaters.", target: "subventions" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 2, fr: "Le patrimoine immatériel", phon: "luh pah-tree-mwahn ee-mah-tay-ryel", en: "Intangible cultural heritage", exFr: "Cette danse traditionnelle fait partie du patrimoine immatériel.", exEn: "This traditional dance is part of intangible heritage.", target: "immatériel" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 3, fr: "L'accès à la culture", phon: "lahk-seh ah lah kool-toor", en: "Access to culture", exFr: "Rendre les musées gratuits améliore l'accès à la culture.", exEn: "Making museums free improves access to culture.", target: "accès" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 4, fr: "La préservation des monuments", phon: "lah pray-zair-vah-syon", en: "Preservation of monuments", exFr: "La préservation des monuments exige d'importants travaux.", exEn: "The preservation of monuments requires major work.", target: "préservation" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 5, fr: "Le mécénat culturel", phon: "luh may-say-nah", en: "Cultural patronage", exFr: "Le mécénat culturel aide au financement de projets artistiques.", exEn: "Cultural patronage helps fund artistic projects.", target: "mécénat" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 6, fr: "La politique culturelle", phon: "lah poh-lee-teek", en: "Cultural policy", exFr: "La politique culturelle vise à promouvoir la création locale.", exEn: "Cultural policy aims to promote local creation.", target: "politique" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 7, fr: "La démocratisation de l'art", phon: "lah day-moh-krah-tee-zah-syon", en: "Democratization of art", exFr: "La démocratisation de l'art permet d'atteindre tous les publics.", exEn: "The democratization of art allows reaching all audiences.", target: "démocratisation" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 8, fr: "Les droits d'auteur", phon: "lay drwah doh-tuhr", en: "Copyright / Royalties", exFr: "Les droits d'auteur protègent la propriété intellectuelle.", exEn: "Copyright protects intellectual property.", target: "droits" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 9, fr: "Le financement public", phon: "luh fee-nahnss-mahn poo-bleek", en: "Public funding", exFr: "Le financement public garantit l'indépendance de certains festivals.", exEn: "Public funding guarantees independence for certain festivals.", target: "financement" },
+        { deck: 1, deckTitle: "Deck 1 • Cultural Policy & Subsidies", id: 10, fr: "L'exception culturelle", phon: "lehks-sehps-syon", en: "Cultural exception", exFr: "L'exception culturelle protège la production audiovisuelle nationale.", exEn: "Cultural exception protects national audiovisual production.", target: "exception" },
+
+        // DECK 2: Museums & Performing Arts
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 11, fr: "Une exposition temporaire", phon: "ewn nehk-spoh-zee-syon", en: "Temporary exhibition", exFr: "Cette exposition temporaire attire de nombreux visiteurs.", exEn: "This temporary exhibition attracts many visitors.", target: "exposition" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 12, fr: "Le spectacle vivant", phon: "luh spehk-tah-kluh vee-vahn", en: "Performing arts", exFr: "Le théâtre et la danse appartiennent au spectacle vivant.", exEn: "Theater and dance belong to the performing arts.", target: "spectacle" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 13, fr: "La conservation des œuvres", phon: "lah kohn-sair-vah-syon", en: "Conservation of artwork", exFr: "La conservation des œuvres nécessite des conditions précises.", exEn: "Artwork conservation requires precise conditions.", target: "conservation" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 14, fr: "Un chef-d'œuvre", phon: "ah shehf-duh-vruh", en: "Masterpiece", exFr: "Ce tableau est considéré comme un véritable chef-d'œuvre.", exEn: "This painting is considered a true masterpiece.", target: "chef-d'œuvre" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 15, fr: "La programmation artistique", phon: "lah proh-grah-mah-syon", en: "Artistic programming", exFr: "La programmation artistique du théâtre est très variée.", exEn: "The theater's artistic programming is very varied.", target: "programmation" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 16, fr: "La fréquentation des musées", phon: "lah fray-kahn-tah-syon", en: "Museum attendance", exFr: "La fréquentation des musées augmente pendant les vacances.", exEn: "Museum attendance increases during holidays.", target: "fréquentation" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 17, fr: "Un site historique", phon: "ah seet eess-toh-reek", en: "Historic site", exFr: "Ce château fort est un site historique remarquable.", exEn: "This castle is a remarkable historic site.", target: "site" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 18, fr: "La médiation culturelle", phon: "lah may-dyah-syon", en: "Cultural outreach", exFr: "La médiation culturelle facilite la compréhension de l'art moderne.", exEn: "Cultural outreach facilitates understanding modern art.", target: "médiation" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 19, fr: "La restitution des biens culturels", phon: "lah rehss-tee-too-syon", en: "Restitution of cultural property", exFr: "La restitution des biens culturels suscite de grands débats.", exEn: "Restitution of cultural property sparks major debates.", target: "restitution" },
+        { deck: 2, deckTitle: "Deck 2 • Museums & Performing Arts", id: 20, fr: "Un édifice classé", phon: "ah nay-dee-feess klah-say", en: "Heritage / Listed building", exFr: "Cet édifice classé ne peut pas être modifié sans autorisation.", exEn: "This listed building cannot be modified without permission.", target: "édifice" },
+
+        // DECK 3: Traditions & Language Preservation
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 21, fr: "La diversité linguistique", phon: "lah dee-vair-see-tay", en: "Linguistic diversity", exFr: "La diversité linguistique est un trésor culturel à préserver.", exEn: "Linguistic diversity is a cultural treasure to preserve.", target: "linguistique" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 22, fr: "La tradition orale", phon: "lah trah-dee-syon oh-rahl", en: "Oral tradition", exFr: "Ces contes anciens se transmettent par la tradition orale.", exEn: "These ancient tales are passed down through oral tradition.", target: "tradition" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 23, fr: "La transmission du savoir", phon: "lah trahnss-mee-syon", en: "Transmission of knowledge", exFr: "La transmission du savoir garantit la survie des coutumes.", exEn: "Knowledge transmission guarantees the survival of customs.", target: "transmission" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 24, fr: "Le folklore local", phon: "luh fohk-lor loh-kahl", en: "Local folklore", exFr: "Le folklore local anime les festivités de la région.", exEn: "Local folklore livens up regional festivities.", target: "folklore" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 25, fr: "Les fêtes traditionnelles", phon: "lay feht", en: "Traditional festivals", exFr: "Les fêtes traditionnelles rassemblement toutes les générations.", exEn: "Traditional festivals bring all generations together.", target: "fêtes" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 26, fr: "La sauvegarde du patrimoine", phon: "lah soh-vuh-gard", en: "Safeguarding of heritage", exFr: "La sauvegarde du patrimoine exige une attention constante.", exEn: "Safeguarding heritage requires constant attention.", target: "sauvegarde" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 27, fr: "Les identités régionales", phon: "lay zee-dahn-tee-tay", en: "Regional identities", exFr: "La langue contribue fortement aux identités régionales.", exEn: "Language contributes strongly to regional identities.", target: "identités" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 28, fr: "Le rayonnement culturel", phon: "luh ray-ohn-mahn", en: "Cultural influence / Reach", exFr: "Ce festival participe au rayonnement culturel de la ville.", exEn: "This festival contributes to the city's cultural reach.", target: "rayonnement" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 29, fr: "Le multiculturalisme", phon: "luh mool-tee-kool-too-rah-lees-muh", en: "Multiculturalism", exFr: "Le multiculturalisme enrichit le paysage artistique.", exEn: "Multiculturalism enriches the artistic landscape.", target: "multiculturalisme" },
+        { deck: 3, deckTitle: "Deck 3 • Traditions & Language Preservation", id: 30, fr: "La mémoire collective", phon: "lah may-mwahr koh-lehk-teev", en: "Collective memory", exFr: "Les monuments font partie de la mémoire collective.", exEn: "Monuments are part of collective memory.", target: "mémoire" },
+
+        // DECK 4: Modern Arts & Architecture
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 31, fr: "L'art contemporain", phon: "lar kohn-tahn-poh-rahn", en: "Contemporary art", exFr: "L'art contemporain suscite parfois des débats animés.", exEn: "Contemporary art sometimes sparks lively debates.", target: "contemporain" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 32, fr: "L'architecture moderne", phon: "lar-shee-tehk-toor", en: "Modern architecture", exFr: "L'architecture moderne intègre des matériaux écologiques.", exEn: "Modern architecture integrates eco-friendly materials.", target: "architecture" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 33, fr: "La création artistique", phon: "lah kray-ah-syon", en: "Artistic creation", exFr: "Encourager la création artistique stimule l'innovation.", exEn: "Encouraging artistic creation stimulates innovation.", target: "création" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 34, fr: "Les arts numériques", phon: "lay zar noo-may-reek", en: "Digital arts", exFr: "Les arts numériques combinent technologie et esthétique.", exEn: "Digital arts combine technology and aesthetics.", target: "numériques" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 35, fr: "Une résidence d'artistes", phon: "ewn ray-zee-dahnss", en: "Artist residency", exFr: "Une résidence d'artistes offre un espace de travail privilégié.", exEn: "An artist residency provides a privileged workspace.", target: "résidence" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 36, fr: "La biennale d'art", phon: "lah bee-eh-nahl dar", en: "Art biennale", exFr: "La biennale d'art présente des créateurs venus du monde entier.", exEn: "The art biennale presents creators from around the world.", target: "biennale" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 37, fr: "L'expression scénique", phon: "lehks-preh-syon say-neek", en: "Stage expression", exFr: "Ce comédien possède une incroyable expression scénique.", exEn: "This actor has incredible stage expression.", target: "scénique" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 38, fr: "Le cinéma d'auteur", phon: "luh see-nay-mah doh-tuhr", en: "Arthouse cinema", exFr: "Le cinéma d'auteur aborde souvent des thèmes profonds.", exEn: "Arthouse cinema often tackles profound themes.", target: "cinéma" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 39, fr: "Les galeries d'art", phon: "lay gah-lree dar", en: "Art galleries", exFr: "Les galeries d'art exposent les jeunes talents émergents.", exEn: "Art galleries display emerging young talent.", target: "galeries" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Arts & Architecture", id: 40, fr: "La critique artistique", phon: "lah kree-teek", en: "Art criticism", exFr: "La critique artistique analyse la portée de l'œuvre.", exEn: "Art criticism analyzes the work's impact.", target: "critique" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Préserver", phon: "pray-zair-vay", en: "To preserve", exFr: "Il faut préserver notre patrimoine culturel pour les générations futures.", exEn: "We must preserve our cultural heritage for future generations.", target: "préserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Transmettre", phon: "trahnss-meh-truh", en: "To transmit / pass down", exFr: "Ce festival vise à transmettre les traditions locales.", exEn: "This festival aims to pass down local traditions.", target: "transmettre" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Subventionner", phon: "soob-vahn-syon-nay", en: "To subsidize", exFr: "La municipalité a décidé de subventionner l'école de musique.", exEn: "The municipality decided to subsidize the music school.", target: "subventionner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Valoriser", phon: "vah-loh-ree-zay", en: "To promote / highlight value", exFr: "Ce projet vise à valoriser l'artisanat régional.", exEn: "This project aims to highlight regional craftsmanship.", target: "valoriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Restaurer", phon: "rehss-toh-ray", en: "To restore", exFr: "Des experts vont restaurer cette fresque ancienne.", exEn: "Experts are going to restore this ancient fresco.", target: "restaurer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Promouvoir", phon: "proh-moo-vwahr", en: "To promote", exFr: "La France s'efforce de promouvoir sa langue dans le monde.", exEn: "France strives to promote its language worldwide.", target: "promouvoir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Inaugurer", phon: "ee-noh-goo-ray", en: "To inaugurate", exFr: "Le maire vient d'inaugurer le nouveau musée d'histoire.", exEn: "The mayor has just inaugurated the new history museum.", target: "inaugurer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Exposer", phon: "ehks-poh-zay", en: "To exhibit / display", exFr: "L'artiste va exposer ses dernières peintures à Paris.", exEn: "The artist will display her latest paintings in Paris.", target: "exposer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Sauvegarder", phon: "soh-vuh-gar-day", en: "To safeguard", exFr: "Cette loi vise à sauvegarder les édifices en péril.", exEn: "This law aims to safeguard buildings at risk.", target: "sauvegarder" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Enrichir", phon: "ahn-ree-sheer", en: "To enrich", exFr: "Les échanges culturels permettent d'enrichir nos connaissances.", exEn: "Cultural exchanges enrich our knowledge.", target: "enrichir" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

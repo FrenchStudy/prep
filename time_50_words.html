@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Gestion du Temps</title>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --dark-blue: #1D4ED8;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #EFF6FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #2563EB; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>⏱️ TCF Canada • 50 Interactive Time Management Words</h1>
+        <p>Gestion du Temps, Échéances, Productivité & Équilibre</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Schedules, Deadlines & Planning
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 1, fr: "La fenêtre d'opportunité", phon: "lah fuh-neh-truh doh-por-too-nee-tay", en: "Opportunity window", exFr: "Il faut agir vite car la fenêtre d'opportunité est très courte.", exEn: "We must act fast because the opportunity window is very short.", target: "opportunité" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 2, fr: "La gestion du temps", phon: "lah zhehs-tyohn doo tahn", en: "Time management", exFr: "Une bonne gestion du temps améliore la qualité de travail.", exEn: "Good time management improves work quality.", target: "temps" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 3, fr: "Une date limite", phon: "ewn daht lee-meet", en: "Deadline", exFr: "La date limite pour soumettre le dossier est vendredi.", exEn: "The deadline to submit the file is Friday.", target: "limite" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 4, fr: "L'emploi du temps", phon: "lahn-plwah doo tahn", en: "Schedule / Timetable", exFr: "Mon emploi du temps est très chargé cette semaine.", exEn: "My schedule is very busy this week.", target: "emploi" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 5, fr: "La planification stratégique", phon: "lah plah-nee-fee-kah-syon", en: "Strategic planning", exFr: "La planification stratégique évite les imprévus de dernière minute.", exEn: "Strategic planning avoids last-minute surprises.", target: "planification" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 6, fr: "Le respect des échéances", phon: "luh rehss-peh day zay-shay-ahnss", en: "Meeting deadlines", exFr: "Le respect des échéances garantit la satisfaction des clients.", exEn: "Meeting deadlines guarantees customer satisfaction.", target: "échéances" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 7, fr: "La hiérarchisation des tâches", phon: "lah ee-ay-rar-shee-zah-syon", en: "Prioritization of tasks", exFr: "La hiérarchisation des tâches permet de traiter l'urgent d'abord.", exEn: "Prioritization of tasks allows handling urgent matters first.", target: "hiérarchisation" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 8, fr: "Le calendrier d'exécution", phon: "luh kah-lahn-dree-ay", en: "Implementation schedule", exFr: "Le calendrier d'exécution fixe les grandes étapes du projet.", exEn: "The implementation schedule sets the main stages of the project.", target: "calendrier" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 9, fr: "Un retard accumulé", phon: "ah ruh-tar ah-koo-moo-lay", en: "Accumulated delay", exFr: "L'équipe s'efforce de rattraper un retard accumulé.", exEn: "The team is striving to catch up on an accumulated delay.", target: "retard" },
+        { deck: 1, deckTitle: "Deck 1 • Schedules, Deadlines & Planning", id: 10, fr: "L'optimisation du temps", phon: "lohp-tee-mee-zah-syon", en: "Time optimization", exFr: "L'optimisation du temps passe par la suppression des distractions.", exEn: "Time optimization relies on eliminating distractions.", target: "optimisation" },
+
+        // DECK 2: Productivity & Time Pressure
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 11, fr: "La procrastination", phon: "lah proh-krahss-tee-nah-syon", en: "Procrastination", exFr: "Lutter contre la procrastination demande de la discipline.", exEn: "Fighting procrastination requires discipline.", target: "procrastination" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 12, fr: "La surcharge de travail", phon: "lah soor-sharzh", en: "Work overload", exFr: "La surcharge de travail peut nuire à la santé mentale.", exEn: "Work overload can harm mental health.", target: "surcharge" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 13, fr: "La pression temporelle", phon: "lah prehss-syon tahn-poh-rel", en: "Time pressure", exFr: "Travailler sous pression temporelle génère souvent du stress.", exEn: "Working under time pressure often generates stress.", target: "temporelle" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 14, fr: "Le gain de temps", phon: "luh gahn doo tahn", en: "Time savings", exFr: "L'automatisation apporte un gain de temps considérable.", exEn: "Automation brings considerable time savings.", target: "gain" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 15, fr: "La perte de temps", phon: "lah pairt doo tahn", en: "Waste of time", exFr: "Multiplier les réunions inutiles est une perte de temps.", exEn: "Multiplying useless meetings is a waste of time.", target: "perte" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 16, fr: "L'efficacité personnelle", phon: "lay-fee-kah-see-tay", en: "Personal effectiveness", exFr: "Développer son efficacité personnelle aide à atteindre ses objectifs.", exEn: "Developing personal effectiveness helps achieve goals.", target: "efficacité" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 17, fr: "La concentration soutenue", phon: "lah kohn-sahn-trah-syon", en: "Sustained focus", exFr: "Résoudre des problèmes complexes exige une concentration soutenue.", exEn: "Solving complex problems requires sustained focus.", target: "concentration" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 18, fr: "La gestion des urgences", phon: "lah zhehs-tyohn day zoor-zhahnss", en: "Emergency management", exFr: "La gestion des urgences ne doit pas remplacer le travail de fond.", exEn: "Emergency management shouldn't replace core work.", target: "urgences" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 19, fr: "Le rythme de travail", phon: "luh reet-muh", en: "Pace of work", exFr: "Il faut adapter son rythme de travail pour éviter la fatigue.", exEn: "One must adapt their pace of work to avoid fatigue.", target: "rythme" },
+        { deck: 2, deckTitle: "Deck 2 • Productivity & Time Pressure", id: 20, fr: "L'organisation quotidienne", phon: "lor-gah-nee-zah-syon", en: "Daily organization", exFr: "Une bonne organisation quotidienne réduit le stress du matin.", exEn: "Good daily organization reduces morning stress.", target: "organisation" },
+
+        // DECK 3: Work-Life Balance & Rest
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 21, fr: "L'équilibre vie pro-vie perso", phon: "lay-kee-lee-bruh", en: "Work-life balance", exFr: "Trouver l'équilibre vie pro-vie perso prévient l'épuisement.", exEn: "Finding work-life balance prevents exhaustion.", target: "équilibre" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 22, fr: "Le droit à la déconnexion", phon: "luh drwah ah lah day-koh-nehk-syon", en: "Right to disconnect", exFr: "Le droit à la déconnexion protège les soirs et les week-ends.", exEn: "The right to disconnect protects evenings and weekends.", target: "déconnexion" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 23, fr: "La pause régénératrice", phon: "lah pohz ray-zhay-nay-rah-treess", en: "Restorative break", exFr: "Faire une pause régénératrice améliore la productivité l'après-midi.", exEn: "Taking a restorative break improves afternoon productivity.", target: "pause" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 24, fr: "Le temps de repos", phon: "luh tahn duh ruh-poh", en: "Rest time", exFr: "Le temps de repos obligatoire est fixé par le code du travail.", exEn: "Mandatory rest time is fixed by the labor code.", target: "repos" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 25, fr: "La disponibilité permanente", phon: "lah deess-poh-nee-bee-lee-tay", en: "Constant availability", exFr: "La disponibilité permanente entraîne une fatigue mentale.", exEn: "Constant availability leads to mental fatigue.", target: "disponibilité" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 26, fr: "Le surmenage", phon: "luh soor-muh-nahzh", en: "Overwork / Burnout", exFr: "Le surmenage s'installe quand on néglige les pauses.", exEn: "Burnout sets in when breaks are neglected.", target: "surmenage" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 27, fr: "Le temps libre", phon: "luh tahn lee-bruh", en: "Free time", exFr: "Profiter de son temps libre permet de recharger ses batteries.", exEn: "Enjoying free time allows recharging batteries.", target: "libre" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 28, fr: "La flexibilité horaire", phon: "lah flehk-see-bee-lee-tay", en: "Flexible hours", exFr: "La flexibilité horaire aide les parents à concilier leurs tâches.", exEn: "Flexible hours help parents balance their duties.", target: "flexibilité" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 29, fr: "La gestion du stress", phon: "lah zhehs-tyohn doo strehss", en: "Stress management", exFr: "La gestion du stress s'appuie sur la respiration et le sport.", exEn: "Stress management relies on breathing and sports.", target: "stress" },
+        { deck: 3, deckTitle: "Deck 3 • Work-Life Balance & Rest", id: 30, fr: "La qualité de vie au travail", phon: "lah kah-lee-tay", en: "Quality of work life", exFr: "Améliorer la qualité de vie au travail réduit l'absentéisme.", exEn: "Improving quality of work life reduces absenteeism.", target: "qualité" },
+
+        // DECK 4: Modern Time Concepts
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 31, fr: "L'instantanéité", phon: "lahns-tahn-tah-nay-ee-tay", en: "Instantaneity", exFr: "L'instantanéité des courriels crée parfois de fausses urgences.", exEn: "The instantaneity of emails sometimes creates false emergencies.", target: "instantanéité" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 32, fr: "La culture de l'urgence", phon: "lah kool-toor", en: "Culture of urgency", exFr: "La culture de l'urgence empêche la réflexion à long terme.", exEn: "The culture of urgency prevents long-term reflection.", target: "urgence" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 33, fr: "La gestion par objectifs", phon: "lah zhehs-tyohn", en: "Management by objectives", exFr: "La gestion par objectifs privilégie les résultats plutôt que les heures.", exEn: "Management by objectives emphasizes results over hours.", target: "objectifs" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 34, fr: "Le travail en flux tendu", phon: "luh trah-vahy ahn floo tahn-doo", en: "Just-in-time work", exFr: "Le travail en flux tendu réduit les stocks mais augmente la pression.", exEn: "Just-in-time work reduces stock but increases pressure.", target: "flux" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 35, fr: "La maîtrise du temps", phon: "lah meh-treez doo tahn", en: "Mastery of time", exFr: "La maîtrise du temps est une compétence précieuse en entreprise.", exEn: "Mastery of time is a valuable skill in business.", target: "maîtrise" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 36, fr: "L'anticipation", phon: "lahn-tee-see-pah-syon", en: "Anticipation", exFr: "L'anticipation permet d'éviter les goulots d'étranglement.", exEn: "Anticipation avoids bottlenecks.", target: "anticipation" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 37, fr: "La durée d'exécution", phon: "lah doo-ray", en: "Execution time", exFr: "Estimer correctement la durée d'exécution demande de l'expérience.", exEn: "Correctly estimating execution time requires experience.", target: "durée" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 38, fr: "L'ordonnancement", phon: "lor-dohn-nahnss-mahn", en: "Scheduling / Sequencing", exFr: "L'ordonnancement précis des tâches optimise la chaîne.", exEn: "Precise sequencing of tasks optimizes the pipeline.", target: "ordonnancement" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 39, fr: "La régularité", phon: "lah ray-goo-lah-ree-tay", en: "Consistency", exFr: "La régularité dans l'effort garantit le succès académique.", exEn: "Consistency in effort guarantees academic success.", target: "régularité" },
+        { deck: 4, deckTitle: "Deck 4 • Modern Time Concepts", id: 40, fr: "La ponctualité", phon: "lah pohnk-too-ah-lee-tay", en: "Punctuality", exFr: "La ponctualité est une marque de respect professionnel.", exEn: "Punctuality is a sign of professional respect.", target: "ponctualité" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Planifier", phon: "plah-nee-fyay", en: "To plan", exFr: "Il faut planifier les activités plusieurs semaines à l'avance.", exEn: "Activities must be planned several weeks in advance.", target: "planifier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Prioriser", phon: "pree-oh-ree-zay", en: "To prioritize", exFr: "Apprendre à prioriser évite de se sentir dépassé.", exEn: "Learning to prioritize avoids feeling overwhelmed.", target: "prioriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Anticiper", phon: "ahn-tee-see-pay", en: "To anticipate", exFr: "Savoir anticiper les obstacles fait gagner un temps précieux.", exEn: "Knowing how to anticipate obstacles saves valuable time.", target: "anticiper" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Gérer", phon: "zhay-ray", en: "To manage", exFr: "Il sait parfaitement gérer son calendrier de réunions.", exEn: "He knows perfectly how to manage his meeting calendar.", target: "gérer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Différer", phon: "dee-fay-ray", en: "To postpone / defer", exFr: "Si le projet n'est pas urgent, mieux vaut différer cette tâche.", exEn: "If the project isn't urgent, it's better to defer this task.", target: "différer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Optimiser", phon: "ohp-tee-mee-zay", en: "To optimize", exFr: "Nous cherchons à optimiser nos méthodes de travail.", exEn: "We seek to optimize our work methods.", target: "optimiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Raccourcir", phon: "rah-koor-seer", en: "To shorten", exFr: "Raccourcir les réunions permet de libérer du temps de travail.", exEn: "Shortening meetings frees up working time.", target: "raccourcir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Respecter", phon: "rehss-pehk-tay", en: "To respect / adhere to", exFr: "Chaque membre de l'équipe s'engage à respecter les délais.", exEn: "Each team member commits to meeting deadlines.", target: "respecter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Déléguer", phon: "day-lay-gay", en: "To delegate", exFr: "Déléguer certaines responsabilités permet de se concentrer sur l'essentiel.", exEn: "Delegating certain duties frees focus for essentials.", target: "déléguer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Accélérer", phon: "ahk-say-lay-ray", en: "To accelerate", exFr: "Utiliser ce nouvel outil va accélérer la livraison des projets.", exEn: "Using this new tool will accelerate project delivery.", target: "accélérer" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

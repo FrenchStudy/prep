@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Égalité & Diversité</title>
+    <style>
+        :root {
+            --primary: #E11D48;
+            --dark-rose: #BE123C;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-rose) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #FFF1F2; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-rose); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-rose); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #E11D48; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>⚖️ TCF Canada • 50 Interactive Equality Words</h1>
+        <p>Égalité des sexes, Parité, Inclusivité & Droits</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Gender Equality & Workplace Inclusion
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 1, fr: "La parité hommes-femmes", phon: "lah pah-ree-tay", en: "Gender parity", exFr: "Atteindre la parité hommes-femmes dans les conseils d'administration est un objectif.", exEn: "Achieving gender parity on boards of directors is a goal.", target: "parité" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 2, fr: "L'égalité salariale", phon: "lay-gah-lee-tay sah-lah-ryahl", en: "Equal pay", exFr: "L'égalité salariale doit être respectée à poste équivalent.", exEn: "Equal pay must be respected for equivalent positions.", target: "salariale" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 3, fr: "Le plafond de verre", phon: "luh plah-fohn duh vair", en: "Glass ceiling", exFr: "Le plafond de verre empêche encore certaines femmes d'accéder aux sommets.", exEn: "The glass ceiling still prevents some women from reaching executive levels.", target: "plafond" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 4, fr: "La conciliation travail-vie personnelle", phon: "lah kohn-see-lyah-syon", en: "Work-life balance", exFr: "Favoriser la conciliation travail-vie personnelle améliore le bien-être.", exEn: "Promoting work-life balance improves well-being.", target: "conciliation" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 5, fr: "L'équité en matière d'emploi", phon: "lay-kee-tay", en: "Employment equity", exFr: "L'équité en matière d'emploi donne des chances égales à chaque candidat.", exEn: "Employment equity gives equal chances to every candidate.", target: "équité" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 6, fr: "L'écart de rémunération", phon: "lay-kar duh ray-moo-nay-rah-syon", en: "Pay gap", exFr: "L'écart de rémunération tend à se réduire progressivement.", exEn: "The pay gap is gradually closing.", target: "écart" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 7, fr: "La sous-représentation", phon: "lah soo-ruh-pray-zahn-tah-syon", en: "Underrepresentation", exFr: "La sous-représentation des minorités est corrigée par des lois.", exEn: "Underrepresentation of minorities is addressed through laws.", target: "représentation" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 8, fr: "La discrimination à l'embauche", phon: "lah deess-kree-mee-nah-syon", en: "Hiring discrimination", exFr: "Le CV anonyme permet de lutter contre la discrimination à l'embauche.", exEn: "The anonymous CV helps fight hiring discrimination.", target: "discrimination" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 9, fr: "Le congé parental", phon: "luh kohn-zhay pah-rahn-tahl", en: "Parental leave", exFr: "Partager le congé parental équilibre les responsabilités familiales.", exEn: "Sharing parental leave balances family responsibilities.", target: "parental" },
+        { deck: 1, deckTitle: "Deck 1 • Gender Equality & Workplace Inclusion", id: 10, fr: "La promotion interne", phon: "lah proh-moh-syon an-tairn", en: "Internal promotion", exFr: "La promotion interne doit reposer sur le mérite individuel.", exEn: "Internal promotion must rely on individual merit.", target: "promotion" },
+
+        // DECK 2: Diversity & Social Inclusion
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 11, fr: "L'inclusion sociale", phon: "lahn-kloo-zyon soh-syahl", en: "Social inclusion", exFr: "L'inclusion sociale offre un soutien aux publics défavorisés.", exEn: "Social inclusion provides support to disadvantaged groups.", target: "inclusion" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 12, fr: "La diversité sociale", phon: "lah dee-vair-see-tay", en: "Social diversity", exFr: "La diversité sociale en entreprise est une source de richesse.", exEn: "Social diversity in the workplace is a source of wealth.", target: "diversité" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 13, fr: "L'accessibilité universelle", phon: "lahk-seh-see-bee-lee-tay", en: "Universal accessibility", exFr: "L'accessibilité universelle adapte les lieux publics aux chaises roulantes.", exEn: "Universal accessibility adapts public places for wheelchairs.", target: "accessibilité" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 14, fr: "La lutte contre le racisme", phon: "lah loot kohn-truh", en: "Fight against racism", exFr: "La lutte contre le racisme demande l'implication de tous.", exEn: "The fight against racism requires everyone's involvement.", target: "racisme" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 15, fr: "Les minorités visibles", phon: "lay mee-noh-ree-tay", en: "Visible minorities", exFr: "Intégrer les minorités visibles renforce le tissu social.", exEn: "Integrating visible minorities strengthens the social fabric.", target: "minorités" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 16, fr: "La tolérance zéro", phon: "lah toh-lay-rahnss zay-roh", en: "Zero tolerance", exFr: "La politique applique une tolérance zéro face au harcèlement.", exEn: "The policy applies zero tolerance to harassment.", target: "tolérance" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 17, fr: "L'intégration des personnes handicapées", phon: "lahn-tay-grah-syon", en: "Integration of persons with disabilities", exFr: "L'intégration des personnes handicapées est une obligation légale.", exEn: "Integrating persons with disabilities is a legal obligation.", target: "handicapées" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 18, fr: "L'équité sociale", phon: "lay-kee-tay soh-syahl", en: "Social equity", exFr: "L'équité sociale garantit un traitement juste pour chaque citoyen.", exEn: "Social equity guarantees fair treatment for every citizen.", target: "équité" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 19, fr: "La lutte contre l'homophobie", phon: "lah loot kohn-truh", en: "Fight against homophobia", exFr: "Des campagnes médiatiques renforcent la lutte contre l'homophobie.", exEn: "Media campaigns reinforce the fight against homophobia.", target: "homophobie" },
+        { deck: 2, deckTitle: "Deck 2 • Diversity & Social Inclusion", id: 20, fr: "La justice distributive", phon: "lah zhoos-teess", en: "Distributive justice", exFr: "La justice distributive cherche à partager équitablement les ressources.", exEn: "Distributive justice seeks to share resources fairly.", target: "justice" },
+
+        // DECK 3: Civic Rights & Legislation
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 21, fr: "La charte des droits", phon: "lah shar-tuh day drwah", en: "Charter of rights", exFr: "La charte des droits garantit les libertés fondamentales de chacun.", exEn: "The charter of rights guarantees everyone's fundamental freedoms.", target: "charte" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 22, fr: "La lutte contre les préjugés", phon: "lah loot kohn-truh", en: "Fight against prejudice", exFr: "L'éducation joue un rôle majeur dans la lutte contre les préjugés.", exEn: "Education plays a major role in fighting prejudice.", target: "préjugés" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 23, fr: "La discrimination systémique", phon: "lah deess-kree-mee-nah-syon", en: "Systemic discrimination", exFr: "Identifier la discrimination systémique permet de réformer les lois.", exEn: "Identifying systemic discrimination allows reforming laws.", target: "systémique" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 24, fr: "L'égalité des chances", phon: "lay-gah-lee-tay day shahnss", en: "Equal opportunity", exFr: "L'école républicaine doit être le moteur de l'égalité des chances.", exEn: "Public school must be the engine of equal opportunity.", target: "égalité" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 25, fr: "Les stéréotypes de genre", phon: "lay stay-ray-oh-teep", en: "Gender stereotypes", exFr: "Il faut déconstruire les stéréotypes de genre dès l'enfance.", exEn: "Gender stereotypes must be deconstructed from childhood.", target: "stéréotypes" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 26, fr: "L'émancipation", phon: "lay-mahn-see-pah-syon", en: "Emancipation", exFr: "L'accès au travail a été crucial pour l'émancipation des femmes.", exEn: "Access to work was crucial for women's emancipation.", target: "émancipation" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 27, fr: "Les droits humains", phon: "lay drwah oo-mahn", en: "Human rights", exFr: "Le respect des droits humains est surveillé par des ONG.", exEn: "Respect for human rights is monitored by NGOs.", target: "droits" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 28, fr: "Le principe de laïcité", phon: "luh prahn-seep", en: "Principle of secularism", exFr: "Le principe de laïcité sépare les affaires religieuses de l'État.", exEn: "The principle of secularism separates religious affairs from the State.", target: "laïcité" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 29, fr: "La liberté de conscience", phon: "lah lee-bair-tay", en: "Freedom of conscience", exFr: "La liberté de conscience protège le droit de croire ou de ne pas croire.", exEn: "Freedom of conscience protects the right to believe or not believe.", target: "conscience" },
+        { deck: 3, deckTitle: "Deck 3 • Civic Rights & Legislation", id: 30, fr: "La cohésion nationale", phon: "lah koh-ay-zyon", en: "National cohesion", exFr: "Le respect mutuel renforce la cohésion nationale.", exEn: "Mutual respect strengthens national cohesion.", target: "cohésion" },
+
+        // DECK 4: Representation & Awareness
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 31, fr: "La représentativité", phon: "lah ruh-pray-zahn-tah-tee-vee-tay", en: "Representativeness", exFr: "Améliorer la représentativité dans les médias reflète la population.", exEn: "Improving representativeness in media reflects the population.", target: "représentativité" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 32, fr: "La sensibilisation du public", phon: "lah sahn-see-bee-lee-zah-syon", en: "Public awareness", exFr: "La sensibilisation du public réduit la stigmatisation.", exEn: "Public awareness reduces stigmatization.", target: "sensibilisation" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 33, fr: "Le quota obligatoire", phon: "luh kwoh-tah", en: "Mandatory quota", exFr: "L'instauration d'un quota obligatoire accélère les recrutements.", exEn: "Establishing a mandatory quota speeds up hiring.", target: "quota" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 34, fr: "L'impartialité", phon: "leem-par-syah-lee-tay", en: "Impartiality", exFr: "Un juge doit traiter les affaires avec une totale impartialité.", exEn: "A judge must handle cases with total impartiality.", target: "impartialité" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 35, fr: "La neutralité de l'État", phon: "lah nuh-trah-lee-tay", en: "State neutrality", exFr: "La neutralité de l'État garantit l'égalité de tous les usagers.", exEn: "State neutrality guarantees equality for all users.", target: "neutralité" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 36, fr: "L'inclusion numérique", phon: "lahn-kloo-zyon noo-may-reek", en: "Digital inclusion", exFr: "L'inclusion numérique aide les aînés à utiliser Internet.", exEn: "Digital inclusion helps seniors use the Internet.", target: "numérique" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 37, fr: "L'entraide sociale", phon: "lahn-trehd soh-syahl", en: "Social mutual aid", exFr: "L'entraide sociale s'organise pour soutenir les familles vulnérables.", exEn: "Social mutual aid is organized to support vulnerable families.", target: "entraide" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 38, fr: "La lutte contre le sexisme", phon: "lah loot kohn-truh", en: "Fight against sexism", exFr: "La lutte contre le sexisme s'intensifie dans les entreprises.", exEn: "The fight against sexism is intensifying in companies.", target: "sexisme" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 39, fr: "Les actions affirmatives", phon: "lay zahk-syon", en: "Affirmative actions", exFr: "Les actions affirmatives cherchent à compenser des désavantages historiques.", exEn: "Affirmative actions seek to compensate for historical disadvantages.", target: "affirmatives" },
+        { deck: 4, deckTitle: "Deck 4 • Representation & Awareness", id: 40, fr: "Le respect des différences", phon: "luh rehss-peh", en: "Respect for differences", exFr: "Enseigner le respect des différences crée une société plus paisible.", exEn: "Teaching respect for differences creates a more peaceful society.", target: "différences" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Combattre", phon: "kohn-bah-truh", en: "To fight / combat", exFr: "Nous devons tous combattre les injustices sociales.", exEn: "We must all fight social injustices.", target: "combattre" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Garantir", phon: "gah-rahn-teer", en: "To guarantee", exFr: "La loi cherche à garantir les mêmes droits pour tous.", exEn: "The law seeks to guarantee the same rights for everyone.", target: "garantir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "L'école doit sensibiliser les élèves aux stéréotypes.", exEn: "School must raise students' awareness of stereotypes.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Intégrer", phon: "ahn-tay-gray", en: "To integrate", exFr: "Cette politique aide à intégrer les personnes isolées.", exEn: "This policy helps integrate isolated individuals.", target: "intégrer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Favoriser", phon: "fah-vah-ree-zay", en: "To foster / encourage", exFr: "L'entreprise veut favoriser l'accès des femmes aux postes de direction.", exEn: "The company wants to foster women's access to executive roles.", target: "favoriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Promouvoir", phon: "proh-moo-vwahr", en: "To promote", exFr: "Le gouvernement s'efforce de promouvoir l'égalité salariale.", exEn: "The government strives to promote equal pay.", target: "promouvoir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Éliminer", phon: "ay-lee-mee-nay", en: "To eliminate", exFr: "Il est urgent d'éliminer toutes les formes de violence.", exEn: "It is urgent to eliminate all forms of violence.", target: "éliminer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Harmoniser", phon: "ar-moh-nee-zay", en: "To harmonize", exFr: "Ce texte vise à harmoniser les règles de recrutement.", exEn: "This text aims to harmonize recruitment rules.", target: "harmoniser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Revendiquer", phon: "ruh-vahn-dee-kay", en: "To demand / claim", exFr: "Les citoyens manifestent pour revendiquer une juste rémunération.", exEn: "Citizens demonstrate to demand fair pay.", target: "revendiquer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Protéger", phon: "proh-tay-zhay", en: "To protect", exFr: "L'État doit protéger les victimes de discriminations.", exEn: "The State must protect victims of discrimination.", target: "protéger" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

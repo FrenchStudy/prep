@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Loisirs & Culture</title>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --dark-purple: #6D28D9;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-purple) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F5F3FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-purple); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-purple); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #8B5CF6; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🎨 TCF Canada • 50 Interactive Leisure Words</h1>
+        <p>Loisirs, Passions, Sports & Culture</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Sports & Physical Well-being
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 1, fr: "L'activité physique", phon: "lahk-tee-vee-tay fee-zeek", en: "Physical activity", exFr: "Pratiquer une activité physique régulière prévient les maladies.", exEn: "Practicing regular physical activity prevents illnesses.", target: "activité physique" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 2, fr: "Une discipline sportive", phon: "ewn dee-see-pleen spor-teev", en: "Sports discipline", exFr: "La natation est une discipline sportive très complète.", exEn: "Swimming is a very complete sports discipline.", target: "discipline" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 3, fr: "Le dépassement de soi", phon: "luh day-pahss-mahn duh swah", en: "Pushing one's limits", exFr: "La course à pied favorise le dépassement de soi.", exEn: "Running promotes pushing one's limits.", target: "dépassement" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 4, fr: "L'esprit d'équipe", phon: "less-pree dey-keep", en: "Team spirit", exFr: "Les sports collectifs développent l'esprit d'équipe.", exEn: "Team sports develop team spirit.", target: "esprit d'équipe" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 5, fr: "Un équipement sportif", phon: "ah nay-keep-mahn", en: "Sports equipment", exFr: "La municipalité investit dans de nouveaux équipements sportifs.", exEn: "The municipality invests in new sports equipment.", target: "équipement" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 6, fr: "La compétition", phon: "lah kohn-pay-tee-syon", en: "Competition", exFr: "Il participe à une compétition nationale ce week-end.", exEn: "He is participating in a national competition this weekend.", target: "compétition" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 7, fr: "L'endurance", phon: "lahn-doo-rahns", en: "Endurance / Stamina", exFr: "Le cyclisme développe une excellente endurance.", exEn: "Cycling develops excellent endurance.", target: "endurance" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 8, fr: "Un entraînement", phon: "ah nahn-trehn-mahn", en: "Training session", exFr: "L'entraînement quotidien exige de la discipline.", exEn: "Daily training requires discipline.", target: "entraînement" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 9, fr: "Le bien-être mental", phon: "luh byahn-neht-ruh mahn-tahl", en: "Mental well-being", exFr: "Le sport contribue directement au bien-être mental.", exEn: "Sport contributes directly to mental well-being.", target: "bien-être" },
+        { deck: 1, deckTitle: "Deck 1 • Sports & Physical Well-being", id: 10, fr: "Une licence sportive", phon: "ewn lee-sahns", en: "Sports club license", exFr: "Il a renouvelé sa licence sportive au club local.", exEn: "He renewed his sports license at the local club.", target: "licence" },
+
+        // DECK 2: Arts, Culture & Creativity
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 11, fr: "L'expression artistique", phon: "lehks-preh-syon ar-tees-teek", en: "Artistic expression", exFr: "La peinture est une forme d'expression artistique populaire.", exEn: "Painting is a popular form of artistic expression.", target: "expression" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 12, fr: "Le patrimoine culturel", phon: "luh pah-tree-mwahn", en: "Cultural heritage", exFr: "Les musées préservent le patrimoine culturel d'un pays.", exEn: "Museums preserve a country's cultural heritage.", target: "patrimoine" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 13, fr: "Une exposition", phon: "ewn nehk-spoh-zee-syon", en: "An exhibition / show", exFr: "Cette galerie présente une exposition de sculpture contemporaine.", exEn: "This gallery presents an exhibition of contemporary sculpture.", target: "exposition" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 14, fr: "Le spectacle vivant", phon: "luh spehk-tah-kluh vee-vahn", en: "Performing arts / Live show", exFr: "Le théâtre est un élément phare du spectacle vivant.", exEn: "Theater is a key element of the performing arts.", target: "spectacle" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 15, fr: "La créativité", phon: "lah kray-ah-tee-vee-tay", en: "Creativity", exFr: "La pratique de la musique stimule la créativité.", exEn: "Practicing music stimulates creativity.", target: "créativité" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 16, fr: "Une œuvre d'art", phon: "ewn nuh-vruh dar", en: "Work of art", exFr: "Cette peinture est considérée comme une œuvre d'art majeure.", exEn: "This painting is considered a major work of art.", target: "œuvre" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 17, fr: "La lecture", phon: "lah lehks-toor", en: "Reading", exFr: "La lecture enrichit le vocabulaire et l'imagination.", exEn: "Reading enriches vocabulary and imagination.", target: "lecture" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 18, fr: "Un atelier d'écriture", phon: "ah nah-tuhl-yay day-kree-toor", en: "Writing workshop", exFr: "Elle s'est inscrite à un atelier d'écriture créative.", exEn: "She enrolled in a creative writing workshop.", target: "atelier" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 19, fr: "La médiation culturelle", phon: "lah may-dyah-syon", en: "Cultural outreach", exFr: "La médiation culturelle facilite l'accès aux musées pour tous.", exEn: "Cultural outreach facilitates access to museums for everyone.", target: "médiation" },
+        { deck: 2, deckTitle: "Deck 2 • Arts, Culture & Creativity", id: 20, fr: "Un instrument de musique", phon: "ah nahns-troo-mahn", en: "Musical instrument", exFr: "Apprendre un instrument de musique demande de la patience.", exEn: "Learning a musical instrument requires patience.", target: "instrument" },
+
+        // DECK 3: Digital Entertainment & Screen Time
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 21, fr: "Le temps d'écran", phon: "luh tahn day-krahn", en: "Screen time", exFr: "Limiter le temps d'écran est conseillé pour la santé.", exEn: "Limiting screen time is advised for health.", target: "temps d'écran" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 22, fr: "Les jeux vidéo", phon: "lay zzhuh vee-day-oh", en: "Video games", exFr: "Les jeux vidéo modernes favorisent la réflexion stratégique.", exEn: "Modern video games promote strategic thinking.", target: "jeux vidéo" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 23, fr: "Le divertissement numérique", phon: "luh dee-vair-teess-mahn", en: "Digital entertainment", exFr: "Le streaming est devenu le principal divertissement numérique.", exEn: "Streaming has become the main digital entertainment.", target: "divertissement" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 24, fr: "L'addiction aux écrans", phon: "lah-deek-syon oh zay-krahn", en: "Screen addiction", exFr: "L'addiction aux écrans touche de plus en plus de jeunes.", exEn: "Screen addiction affects more and more young people.", target: "addiction" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 25, fr: "Les réseaux sociaux", phon: "lay ray-zoh soh-syoh", en: "Social networks", exFr: "Les réseaux sociaux modifient nos habitudes de loisir.", exEn: "Social networks modify our leisure habits.", target: "réseaux sociaux" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 26, fr: "La sédentarité", phon: "lah say-dahn-tah-ree-tay", en: "Sedentary lifestyle", exFr: "La sédentarité est un risque majeur lié aux écrans.", exEn: "A sedentary lifestyle is a major risk linked to screens.", target: "sédentarité" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 27, fr: "Les contenus en ligne", phon: "lay kohn-tnoo ahn leen-yuh", en: "Online content", exFr: "La consommation de contenus en ligne augmente sans cesse.", exEn: "Consumption of online content is constantly increasing.", target: "contenus" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 28, fr: "La pause numérique", phon: "lah pohz noo-may-reek", en: "Digital detox / break", exFr: "Faire une pause numérique permet de se recentrer.", exEn: "Taking a digital break allows one to refocus.", target: "pause" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 29, fr: "Une plateforme de streaming", phon: "ewn plaht-fay-orm", en: "Streaming platform", exFr: "Cette plateforme de streaming propose des films rares.", exEn: "This streaming platform offers rare movies.", target: "plateforme" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Entertainment & Screen Time", id: 30, fr: "L'interactivité", phon: "lahn-tair-ahk-tee-vee-tay", en: "Interactivity", exFr: "L'interactivité rend les loisirs numériques plus captivants.", exEn: "Interactivity makes digital leisure more captivating.", target: "interactivité" },
+
+        // DECK 4: Community, Nature & Outdoor Leisure
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 31, fr: "Le bénévolat", phon: "luh bay-nay-voh-lah", en: "Volunteering", exFr: "Le bénévolat au sein d'un club crée du lien social.", exEn: "Volunteering within a club creates social connection.", target: "bénévolat" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 32, fr: "Les activités de plein air", phon: "lay zahk-tee-vee-tay", en: "Outdoor activities", exFr: "Les activités de plein air sont idéales pendant le printemps.", exEn: "Outdoor activities are ideal during spring.", target: "plein air" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 33, fr: "La randonnée", phon: "lah rahn-doh-nay", en: "Hiking", exFr: "La randonnée en forêt permet de se ressourcer.", exEn: "Hiking in the forest allows one to recharge.", target: "randonnée" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 34, fr: "Le tissu associatif", phon: "luh tee-soo ah-soh-syah-teef", en: "Community / Association network", exFr: "Le tissu associatif dynamise la vie de la commune.", exEn: "The association network boosts local town life.", target: "associatif" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 35, fr: "La vie communautaire", phon: "lah vee koh-moo-noh-tair", en: "Community life", exFr: "Participer aux fêtes locales renforce la vie communautaire.", exEn: "Participating in local festivals strengthens community life.", target: "communautaire" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 36, fr: "Le jardinage", phon: "luh zhar-dee-nahzh", en: "Gardening", exFr: "Le jardinage est un loisir relaxant et gratifiant.", exEn: "Gardening is a relaxing and rewarding hobby.", target: "jardinage" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 37, fr: "L'épanouissement personnel", phon: "lay-pah-nweess-mahn", en: "Personal fulfillment", exFr: "Avoir une passion contribue à l'épanouissement personnel.", exEn: "Having a passion contributes to personal fulfillment.", target: "épanouissement" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 38, fr: "La convivialité", phon: "lah kohn-vee-vee-ah-lee-tay", en: "Friendliness / Conviviality", exFr: "Ce club de jeux privilégie la convivialité.", exEn: "This gaming club prioritizes friendliness.", target: "convivialité" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 39, fr: "Les loisirs créatifs", phon: "lay lwah-zeer kray-ah-teef", en: "Crafts / Creative hobbies", exFr: "La poterie fait partie des loisirs créatifs très prisés.", exEn: "Pottery is one of the highly popular creative hobbies.", target: "loisirs créatifs" },
+        { deck: 4, deckTitle: "Deck 4 • Community, Nature & Outdoor Leisure", id: 40, fr: "La détente", phon: "lah day-tahnt", en: "Relaxation", exFr: "Réserver du temps pour la détente est indispensable.", exEn: "Reserving time for relaxation is essential.", target: "détente" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Pratiquer", phon: "prah-tee-kay", en: "To practice / engage in", exFr: "Il aime pratiquer le tennis deux fois par semaine.", exEn: "He likes practicing tennis twice a week.", target: "pratiquer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Se détendre", phon: "suh day-tahn-druh", en: "To relax", exFr: "Écouter de la musique aide à se détendre après le travail.", exEn: "Listening to music helps relax after work.", target: "détendre" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "S'inscrire", phon: "sahn-skreer", en: "To sign up / register", exFr: "Je vais m'inscrire au cours de peinture de la ville.", exEn: "I am going to sign up for the city's painting class.", target: "inscrire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "S'épanouir", phon: "say-pah-nweer", en: "To thrive / flourish", exFr: "Chaque individu doit s'épanouir à travers ses passions.", exEn: "Every individual should thrive through their passions.", target: "épanouir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Participer", phon: "par-tee-see-pay", en: "To participate", exFr: "Elle adore participer aux événements culturels locaux.", exEn: "She loves participating in local cultural events.", target: "participer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "S'engager", phon: "sahn-gah-zhay", en: "To commit / get involved", exFr: "Beaucoup de citoyens choisissent de s'engager dans un club.", exEn: "Many citizens choose to get involved in a club.", target: "engager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Développer", phon: "day-vlohp-pay", en: "To develop", exFr: "Les loisirs permettent de développer de nouvelles aptitudes.", exEn: "Hobbies allow one to develop new skills.", target: "développer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Se ressourcer", phon: "suh ruh-soor-say", en: "To recharge / renew oneself", exFr: "Passer du temps en nature permet de se ressourcer.", exEn: "Spending time in nature allows one to recharge.", target: "ressourcer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Animer", phon: "ah-nee-may", en: "To lead / facilitate", exFr: "Un bénévole vient animer l'atelier de théâtre.", exEn: "A volunteer comes to lead the theater workshop.", target: "animer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Concilier", phon: "kohn-see-lyay", en: "To balance / reconcile", exFr: "Il faut concilier travail, famille et temps libre.", exEn: "One must balance work, family, and free time.", target: "concilier" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

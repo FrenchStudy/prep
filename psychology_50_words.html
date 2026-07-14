@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Psychologie & Comportement</title>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --dark-purple: #6D28D9;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-purple) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F5F3FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-purple); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-purple); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #8B5CF6; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🧠 TCF Canada • 50 Interactive Psychology Words</h1>
+        <p>Santé Mentale, Empathie, Biens Cognitifs & Motivation</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Mental Health & Emotional Well-Being
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 1, fr: "La santé mentale", phon: "lah sahn-tay mahn-tahl", en: "Mental health", exFr: "Prendre soin de sa santé mentale est aussi important que le sport.", exEn: "Taking care of your mental health is as important as exercise.", target: "santé mentale" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 2, fr: "Le bien-être émotionnel", phon: "luh byahn-neht-ruh ay-moh-syon-nehl", en: "Emotional well-being", exFr: "La méditation favorise un meilleur bien-être émotionnel au quotidien.", exEn: "Meditation fosters better daily emotional well-being.", target: "bien-être" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 3, fr: "La gestion des émotions", phon: "lah zhehs-tyohn day zay-moh-syon", en: "Emotion management", exFr: "La gestion des émotions s'apprend dès le plus jeune âge.", exEn: "Emotion management is learned from a very young age.", target: "émotions" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 4, fr: "L'épuisement professionnel", phon: "lay-pweez-mahn proh-fehs-syon-nehl", en: "Burnout", exFr: "L'épuisement professionnel touche de nombreux travailleurs surmenés.", exEn: "Burnout affects many overworked employees.", target: "épuisement" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 5, fr: "L'anxiété sociale", phon: "lahn-ksyay-tay soh-syahl", en: "Social anxiety", exFr: "L'anxiété sociale peut rendre les réunions de groupe difficiles.", exEn: "Social anxiety can make group meetings difficult.", target: "anxiété" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 6, fr: "La résilience psychologique", phon: "lah ray-zee-lyahnss", en: "Psychological resilience", exFr: "La résilience psychologique aide à surmonter les épreuves graves.", exEn: "Psychological resilience helps overcome severe trials.", target: "résilience" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 7, fr: "L'estime de soi", phon: "lehss-teem duh swah", en: "Self-esteem", exFr: "Une bonne estime de soi donne la confiance pour entreprendre.", exEn: "Good self-esteem gives confidence to take action.", target: "estime" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 8, fr: "La charge mentale", phon: "lah sharzh mahn-tahl", en: "Mental load", exFr: "Mieux répartir la charge mentale équilibre la vie de famille.", exEn: "Better sharing of the mental load balances family life.", target: "charge" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 9, fr: "Le sentiment de solitude", phon: "luh sahn-tee-mahn", en: "Feeling of loneliness", exFr: "Le sentiment de solitude pèse lourdement sur la santé des aînés.", exEn: "The feeling of loneliness weighs heavily on seniors' health.", target: "solitude" },
+        { deck: 1, deckTitle: "Deck 1 • Mental Health & Emotional Well-Being", id: 10, fr: "La régulation émotionnelle", phon: "lah ray-goo-lah-syon", en: "Emotional regulation", exFr: "La régulation émotionnelle permet d'éviter les réactions impulsives.", exEn: "Emotional regulation prevents impulsive reactions.", target: "régulation" },
+
+        // DECK 2: Interpersonal Dynamics & Social Behavior
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 11, fr: "L'empathie", phon: "lahn-pah-tee", en: "Empathy", exFr: "Faire preuve d'empathie facilite les relations avec ses collègues.", exEn: "Showing empathy eases relationships with colleagues.", target: "empathie" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 12, fr: "La communication non violente", phon: "lah koh-moo-nee-kah-syon", en: "Nonviolent communication", exFr: "La communication non violente prévient les tensions dans l'équipe.", exEn: "Nonviolent communication prevents team tensions.", target: "communication" },
+        { deck: 3, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 13, fr: "La dynamique de groupe", phon: "lah dee-nah-meek", en: "Group dynamics", exFr: "Une dynamique de groupe positive stimule la créativité.", exEn: "A positive group dynamic stimulates creativity.", target: "dynamique" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 14, fr: "Le comportement altruiste", phon: "luh kohn-por-tuh-mahn", en: "Altruistic behavior", exFr: "Le comportement altruiste renforce la solidarité sociale.", exEn: "Altruistic behavior strengthens social solidarity.", target: "altruiste" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 15, fr: "L'intelligence émotionnelle", phon: "lahn-tehl-ee-zhahnss", en: "Emotional intelligence", exFr: "L'intelligence émotionnelle distingue les grands leaders.", exEn: "Emotional intelligence sets great leaders apart.", target: "intelligence" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 16, fr: "Le besoin d'appartenance", phon: "luh buh-zwahn dah-par-tuh-nahnss", en: "Need for belonging", exFr: "Le besoin d'appartenance pousse l'individu à intégrer une communauté.", exEn: "The need for belonging drives individuals to join a community.", target: "appartenance" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 17, fr: "L'affirmation de soi", phon: "lah-feer-mah-syon", en: "Assertiveness", exFr: "L'affirmation de soi permet de poser des limites sans agressivité.", exEn: "Assertiveness allows setting boundaries without aggression.", target: "affirmation" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 18, fr: "La résolution de conflits", phon: "lah ray-zoh-loo-syon", en: "Conflict resolution", exFr: "Le médiateur excelle dans la résolution de conflits complexes.", exEn: "The mediator excels in resolving complex conflicts.", target: "conflits" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 19, fr: "La cohésion relationnelle", phon: "lah koh-ay-zyon", en: "Relational cohesion", exFr: "Renforcer la cohésion relationnelle crée un climat de confiance.", exEn: "Strengthening relational cohesion creates a climate of trust.", target: "cohésion" },
+        { deck: 2, deckTitle: "Deck 2 • Interpersonal Dynamics & Social Behavior", id: 20, fr: "L'écoute active", phon: "lay-koot ahk-teev", en: "Active listening", exFr: "Pratiquer l'écoute active demande toute son attention sans interrompre.", exEn: "Practicing active listening requires full attention without interrupting.", target: "écoute" },
+
+        // DECK 3: Cognitive Biases & Decision Making
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 21, fr: "Le biais cognitif", phon: "luh byeh kohn-nyee-teef", en: "Cognitive bias", exFr: "Un biais cognitif peut altérer notre jugement sans qu'on le sache.", exEn: "A cognitive bias can alter our judgment without us knowing.", target: "biais" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 22, fr: "La prise de décision", phon: "lah preez duh day-see-zyohn", en: "Decision-making", exFr: "La prise de décision doit s'appuyer sur des données objectives.", exEn: "Decision-making should rely on objective data.", target: "décision" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 23, fr: "La dissonance cognitive", phon: "lah deess-soh-nahnss", en: "Cognitive dissonance", exFr: "Fumer tout en sachant que c'est nocif crée une dissonance cognitive.", exEn: "Smoking while knowing it's harmful creates cognitive dissonance.", target: "dissonance" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 24, fr: "Le biais de confirmation", phon: "luh byeh duh kohn-feer-mah-syon", en: "Confirmation bias", exFr: "Le biais de confirmation nous incite à ne lire que ce qui nous approuve.", exEn: "Confirmation bias prompts us to read only what agrees with us.", target: "confirmation" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 25, fr: "La pression des pairs", phon: "lah prehss-syon day pair", en: "Peer pressure", exFr: "Les adolescents sont très sensibles à la pression des pairs.", exEn: "Teenagers are very sensitive to peer pressure.", target: "pression" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 26, fr: "La perception du risque", phon: "lah pair-sehps-syon", en: "Risk perception", exFr: "La perception du risque varie énormément selon les individus.", exEn: "Risk perception varies enormously across individuals.", target: "perception" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 27, fr: "L'intuition", phon: "lahn-twee-syon", en: "Intuition / Gut feeling", exFr: "Dans les situations d'urgence, l'intuition peut guider l'action.", exEn: "In emergencies, intuition can guide action.", target: "intuition" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 28, fr: "La rationalisation", phon: "lah rah-syo-nah-lee-zah-syon", en: "Rationalization", exFr: "La rationalisation permet de fabriquer de fausses excuses.", exEn: "Rationalization allows constructing fake excuses.", target: "rationalisation" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 29, fr: "La résistance au changement", phon: "lah ray-zees-tahnss", en: "Resistance to change", exFr: "Comprendre la résistance au changement facilite les réformes.", exEn: "Understanding resistance to change eases reforms.", target: "résistance" },
+        { deck: 3, deckTitle: "Deck 3 • Cognitive Biases & Decision Making", id: 30, fr: "La capacité de concentration", phon: "lah kah-pah-see-tay", en: "Focus span", exFr: "Les écrans réduisent parfois notre capacité de concentration.", exEn: "Screens sometimes reduce our focus span.", target: "concentration" },
+
+        // DECK 4: Motivation & Personal Growth
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 31, fr: "La motivation intrinsèque", phon: "lah moh-tee-vah-syon", en: "Intrinsic motivation", exFr: "La passion est la meilleure source de motivation intrinsèque.", exEn: "Passion is the best source of intrinsic motivation.", target: "intrinsèque" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 32, fr: "Le dépassement de soi", phon: "luh day-pahs-mahn", en: "Personal growth", exFr: "Le sport de haut niveau exige un dépassement de soi permanent.", exEn: "High-level sports demand constant self-surpassing.", target: "dépassement" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 33, fr: "La réalisation de soi", phon: "lah ray-ah-lee-zah-syon", en: "Self-actualization", exFr: "Atteindre ses objectifs mène à la réalisation de soi.", exEn: "Reaching one's goals leads to self-actualization.", target: "réalisation" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 34, fr: "La discipline personnelle", phon: "lah deess-see-pleen", en: "Self-discipline", exFr: "La discipline personnelle transforme les idées en projets réels.", exEn: "Self-discipline turns ideas into real projects.", target: "discipline" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 35, fr: "La quête de sens", phon: "lah keht duh sahnss", en: "Search for meaning", exFr: "Changer de carrière répond souvent à une quête de sens.", exEn: "Changing careers often answers a search for meaning.", target: "quête" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 36, fr: "L'autonomie", phon: "loh-toh-noh-mee", en: "Autonomy", exFr: "Donner de l'autonomie aux salariés augmente leur satisfaction.", exEn: "Giving autonomy to employees increases their satisfaction.", target: "autonomie" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 37, fr: "La persévérance", phon: "lah pair-say-vay-rahnss", en: "Perseverance", exFr: "La persévérance surmonte la plupart des obstacles professionnels.", exEn: "Perseverance overcomes most professional obstacles.", target: "persévérance" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 38, fr: "Le sentiment d'efficacité", phon: "luh sahn-tee-mahn", en: "Self-efficacy", exFr: "Renforcer son sentiment d'efficacité aide à relever des défis.", exEn: "Strengthening one's self-efficacy helps take on challenges.", target: "efficacité" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 39, fr: "La gestion de l'échec", phon: "lah zhehs-tyohn", en: "Managing failure", exFr: "La bonne gestion de l'échec transforme la défaite en leçon.", exEn: "Good management of failure turns defeat into a lesson.", target: "échec" },
+        { deck: 4, deckTitle: "Deck 4 • Motivation & Personal Growth", id: 40, fr: "L'épanouissement personnel", phon: "lay-pah-nweess-mahn", en: "Personal fulfillment", exFr: "Trouver sa voie favorise un épanouissement personnel durable.", exEn: "Finding one's path promotes long-lasting personal fulfillment.", target: "épanouissement" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Surmonter", phon: "soor-mohn-tay", en: "To overcome", exFr: "La thérapie aide à surmonter les traumatismes d'enfance.", exEn: "Therapy helps overcome childhood traumas.", target: "surmonter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Exprimer", phon: "ehks-pree-may", en: "To express", exFr: "Il faut encourager les enfants à exprimer leurs émotions.", exEn: "Children should be encouraged to express their emotions.", target: "exprimer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Canaliser", phon: "kah-nah-lee-zay", en: "To channel / direct", exFr: "Le sport aide à canaliser l'énergie en surplus.", exEn: "Sports help channel extra energy.", target: "canaliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Introspecter", phon: "ahn-troh-spehk-tay", en: "To introspect", exFr: "Prendre du temps pour introspecter permet de mieux se connaître.", exEn: "Taking time to introspect allows knowing oneself better.", target: "introspecter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Relativiser", phon: "ruh-lah-tee-vee-zay", en: "To put into perspective", exFr: "Apprendre à relativiser réduit fortement l'anxiété au quotidien.", exEn: "Learning to put things into perspective greatly reduces anxiety.", target: "relativiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "S'adapter", phon: "sah-dahp-tay", en: "To adapt", exFr: "L'être humain possède une grande capacité à s'adapter.", exEn: "Humans possess a great ability to adapt.", target: "adapter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Écouter", phon: "ay-koo-tay", en: "To listen", exFr: "Savoir écouter l'autre est la base de toute relation solide.", exEn: "Knowing how to listen to others is the base of any solid relation.", target: "écouter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Développer", phon: "day-vlohp-pay", en: "To develop", exFr: "Il cherche à développer ses compétences relationnelles.", exEn: "He seeks to develop his interpersonal skills.", target: "développer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Gérer", phon: "zhay-ray", en: "To manage", exFr: "Elle a appris à gérer sa colère lors des conflits.", exEn: "She learned to manage her anger during conflicts.", target: "gérer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "S'épanouir", phon: "say-pah-nweer", en: "To blossom / thrive", exFr: "Chacun cherche un environnement où il peut s'épanouir.", exEn: "Everyone looks for an environment where they can thrive.", target: "épanouir" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

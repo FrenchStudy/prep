@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Société & Civisme</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --dark-indigo: #3730A3;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-indigo) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #EEF2FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-indigo); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-indigo); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #4F46E5; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🏛️ TCF Canada • 50 Interactive Society Words</h1>
+        <p>Société, Civisme, Inclusivité & Diversité</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Civic Engagement & Social Cohesion
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 1, fr: "La cohésion sociale", phon: "lah koh-ay-zyon soh-syahl", en: "Social cohesion", exFr: "La cohésion sociale est renforcée par l'entraide communautaire.", exEn: "Social cohesion is strengthened by community mutual aid.", target: "cohésion" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 2, fr: "L'engagement citoyen", phon: "lahn-gahzh-mahn see-twah-yahn", en: "Civic engagement", exFr: "L'engagement citoyen se manifeste à travers le bénévolat.", exEn: "Civic engagement is expressed through volunteering.", target: "engagement" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 3, fr: "Le devoir civique", phon: "luh duh-vwahr see-veek", en: "Civic duty", exFr: "Voter lors des élections est un devoir civique important.", exEn: "Voting in elections is an important civic duty.", target: "devoir" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 4, fr: "La solidarité intergénérationnelle", phon: "lah soh-lee-dah-ree-tay", en: "Intergenerational solidarity", exFr: "La solidarité intergénérationnelle aide à lutter contre la solitude.", exEn: "Intergenerational solidarity helps fight loneliness.", target: "solidarité" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 5, fr: "Le bénévole", phon: "luh bay-nay-vohl", en: "Volunteer", exFr: "Chaque bénévole apporte un soutien précieux aux associations.", exEn: "Each volunteer brings precious support to associations.", target: "bénévole" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 6, fr: "Le tissu social", phon: "luh tee-soo soh-syahl", en: "Social fabric", exFr: "Les événements locaux maintiennent vivant le tissu social.", exEn: "Local events keep the social fabric alive.", target: "tissu" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 7, fr: "La participation politique", phon: "lah par-tee-see-pah-syon", en: "Political participation", exFr: "La participation politique des jeunes est en augmentation.", exEn: "Youth political participation is increasing.", target: "participation" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 8, fr: "Le droit de vote", phon: "luh drwah duh voht", en: "Right to vote", exFr: "Le droit de vote est un pilier fondamental de la démocratie.", exEn: "The right to vote is a fundamental pillar of democracy.", target: "vote" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 9, fr: "L'intérêt général", phon: "lahn-tay-ray zhay-nay-rahl", en: "Public interest", exFr: "Les lois doivent toujours servir l'intérêt général.", exEn: "Laws must always serve the public interest.", target: "intérêt" },
+        { deck: 1, deckTitle: "Deck 1 • Civic Engagement & Social Cohesion", id: 10, fr: "Le vivre-ensemble", phon: "luh vee-vruh ahn-sahm-bluh", en: "Living together in harmony", exFr: "Le vivre-ensemble exige tolérance et respect mutuel.", exEn: "Living together in harmony requires tolerance and mutual respect.", target: "vivre-ensemble" },
+
+        // DECK 2: Family & Generational Shifts
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 11, fr: "L'évolution de la famille", phon: "lay-voh-loo-syon", en: "Family evolution", exFr: "L'évolution de la famille reflète les transformations de la société.", exEn: "Family evolution reflects societal changes.", target: "famille" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 12, fr: "La famille monoparentale", phon: "lah fah-mee-yuh", en: "Single-parent family", exFr: "Les familles monoparentales bénéficient de soutiens spécifiques.", exEn: "Single-parent families benefit from specific support.", target: "monoparentale" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 13, fr: "La famille recomposée", phon: "lah fah-mee-yuh", en: "Blended family", exFr: "La famille recomposée rassemble des enfants de différentes unions.", exEn: "The blended family brings together children from different unions.", target: "recomposée" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 14, fr: "Le vieillissement de la population", phon: "luh vyay-yeess-mahn", en: "Aging population", exFr: "Le vieillissement de la population nécessite des soins adaptés.", exEn: "The aging population requires adapted care.", target: "vieillissement" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 15, fr: "Le fossé des générations", phon: "luh foh-say", en: "Generation gap", exFr: "Le dialogue réduit le fossé des générations.", exEn: "Dialogue reduces the generation gap.", target: "fossé" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 16, fr: "La conciliation travail-famille", phon: "lah kohn-see-lyah-syon", en: "Work-family balance", exFr: "La conciliation travail-famille est facilitée par le télétravail.", exEn: "Work-family balance is facilitated by remote work.", target: "conciliation" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 17, fr: "La baisse de la natalité", phon: "lah behss duh lah nah-tah-lee-tay", en: "Declining birth rate", exFr: "Certains pays font face à la baisse de la natalité.", exEn: "Some countries are facing a declining birth rate.", target: "natalité" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 18, fr: "La garde d'enfants", phon: "lah gard dahn-fahn", en: "Childcare", exFr: "Trouver des services de garde d'enfants abordables est un défi.", exEn: "Finding affordable childcare services is a challenge.", target: "garde" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 19, fr: "Les proches aidants", phon: "lay prohsh zay-dahn", en: "Family caregivers", exFr: "Les proches aidants soutiennent leurs aînés au quotidien.", exEn: "Family caregivers support their elders daily.", target: "aidants" },
+        { deck: 2, deckTitle: "Deck 2 • Family & Generational Shifts", id: 20, fr: "L'autonomie des seniors", phon: "loh-toh-noh-mee", en: "Seniors' independence", exFr: "Préserver l'autonomie des seniors améliore leur quotidien.", exEn: "Preserving seniors' independence improves their daily life.", target: "autonomie" },
+
+        // DECK 3: Inclusion, Diversity & Equality
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 21, fr: "L'inclusion sociale", phon: "lahn-kloo-zyon soh-syahl", en: "Social inclusion", exFr: "L'inclusion sociale garantit des opportunités pour tous.", exEn: "Social inclusion guarantees opportunities for all.", target: "inclusion" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 22, fr: "La diversité culturelle", phon: "lah dee-vair-see-tay", en: "Cultural diversity", exFr: "La diversité culturelle enrichit les échanges urbains.", exEn: "Cultural diversity enriches urban exchanges.", target: "diversité" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 23, fr: "L'égalité des sexes", phon: "lay-gah-lee-tay day sehks", en: "Gender equality", exFr: "L'égalité des sexes fait d'importants progrès au travail.", exEn: "Gender equality is making significant progress at work.", target: "égalité" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 24, fr: "La lutte contre les discriminations", phon: "lah loot kohn-truh", en: "Fight against discrimination", exFr: "La lutte contre les discriminations exige une législation stricte.", exEn: "The fight against discrimination demands strict legislation.", target: "discriminations" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 25, fr: "L'accessibilité universelle", phon: "lahk-seh-see-bee-lee-tay", en: "Universal accessibility", exFr: "L'accessibilité universelle adapte les transports publics.", exEn: "Universal accessibility adapts public transit.", target: "accessibilité" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 26, fr: "La parité", phon: "lah pah-ree-tay", en: "Parity / Equal representation", exFr: "Atteindre la parité hommes-femmes est un objectif clé.", exEn: "Achieving gender parity is a key goal.", target: "parité" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 27, fr: "Les droits humains", phon: "lay drwah oo-mahn", en: "Human rights", exFr: "Le respect des droits humains est protégé par la charte.", exEn: "Respect for human rights is protected by the charter.", target: "droits" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 28, fr: "La précarité financière", phon: "lah pray-kah-ree-tay", en: "Financial insecurity", exFr: "La précarité financière touche plusieurs foyers modestes.", exEn: "Financial insecurity affects several modest households.", target: "précarité" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 29, fr: "La justice sociale", phon: "lah zhoos-teess soh-syahl", en: "Social justice", exFr: "Promouvoir la justice sociale est indispensable au progrès.", exEn: "Promoting social justice is essential for progress.", target: "justice" },
+        { deck: 3, deckTitle: "Deck 3 • Inclusion, Diversity & Equality", id: 30, fr: "L'égalité salariale", phon: "lay-gah-lee-tay sah-lah-ryahl", en: "Equal pay", exFr: "L'égalité salariale entre hommes et femmes reste un enjeu.", exEn: "Equal pay between men and women remains an issue.", target: "salariale" },
+
+        // DECK 4: Community Life & Public Space
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 31, fr: "La vie associative", phon: "lah vee ah-soh-syah-teev", en: "Community / Club life", exFr: "La vie associative est très développée dans ce quartier.", exEn: "Community life is very developed in this neighborhood.", target: "associative" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 32, fr: "L'espace public", phon: "less-pahss poo-bleek", en: "Public space", exFr: "L'espace public appartient à l'ensemble des citoyens.", exEn: "Public space belongs to all citizens.", target: "espace" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 33, fr: "La sécurité publique", phon: "lah say-koo-ree-tay", en: "Public safety", exFr: "La sécurité publique garantit la tranquillité dans la ville.", exEn: "Public safety guarantees peace in the city.", target: "sécurité" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 34, fr: "Le dialogue social", phon: "luh dyah-lohg soh-syahl", en: "Social dialogue", exFr: "Le dialogue social permet de résoudre les conflits.", exEn: "Social dialogue allows resolving conflicts.", target: "dialogue" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 35, fr: "L'entraide locale", phon: "lahn-trehd loh-kahl", en: "Local mutual aid", exFr: "L'entraide locale s'organise face aux urgences.", exEn: "Local mutual aid organizes during emergencies.", target: "entraide" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 36, fr: "La tolérance", phon: "lah toh-lay-rahnss", en: "Tolerance", exFr: "La tolérance est essentielle dans une société multiculturelle.", exEn: "Tolerance is essential in a multicultural society.", target: "tolérance" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 37, fr: "Le respect mutuel", phon: "luh rehss-peh moo-too-el", en: "Mutual respect", exFr: "Le respect mutuel facilite les échanges interpersonnels.", exEn: "Mutual respect facilitates interpersonal exchanges.", target: "respect" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 38, fr: "La sensibilisation du public", phon: "lah sahn-see-bee-lee-zah-syon", en: "Public awareness", exFr: "La sensibilisation du public réduit le gaspillage.", exEn: "Public awareness reduces waste.", target: "sensibilisation" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 39, fr: "Les initiatives citoyennes", phon: "lay zee-nee-syah-teev", en: "Citizen initiatives", exFr: "Les initiatives citoyennes transforment les quartiers.", exEn: "Citizen initiatives transform neighborhoods.", target: "initiatives" },
+        { deck: 4, deckTitle: "Deck 4 • Community Life & Public Space", id: 40, fr: "Le débat public", phon: "luh day-bah poo-bleek", en: "Public debate", exFr: "Le débat public permet d'éclairer la prise de décision.", exEn: "Public debate clarifies decision-making.", target: "débat" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "S'engager", phon: "sahn-gah-zhay", en: "To commit / get involved", exFr: "Il souhaite s'engager au service de la collectivité.", exEn: "He wishes to get involved in serving the community.", target: "engager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "L'association cherche à sensibiliser aux droits des enfants.", exEn: "The association seeks to raise awareness of children's rights.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Voter", phon: "voh-tay", en: "To vote", exFr: "Chaque citoyen est invité à voter le dimanche.", exEn: "Every citizen is invited to vote on Sunday.", target: "voter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Intégrer", phon: "ahn-tay-gray", en: "To integrate", exFr: "Ce programme aide les nouveaux arrivants à s'intégrer.", exEn: "This program helps newcomers integrate.", target: "intégrer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Revendiquer", phon: "ruh-vahn-dee-kay", en: "To demand / claim", exFr: "Les travailleurs se rassemblent pour revendiquer leurs droits.", exEn: "Workers gather to demand their rights.", target: "revendiquer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Protéger", phon: "proh-tay-zhay", en: "To protect", exFr: "La constitution vise à protéger les libertés individuelles.", exEn: "The constitution aims to protect individual freedoms.", target: "protéger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Soutenir", phon: "soo-tneer", en: "To support", exFr: "La communauté s'organise pour soutenir les familles précarisées.", exEn: "The community organizes to support vulnerable families.", target: "soutenir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Rassemblement", phon: "rahss-ahm-bluh-mahn", en: "To bring together / gather", exFr: "Cet événement vise à rassembler toutes les cultures.", exEn: "This event aims to bring all cultures together.", target: "rassembler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Favoriser", phon: "fah-vah-ree-zay", en: "To encourage / promote", exFr: "Il faut favoriser l'accès à la culture pour tous.", exEn: "We must promote access to culture for all.", target: "favoriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Harmoniser", phon: "ar-moh-nee-zay", en: "To harmonize", exFr: "Le projet cherche à harmoniser les relations de voisinage.", exEn: "The project seeks to harmonize neighborly relations.", target: "harmoniser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

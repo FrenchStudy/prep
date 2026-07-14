@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Politique & Gouvernance</title>
+    <style>
+        :root {
+            --primary: #4338CA;
+            --dark-indigo: #3730A3;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-indigo) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #EEF2FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-indigo); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-indigo); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #4338CA; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🏛️ TCF Canada • 50 Interactive Politics Words</h1>
+        <p>Politique Publique, Élections, Transparence & Démocratie</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Public Policy & Institutions
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 1, fr: "La politique publique", phon: "lah poh-lee-teek poo-bleek", en: "Public policy", exFr: "La politique publique vise à améliorer le système de santé.", exEn: "Public policy aims to improve the healthcare system.", target: "politique" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 2, fr: "L'appareil d'État", phon: "lah-pah-rehy day-tah", en: "State apparatus", exFr: "L'appareil d'État gère les affaires administratives du pays.", exEn: "The state apparatus manages the country's administrative affairs.", target: "appareil" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 3, fr: "La gouvernance institutionnelle", phon: "lah goo-vair-nahnss", en: "Institutional governance", exFr: "La gouvernance institutionnelle garantit le respect des règles.", exEn: "Institutional governance guarantees respect for rules.", target: "gouvernance" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 4, fr: "La séparation des pouvoirs", phon: "lah say-pah-rah-syon", en: "Separation of powers", exFr: "La séparation des pouvoirs protège contre la tyrannie.", exEn: "The separation of powers protects against tyranny.", target: "séparation" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 5, fr: "Le pouvoir exécutif", phon: "luh poo-vwahr ehg-zay-koo-teef", en: "Executive power", exFr: "Le pouvoir exécutif applique les lois votées au Parlement.", exEn: "Executive power enforces laws passed in Parliament.", target: "exécutif" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 6, fr: "Le cadre réglementaire", phon: "luh kah-druh ray-gluh-mahn-tair", en: "Regulatory framework", exFr: "Le cadre réglementaire fixe les limites écologiques aux usines.", exEn: "The regulatory framework sets environmental limits for factories.", target: "réglementaire" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 7, fr: "La décentralisation", phon: "lah day-sahn-trah-lee-zah-syon", en: "Decentralization", exFr: "La décentralisation donne plus d'autonomie aux régions.", exEn: "Decentralization gives more autonomy to regions.", target: "décentralisation" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 8, fr: "La souveraineté nationale", phon: "lah soo-vrahn-tay", en: "National sovereignty", exFr: "Le peuple exerce sa souveraineté nationale par le vote.", exEn: "The people exercise their national sovereignty through voting.", target: "souveraineté" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 9, fr: "Le droit constitutionnel", phon: "luh drwah kohnss-tee-too-syon-nehl", en: "Constitutional law", exFr: "Le droit constitutionnel encadre le fonctionnement des institutions.", exEn: "Constitutional law frames institutional operations.", target: "constitutionnel" },
+        { deck: 1, deckTitle: "Deck 1 • Public Policy & Institutions", id: 10, fr: "L'intérêt général", phon: "lahn-tay-reh zhay-nay-rahl", en: "Public interest", exFr: "Les décisions de l'État doivent toujours servir l'intérêt général.", exEn: "State decisions must always serve the public interest.", target: "intérêt" },
+
+        // DECK 2: Democratic Process & Elections
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 11, fr: "Le processus électoral", phon: "luh proh-seh-sooss ay-lekh-toh-rahl", en: "Electoral process", exFr: "Le processus électoral doit être totalement transparent et vérifié.", exEn: "The electoral process must be fully transparent and verified.", target: "électoral" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 12, fr: "Le taux d'abstention", phon: "luh toh dahbss-tahn-syon", en: "Abstention rate", exFr: "Un fort taux d'abstention préoccupe les observateurs politiques.", exEn: "A high abstention rate worries political observers.", target: "abstention" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 13, fr: "Le scrutin proportionnel", phon: "luh skroo-tahn proh-por-syon-nehl", en: "Proportional voting", exFr: "Le scrutin proportionnel offre une meilleure représentation des partis.", exEn: "Proportional voting offers better party representation.", target: "proportionnel" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 14, fr: "Le suffrage universel", phon: "luh soo-frahzh oo-nee-vair-sehl", en: "Universal suffrage", exFr: "Le suffrage universel permet à chaque citoyen adulte de voter.", exEn: "Universal suffrage lets every adult citizen vote.", target: "suffrage" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 15, fr: "La campagne électorale", phon: "lah kahn-pahn-yuh", en: "Electoral campaign", exFr: "La campagne électorale s'intensifie avant le jour du scrutin.", exEn: "The electoral campaign intensifies before election day.", target: "campagne" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 16, fr: "Le mandat politique", phon: "luh mahn-dah poh-lee-teek", en: "Political mandate", exFr: "Le président a reçu un mandat politique pour mener les réformes.", exEn: "The president received a political mandate to lead reforms.", target: "mandat" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 17, fr: "La démocratie représentative", phon: "lah day-moh-krah-tee", en: "Representative democracy", exFr: "Dans une démocratie représentative, le peuple élit ses députés.", exEn: "In a representative democracy, the people elect representatives.", target: "représentative" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 18, fr: "La bipolarisation politique", phon: "lah bee-poh-lah-ree-zah-syon", en: "Political bipolarization", exFr: "La bipolarisation politique divise le parlement en deux grands blocs.", exEn: "Political bipolarization divides parliament into two major blocks.", target: "bipolarisation" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 19, fr: "Le pluralisme politique", phon: "luh ploo-rah-lees-muh", en: "Political pluralism", exFr: "Le pluralisme politique garantit la présence de multiples voix.", exEn: "Political pluralism guarantees multiple voices.", target: "pluralisme" },
+        { deck: 2, deckTitle: "Deck 2 • Democratic Process & Elections", id: 20, fr: "Le renouvellement de la classe politique", phon: "luh ruh-noo-vehl-mahn", en: "Renewal of political class", exFr: "Les citoyens réclament un renouvellement de la classe politique.", exEn: "Citizens demand a renewal of the political class.", target: "renouvellement" },
+
+        // DECK 3: Transparency & Ethics in Power
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 21, fr: "La transparence démocratique", phon: "lah trahnss-pah-rahnss", en: "Democratic transparency", exFr: "La transparence démocratique exige la publication des comptes publics.", exEn: "Democratic transparency demands publication of public accounts.", target: "transparence" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 22, fr: "La lutte contre la corruption", phon: "lah loot kohn-truh", en: "Fight against corruption", exFr: "La lutte contre la corruption renforce la confiance citoyenne.", exEn: "The fight against corruption strengthens civic trust.", target: "corruption" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 23, fr: "La probité des élus", phon: "lah proh-bee-tay", en: "Integrity of elected officials", exFr: "La probité des élus est contrôlée par une commission indépendante.", exEn: "The integrity of elected officials is monitored by an independent committee.", target: "probité" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 24, fr: "Le conflit d'intérêts", phon: "luh kohn-flee dahn-tay-reh", en: "Conflict of interest", exFr: "Déclarer tout conflit d'intérêts évite les soupçons de favoritisme.", exEn: "Declaring any conflict of interest avoids suspicion of favoritism.", target: "intérêts" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 25, fr: "La reddition de comptes", phon: "lah reh-dee-syon", en: "Accountability", exFr: "La reddition de comptes oblige les gouvernants à s'expliquer.", exEn: "Accountability forces governors to explain their actions.", target: "reddition" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 26, fr: "Le groupe de pression", phon: "luh groop duh prehss-syon", en: "Lobby / Interest group", exFr: "Ce groupe de pression tente de modifier la loi sur l'énergie.", exEn: "This interest group tries to amend the energy law.", target: "pression" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 27, fr: "Le népotisme", phon: "luh nay-poh-tees-muh", en: "Nepotism", exFr: "Combattre le népotisme garantit un recrutement au mérite.", exEn: "Fighting nepotism guarantees merit-based hiring.", target: "népotisme" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 28, fr: "La déclaration de patrimoine", phon: "lah day-klah-rah-syon", en: "Asset declaration", exFr: "Chaque ministre doit remplir sa déclaration de patrimoine.", exEn: "Every minister must complete an asset declaration.", target: "patrimoine" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 29, fr: "L'éthique publique", phon: "lay-teek poo-bleek", en: "Public ethics", exFr: "L'éthique publique impose des règles de conduite très strictes.", exEn: "Public ethics imposes strict rules of conduct.", target: "éthique" },
+        { deck: 3, deckTitle: "Deck 3 • Transparency & Ethics in Power", id: 30, fr: "Le contrôle parlementaire", phon: "luh kohn-trohl", en: "Parliamentary oversight", exFr: "Le contrôle parlementaire évalue l'action des ministères.", exEn: "Parliamentary oversight evaluates ministerial action.", target: "parlementaire" },
+
+        // DECK 4: Citizen Participation & Civic Reform
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 31, fr: "Le référendum d'initiative citoyenne", phon: "luh ray-fay-rahn-doom", en: "Citizens' initiative referendum", exFr: "Le référendum d'initiative citoyenne permet de soumettre une loi au vote direct.", exEn: "A citizens' initiative referendum submits a law to direct vote.", target: "référendum" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 32, fr: "La consultation publique", phon: "lah kohn-sool-tah-syon", en: "Public consultation", exFr: "Une consultation publique est organisée avant le grand chantier urbain.", exEn: "A public consultation is organized before the major urban project.", target: "consultation" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 33, fr: "La démocratie locale", phon: "lah day-moh-krah-tee", en: "Local democracy", exFr: "Les conseils municipaux favorisent l'essor de la démocratie locale.", exEn: "City councils promote the rise of local democracy.", target: "locale" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 34, fr: "L'engagement partisan", phon: "lahn-gahzh-mahn par-tee-zahn", en: "Party involvement", exFr: "L'engagement partisan faiblit chez les jeunes générations.", exEn: "Party involvement is declining among younger generations.", target: "partisan" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 35, fr: "La pétition parlementaire", phon: "lah pay-tee-syon", en: "Parliamentary petition", exFr: "Cette pétition parlementaire a recueilli plus de 100 000 signatures.", exEn: "This parliamentary petition gathered over 100,000 signatures.", target: "pétition" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 36, fr: "La société civile", phon: "lah soh-syay-tay see-veel", en: "Civil society", exFr: "La société civile se mobilise pour la protection de l'environnement.", exEn: "Civil society mobilizes for environmental protection.", target: "société civile" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 37, fr: "La réforme institutionnelle", phon: "lah ray-form", en: "Institutional reform", exFr: "La réforme institutionnelle modernise le fonctionnement de l'État.", exEn: "Institutional reform modernizes state operations.", target: "réforme" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 38, fr: "La défiance politique", phon: "lah day-fyahnss", en: "Political mistrust", exFr: "Réduire la défiance politique demande de la transparence.", exEn: "Reducing political mistrust requires transparency.", target: "défiance" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 39, fr: "Le débat parlementaire", phon: "luh day-bah par-luh-mahn-tair", en: "Parliamentary debate", exFr: "Le débat parlementaire a duré toute la nuit sur le budget.", exEn: "The parliamentary debate lasted all night over the budget.", target: "débat" },
+        { deck: 4, deckTitle: "Deck 4 • Citizen Participation & Civic Reform", id: 40, fr: "La justice sociale et politique", phon: "lah zhoos-teess", en: "Social and political justice", exFr: "Assurer la justice sociale et politique maintient la paix sociale.", exEn: "Ensuring social and political justice maintains social peace.", target: "justice" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Gouverner", phon: "goo-vair-nay", en: "To govern", exFr: "Gouverner exige d'anticiper les besoins collectifs.", exEn: "To govern requires anticipating collective needs.", target: "gouverner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Légiférer", phon: "lay-zhee-fay-ray", en: "To legislate", exFr: "Le Parlement doit légiférer pour encadrer les nouvelles technologies.", exEn: "Parliament must legislate to regulate new technologies.", target: "légiférer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Promulguer", phon: "proh-mool-gay", en: "To promulgate / enact", exFr: "Le chef de l'État va promulguer la loi votée la semaine dernière.", exEn: "The head of state will enact the law passed last week.", target: "promulguer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Administrer", phon: "ahd-mee-neess-tray", en: "To administer", exFr: "Ce préfet est chargé d'administrer la région avec rigueur.", exEn: "This prefect is tasked with administering the region strictly.", target: "administrer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Débattre", phon: "day-bah-truh", en: "To debate", exFr: "Les députés vont débattre du projet de loi ce soir.", exEn: "Deputies will debate the bill tonight.", target: "débattre" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Sanctionner", phon: "sahnk-syon-nay", en: "To sanction / approve or penalize", exFr: "Le Conseil constitutionnel peut sanctionner un texte non conforme.", exEn: "The Constitutional Council can strike down a non-compliant text.", target: "sanctionner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Dissoudre", phon: "dee-soo-druh", en: "To dissolve", exFr: "Le président a le pouvoir de dissoudre l'Assemblée nationale.", exEn: "The president has the power to dissolve the National Assembly.", target: "dissoudre" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Réformer", phon: "ray-for-may", en: "To reform", exFr: "Le gouvernement veut réformer le système de retraite.", exEn: "The government wants to reform the pension system.", target: "réformer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Consulter", phon: "kohn-sool-tay", en: "To consult", exFr: "Le ministre décide de consulter les syndicats avant la décision.", exEn: "The minister decides to consult unions before making the decision.", target: "consulter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Voter", phon: "voh-tay", en: "To vote", exFr: "Chaque citoyen est invité à voter dimanche prochain.", exEn: "Every citizen is invited to vote next Sunday.", target: "voter" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

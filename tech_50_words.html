@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Technologie & I.A.</title>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --dark-blue: #1E40AF;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #EFF6FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #2563EB; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>📱 TCF Canada • 50 Interactive Tech Words</h1>
+        <p>Technologie, Intelligence Artificielle & Cybersécurité</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Artificial Intelligence & Automation
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 1, fr: "L'intelligence artificielle", phon: "lahn-tel-ee-zhahns ar-tee-fee-syel", en: "Artificial intelligence", exFr: "L'intelligence artificielle transforme tous les secteurs d'activité.", exEn: "Artificial intelligence transforms all business sectors.", target: "intelligence artificielle" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 2, fr: "L'automatisation", phon: "loh-toh-mah-tee-zah-syon", en: "Automation", exFr: "L'automatisation des usines augmente la précision.", exEn: "Factory automation increases precision.", target: "automatisation" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 3, fr: "Un algorithme", phon: "ah nahng-goh-reet-muh", en: "An algorithm", exFr: "L'algorithme sélectionne les actualités affichées sur votre fil.", exEn: "The algorithm selects the news displayed on your feed.", target: "algorithme" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 4, fr: "L'apprentissage automatique", phon: "lah-prahn-tee-sahzh", en: "Machine learning", exFr: "L'apprentissage automatique permet d'analyser d'immenses données.", exEn: "Machine learning allows analyzing massive data.", target: "apprentissage" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 5, fr: "La robotique", phon: "lah roh-boh-teek", en: "Robotics", exFr: "La robotique médicale assiste les chirurgiens en salle d'opération.", exEn: "Medical robotics assists surgeons in the operating room.", target: "robotique" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 6, fr: "L'agent conversationnel", phon: "lah-zhahn kohn-vair-sah-syon-nel", en: "Chatbot / Conversational AI", exFr: "Cet agent conversationnel répond aux questions des clients 24/7.", exEn: "This chatbot answers customer questions 24/7.", target: "agent" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 7, fr: "La reconnaissance faciale", phon: "lah ruh-koh-nehss-ahns", en: "Facial recognition", exFr: "La reconnaissance faciale est utilisée pour le contrôle aux frontières.", exEn: "Facial recognition is used for border control.", target: "reconnaissance" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 8, fr: "La suppression d'emplois", phon: "lah soo-preh-syon", en: "Job displacement / suppression", exFr: "L'automatisation peut provoquer la suppression d'emplois répétitifs.", exEn: "Automation can cause the elimination of repetitive jobs.", target: "suppression" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 9, fr: "La productivité accrue", phon: "lah proh-dook-tee-vee-tay", en: "Increased productivity", exFr: "Les outils IA apportent une productivité accrue aux équipes.", exEn: "AI tools bring increased productivity to teams.", target: "productivité" },
+        { deck: 1, deckTitle: "Deck 1 • Artificial Intelligence & Automation", id: 10, fr: "L'éthique numérique", phon: "lay-teek noo-may-reek", en: "Digital ethics", exFr: "L'éthique numérique doit encadrer le développement des logiciels.", exEn: "Digital ethics must frame software development.", target: "éthique" },
+
+        // DECK 2: Data Privacy & Cybersecurity
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 11, fr: "La protection des données", phon: "lah proh-tehk-syon", en: "Data protection", exFr: "La protection des données personnelles est obligatoire par la loi.", exEn: "Personal data protection is mandatory by law.", target: "protection" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 12, fr: "La cybersécurité", phon: "lah see-bair-say-koo-ree-tay", en: "Cybersecurity", exFr: "La cybersécurité est une priorité stratégique pour les banques.", exEn: "Cybersecurity is a strategic priority for banks.", target: "cybersécurité" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 13, fr: "Une fuite de données", phon: "ewn fweet", en: "Data breach / leak", exFr: "Une fuite de données a compromis les identifiants de milliers d'usagers.", exEn: "A data breach compromised the logins of thousands of users.", target: "fuite" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 14, fr: "Le piratage informatique", phon: "luh pee-rah-tahzh", en: "Hacking / Cyberpiracy", exFr: "Le piratage informatique cible souvent les failles du système.", exEn: "Computer hacking often targets system vulnerabilities.", target: "piratage" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 15, fr: "La confidentialité", phon: "lah kohn-fee-dahn-syah-lee-tay", en: "Confidentiality / Privacy", exFr: "La confidentialité des informations bancaires est garantie.", exEn: "Confidentiality of banking information is guaranteed.", target: "confidentialité" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 16, fr: "Un logiciel malveillant", phon: "ah loh-zhee-syel", en: "Malware", exFr: "Un logiciel malveillant peut paralyser tout un réseau d'entreprise.", exEn: "Malware can paralyze an entire company network.", target: "logiciel" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 17, fr: "L'usurpation d'identité", phon: "loo-zoor-pah-syon", en: "Identity theft", exFr: "L'usurpation d'identité sur Internet est en forte hausse.", exEn: "Identity theft on the Internet is sharply rising.", target: "usurpation" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 18, fr: "Le mot de passe sécurisé", phon: "luh moh duh pahss", en: "Secure password", exFr: "Il est recommandé d'utiliser un mot de passe sécurisé et unique.", exEn: "It is recommended to use a secure and unique password.", target: "mot de passe" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 19, fr: "Le consentement explicite", phon: "luh kohn-sahn-tmahn", en: "Explicit consent", exFr: "Le site doit obtenir votre consentement explicite avant de collecter des cookies.", exEn: "The site must obtain your explicit consent before collecting cookies.", target: "consentement" },
+        { deck: 2, deckTitle: "Deck 2 • Data Privacy & Cybersecurity", id: 20, fr: "La surveillance numérique", phon: "lah soor-vay-yahns", en: "Digital surveillance", exFr: "La surveillance numérique soulève des questions de liberté individuelle.", exEn: "Digital surveillance raises questions about individual freedom.", target: "surveillance" },
+
+        // DECK 3: Digital Transformation & Connectivity
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 21, fr: "La transformation numérique", phon: "lah trahn-sfor-mah-syon", en: "Digital transformation", exFr: "La transformation numérique accélère le travail collaboratif.", exEn: "Digital transformation accelerates collaborative work.", target: "transformation" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 22, fr: "La fracture numérique", phon: "lah frahk-toor", en: "Digital divide", exFr: "Réduire la fracture numérique isole moins les zones rurales.", exEn: "Bridging the digital divide isolates rural areas less.", target: "fracture" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 23, fr: "Le cloud computing", phon: "luh klowd", en: "Cloud computing", exFr: "Le cloud computing simplifie l'accès distant aux fichiers.", exEn: "Cloud computing simplifies remote access to files.", target: "cloud" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 24, fr: "Le haut débit", phon: "luh oh day-bee", en: "High-speed broadband", exFr: "L'installation du haut débit est essentielle pour le télétravail.", exEn: "Broadband installation is essential for remote work.", target: "haut débit" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 25, fr: "Les services en ligne", phon: "lay sair-veess", en: "Online services", exFr: "La plupart des démarches administratives se font via des services en ligne.", exEn: "Most administrative procedures are done via online services.", target: "services" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 26, fr: "L'obsolescence programmée", phon: "lohb-soh-lehss-ahns", en: "Planned obsolescence", exFr: "L'obsolescence programmée nuit à l'environnement.", exEn: "Planned obsolescence harms the environment.", target: "obsolescence" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 27, fr: "Les objets connectés", phon: "lay zohb-zhay", en: "Smart / Connected devices", exFr: "Les objets connectés facilitent la gestion de l'énergie à la maison.", exEn: "Connected objects facilitate home energy management.", target: "connectés" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 28, fr: "La numérisation", phon: "lah noo-may-ree-zah-syon", en: "Digitization", exFr: "La numérisation des archives garantit leur conservation.", exEn: "Digitizing archives guarantees their preservation.", target: "numérisation" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 29, fr: "L'inclusivité numérique", phon: "lahn-kloo-zee-vee-tay", en: "Digital inclusion", exFr: "L'inclusivité numérique garantit que personne n'est laissé pour compte.", exEn: "Digital inclusion guarantees that no one is left behind.", target: "inclusivité" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Transformation & Connectivity", id: 30, fr: "La souveraineté numérique", phon: "lah soo-vrahn-tay", en: "Digital sovereignty", exFr: "Le pays cherche à renforcer sa souveraineté numérique.", exEn: "The country seeks to strengthen its digital sovereignty.", target: "souveraineté" },
+
+        // DECK 4: Social Media & Impact on Youth
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 31, fr: "Les réseaux sociaux", phon: "lay ray-zoh", en: "Social networks", exFr: "Les réseaux sociaux influencent l'opinion publique.", exEn: "Social networks influence public opinion.", target: "réseaux" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 32, fr: "Le cyberharcèlement", phon: "luh see-bair-har-sehl-mahn", en: "Cyberbullying", exFr: "La lutte contre le cyberharcèlement scolaire est primordiale.", exEn: "The fight against school cyberbullying is paramount.", target: "cyberharcèlement" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 33, fr: "L'addiction numérique", phon: "lah-deek-syon", en: "Digital addiction", exFr: "L'addiction numérique entraîne des troubles du sommeil.", exEn: "Digital addiction leads to sleep disorders.", target: "addiction" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 34, fr: "L'isolement social", phon: "lee-zohl-mahn", en: "Social isolation", exFr: "L'excès d'écrans peut parfois conduire à l'isolement social.", exEn: "Excessive screen time can sometimes lead to social isolation.", target: "isolement" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 35, fr: "La désinformation", phon: "lah day-zan-for-mah-syon", en: "Disinformation / Misinformation", exFr: "La désinformation se propage très vite sur le web.", exEn: "Disinformation spreads very quickly on the web.", target: "désinformation" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 36, fr: "Les fausses nouvelles", phon: "lay fohss noo-vehl", en: "Fake news", exFr: "Il faut vérifier ses sources pour éviter les fausses nouvelles.", exEn: "One must check sources to avoid fake news.", target: "fausses nouvelles" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 37, fr: "L'image de soi", phon: "lee-mahzh duh swah", en: "Self-image", exFr: "Les filtres photo peuvent altérer l'image de soi chez les ados.", exEn: "Photo filters can alter teens' self-image.", target: "image" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 38, fr: "Le temps de connexion", phon: "luh tahn", en: "Screen time / Connection time", exFr: "Contrôler son temps de connexion aide à mieux étudier.", exEn: "Controlling connection time helps study better.", target: "connexion" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 39, fr: "Les créateurs de contenu", phon: "lay kray-ah-tuhr", en: "Content creators / Influencers", exFr: "Les créateurs de contenu ont un fort impact sur les jeunes.", exEn: "Content creators have a strong impact on youth.", target: "créateurs" },
+        { deck: 4, deckTitle: "Deck 4 • Social Media & Impact on Youth", id: 40, fr: "La bulle de filtres", phon: "lah bool", en: "Filter bubble", exFr: "La bulle de filtres enferme l'utilisateur dans ses idées habituelles.", exEn: "The filter bubble locks the user in their usual ideas.", target: "bulle" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Automatiser", phon: "oh-toh-mah-tee-zay", en: "To automate", exFr: "Il faut automatiser la sauvegarde informatique.", exEn: "Data backup must be automated.", target: "automatiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Sécuriser", phon: "say-koo-ree-zay", en: "To secure", exFr: "Pensez à sécuriser vos accès bancaires avec deux facteurs.", exEn: "Remember to secure your bank accesses with two factors.", target: "sécuriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Innover", phon: "ee-noh-vay", en: "To innovate", exFr: "Cette entreprise continue d'innover dans le secteur technologique.", exEn: "This company continues to innovate in the tech sector.", target: "innover" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Numériser", phon: "noo-may-ree-zay", en: "To digitize", exFr: "L'hôpital souhaite numériser tous les dossiers médicaux.", exEn: "The hospital wants to digitize all medical records.", target: "numériser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Télécharger", phon: "tay-lay-shar-zhay", en: "To download", exFr: "Vous pouvez télécharger la mise à jour gratuitement.", exEn: "You can download the update for free.", target: "télécharger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Décoder", phon: "day-koh-day", en: "To decode / decipher", exFr: "Les étudiants apprennent à décoder l'information en ligne.", exEn: "Students learn to decode online information.", target: "décoder" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Protéger", phon: "proh-tay-zhay", en: "To protect", exFr: "Il est indispensable de protéger ses données privées.", exEn: "It is essential to protect private data.", target: "protéger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Collecter", phon: "koh-lehk-tay", en: "To collect (data)", exFr: "L'application demande l'autorisation de collecter votre position.", exEn: "The app asks permission to collect your location.", target: "collecter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Pirater", phon: "pee-rah-tay", en: "To hack", exFr: "Un groupe tente de pirater les serveurs de la société.", exEn: "A group is attempting to hack the company's servers.", target: "pirater" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Restreindre", phon: "rehss-trahn-druh", en: "To restrict", exFr: "Les parents souhaitent restreindre l'accès à certains sites.", exEn: "Parents wish to restrict access to certain sites.", target: "restreindre" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

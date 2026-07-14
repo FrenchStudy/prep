@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Immigration & Intégration</title>
+    <style>
+        :root {
+            --primary: #0D9488;
+            --dark-teal: #0F766E;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-teal) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #CCFBF1; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-teal); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-teal); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0D9488; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🇨🇦 TCF Canada • 50 Interactive Immigration Words</h1>
+        <p>Immigration, Intégration, Francisation & Citoyenneté</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Integration & Newcomers
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 1, fr: "L'intégration des nouveaux arrivants", phon: "lahn-tay-grah-syon", en: "Integration of newcomers", exFr: "L'intégration des nouveaux arrivants passe par l'emploi et la langue.", exEn: "The integration of newcomers relies on employment and language.", target: "intégration" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 2, fr: "La diversité culturelle", phon: "lah dee-vair-see-tay", en: "Cultural diversity", exFr: "La diversité culturelle enrichit l'ensemble de la communauté.", exEn: "Cultural diversity enriches the whole community.", target: "diversité" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 3, fr: "La politique linguistique", phon: "lah poh-lee-teek", en: "Language policy", exFr: "La politique linguistique encourage l'apprentissage du français.", exEn: "Language policy encourages learning French.", target: "linguistique" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 4, fr: "La cohésion sociale", phon: "lah koh-ay-zyon", en: "Social cohesion", exFr: "La cohésion sociale exige l'égalité des chances.", exEn: "Social cohesion requires equal opportunity.", target: "cohésion" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 5, fr: "Un permis de travail", phon: "ah pair-mee duh trah-vahy", en: "Work permit", exFr: "Obtenir un permis de travail permet de travailler légalement.", exEn: "Obtaining a work permit allows working legally.", target: "permis" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 6, fr: "La résidence permanente", phon: "lah ray-zee-dahnss", en: "Permanent residency", exFr: "Elle a obtenu sa résidence permanente l'année dernière.", exEn: "She obtained her permanent residency last year.", target: "résidence" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 7, fr: "Le choc culturel", phon: "luh shohk kool-too-rel", en: "Culture shock", exFr: "Le choc culturel est une étape normale au début de l'expatriation.", exEn: "Culture shock is a normal stage at the start of expatriation.", target: "choc" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 8, fr: "L'équivalence des diplômes", phon: "lay-kee-vah-lahnss", en: "Degree equivalency", exFr: "Demander l'équivalence des diplômes facilite la recherche d'emploi.", exEn: "Requesting degree equivalency eases job search.", target: "équivalence" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 9, fr: "Le cours de francisation", phon: "luh koor duh frahn-see-zah-syon", en: "French integration course", exFr: "Elle s'est inscrite à un cours de francisation intensif.", exEn: "She enrolled in an intensive French integration course.", target: "francisation" },
+        { deck: 1, deckTitle: "Deck 1 • Integration & Newcomers", id: 10, fr: "L'inclusivité", phon: "lahn-kloo-zee-vee-tay", en: "Inclusivity", exFr: "L'inclusivité garantit un accueil chaleureux pour tous.", exEn: "Inclusivity guarantees a warm welcome for everyone.", target: "inclusivité" },
+
+        // DECK 2: Civic Pathways & Employment
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 11, fr: "Le processus de naturalisation", phon: "luh proh-seh-sooss", en: "Naturalization process", exFr: "Le processus de naturalisation comporte plusieurs étapes vérifiées.", exEn: "The naturalization process involves several verified steps.", target: "naturalisation" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 12, fr: "La citoyenneté", phon: "lah see-twah-yeh-nuh-tay", en: "Citizenship", exFr: "Elle a prêté serment pour recevoir la citoyenneté.", exEn: "She took an oath to receive citizenship.", target: "citoyenneté" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 13, fr: "L'insertion professionnelle", phon: "lahn-sair-syon", en: "Professional integration", exFr: "L'insertion professionnelle est essentielle à l'autonomie.", exEn: "Professional integration is essential for autonomy.", target: "insertion" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 14, fr: "Le marché du travail local", phon: "luh mar-shay", en: "Local labor market", exFr: "Le marché du travail local recherche des travailleurs qualifiés.", exEn: "The local labor market seeks skilled workers.", target: "marché" },
+        { deck: 1, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 15, fr: "L'aide à l'installation", phon: "lehd ah lahns-tah-lah-syon", en: "Settlement assistance", exFr: "Les nouveaux arrivants reçoivent une aide à l'installation.", exEn: "Newcomers receive settlement assistance.", target: "installation" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 16, fr: "Un organisme d'accueil", phon: "ah nor-gah-nees-muh", en: "Settlement agency", exFr: "Cet organisme d'accueil aide à trouver un logement.", exEn: "This settlement agency helps find housing.", target: "organisme" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 17, fr: "La reconnaissance des compétences", phon: "lah ruh-koh-nehss-ahns", en: "Recognition of skills", exFr: "La reconnaissance des compétences accélère l'embauche.", exEn: "Recognition of skills speeds up hiring.", target: "reconnaissance" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 18, fr: "L'égalité des chances", phon: "lay-gah-lee-tay day shahnss", en: "Equal opportunity", exFr: "Promouvoir l'égalité des chances est prioritaire.", exEn: "Promoting equal opportunity is a priority.", target: "égalité" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 19, fr: "La réunification familiale", phon: "lah ray-oo-nee-fee-kah-syon", en: "Family reunification", exFr: "La réunification familiale permet de faire venir ses proches.", exEn: "Family reunification allows bringing close family members.", target: "réunification" },
+        { deck: 2, deckTitle: "Deck 2 • Civic Pathways & Employment", id: 20, fr: "Le seuil d'immigration", phon: "luh suhy deem-mee-grah-syon", en: "Immigration threshold", exFr: "Le gouvernement ajuste le seuil d'immigration chaque année.", exEn: "The government adjusts the immigration threshold each year.", target: "seuil" },
+
+        // DECK 3: Cultural Diversity & Social Fabric
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 21, fr: "Le multiculturalisme", phon: "luh mool-tee-kool-too-rah-lees-muh", en: "Multiculturalism", exFr: "Le multiculturalisme caractérise les grandes métropoles.", exEn: "Multiculturalism characterizes major metropolitan areas.", target: "multiculturalisme" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 22, fr: "L'interculturalisme", phon: "lahn-tair-kool-too-rah-lees-muh", en: "Interculturalism", exFr: "L'interculturalisme favorise le dialogue actif entre communautés.", exEn: "Interculturalism fosters active dialogue between communities.", target: "interculturalisme" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 23, fr: "La lutte contre la discrimination", phon: "lah loot", en: "Fight against discrimination", exFr: "La lutte contre la discrimination protège l'accès à l'emploi.", exEn: "The fight against discrimination protects job access.", target: "discrimination" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 24, fr: "Le sentiment d'appartenance", phon: "luh sahn-tee-mahn", en: "Sense of belonging", exFr: "S'impliquer dans son quartier renforce le sentiment d'appartenance.", exEn: "Getting involved in one's neighborhood strengthens the sense of belonging.", target: "appartenance" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 25, fr: "L'échange interculturel", phon: "lay-shahnhzh", en: "Intercultural exchange", exFr: "Ce festival favorise l'échange interculturel et le partage.", exEn: "This festival promotes intercultural exchange and sharing.", target: "interculturel" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 26, fr: "La tolérance religieuse", phon: "lah toh-lay-rahnss", en: "Religious tolerance", exFr: "La tolérance religieuse est garantie par la loi.", exEn: "Religious tolerance is guaranteed by law.", target: "tolérance" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 27, fr: "Les traditions ancestrales", phon: "lay trah-dee-syon", en: "Ancestral traditions", exFr: "Ils partagent leurs traditions ancestrales lors des fêtes.", exEn: "They share their ancestral traditions during holidays.", target: "traditions" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 28, fr: "La barrière de la langue", phon: "lah bah-ryair", en: "Language barrier", exFr: "Apprendre la langue officielle surmonte la barrière de la langue.", exEn: "Learning the official language overcomes the language barrier.", target: "barrière" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 29, fr: "La mixité sociale", phon: "lah meeks-ee-tay", en: "Social diversity", exFr: "La mixité sociale dans les écoles enrichit les élèves.", exEn: "Social diversity in schools enriches students.", target: "mixité" },
+        { deck: 3, deckTitle: "Deck 3 • Cultural Diversity & Social Fabric", id: 30, fr: "Le vivre-ensemble", phon: "luh vee-vruh ahn-sahm-bluh", en: "Living together in harmony", exFr: "Le vivre-ensemble exige du respect et de la tolérance.", exEn: "Living together in harmony requires respect and tolerance.", target: "vivre-ensemble" },
+
+        // DECK 4: Rights, Status & Policies
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 31, fr: "Le statut de réfugié", phon: "luh stah-too", en: "Refugee status", exFr: "Le statut de réfugié protège les personnes fuyant la guerre.", exEn: "Refugee status protects people fleeing war.", target: "statut" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 32, fr: "Le droit d'asile", phon: "luh drwah dah-zeel", en: "Right of asylum", exFr: "Demander le droit d'asile est une procédure internationale régulée.", exEn: "Requesting the right of asylum is a regulated international process.", target: "asile" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 33, fr: "Le regroupement familial", phon: "luh ruh-groop-mahn", en: "Family reunification", exFr: "Le regroupement familial aide à maintenir l'unité du foyer.", exEn: "Family reunification helps maintain household unity.", target: "regroupement" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 34, fr: "La charte des droits et libertés", phon: "lah shar-tuh", en: "Charter of rights and freedoms", exFr: "La charte des droits et libertés garantit les libertés fondamentales.", exEn: "The charter of rights and freedoms guarantees fundamental liberties.", target: "charte" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 35, fr: "La valeur démocratique", phon: "lah vah-luhr", en: "Democratic value", exFr: "Respecter les lois est une valeur démocratique essentielle.", exEn: "Respecting laws is an essential democratic value.", target: "démocratique" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 36, fr: "L'expatriation", phon: "lehks-pah-tryah-syon", en: "Expatriation", exFr: "L'expatriation exige une grande capacité d'adaptation.", exEn: "Expatriation requires great adaptability.", target: "expatriation" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 37, fr: "La communauté d'accueil", phon: "lah koh-moo-noh-tay", en: "Host community", exFr: "La communauté d'accueil facilite les premiers pas des arrivants.", exEn: "The host community facilitates newcomers' first steps.", target: "accueil" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 38, fr: "Un travailleur qualifié", phon: "ah trah-vah-yuhr", en: "Skilled worker", exFr: "Un travailleur qualifié trouve rapidement sa place sur le marché.", exEn: "A skilled worker quickly finds a spot in the market.", target: "qualifié" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 39, fr: "La politique d'immigration", phon: "lah poh-lee-teek", en: "Immigration policy", exFr: "La politique d'immigration vise à répondre aux besoins économiques.", exEn: "Immigration policy aims to respond to economic needs.", target: "politique" },
+        { deck: 4, deckTitle: "Deck 4 • Rights, Status & Policies", id: 40, fr: "L'harmonisation culturelle", phon: "lar-moh-nee-zah-syon", en: "Cultural harmonization", exFr: "L'harmonisation culturelle se fait par le dialogue continu.", exEn: "Cultural harmonization occurs through continuous dialogue.", target: "harmonisation" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "S'intégrer", phon: "sahn-tay-gray", en: "To integrate oneself", exFr: "Pour s'intégrer, il est important de participer à la vie locale.", exEn: "To integrate oneself, it is important to participate in local life.", target: "intégrer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Accueillir", phon: "ah-kuh-yeer", en: "To welcome / host", exFr: "Ce pays sait accueillir chaleureusement les nouveaux résidents.", exEn: "This country knows how to warmly welcome new residents.", target: "accueillir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "S'adapter", phon: "sah-dahp-tay", en: "To adapt", exFr: "Chaque immigrant apprend à s'adapter au nouveau climat.", exEn: "Every immigrant learns to adapt to the new climate.", target: "adapter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Faciliter", phon: "fah-see-lee-tay", en: "To facilitate", exFr: "Les cours de langue visent à faciliter les démarches.", exEn: "Language courses aim to facilitate procedures.", target: "faciliter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Valoriser", phon: "vah-loh-ree-zay", en: "To value / highlight", exFr: "L'entreprise cherche à valoriser les compétences de chacun.", exEn: "The company seeks to value everyone's skills.", target: "valoriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "S'installer", phon: "sahnss-tah-lay", en: "To settle down", exFr: "Ils ont choisi de s'installer dans une région dynamique.", exEn: "They chose to settle down in a dynamic region.", target: "installer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Naturaliser", phon: "nah-too-rah-lee-zay", en: "To naturalize", exFr: "L'État décide de naturaliser les résidents de longue date.", exEn: "The State decides to naturalize long-term residents.", target: "naturaliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Accompagner", phon: "ah-kohn-pahn-yay", en: "To accompany / guide", exFr: "Un conseiller vient accompagner la famille dans ses démarches.", exEn: "A counselor comes to guide the family in their procedures.", target: "accompagner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "Il faut sensibiliser la population aux réalités des réfugiés.", exEn: "We must raise population awareness about refugee realities.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Harmoniser", phon: "ar-moh-nee-zay", en: "To harmonize", exFr: "Ce programme aide à harmoniser les relations interculturelles.", exEn: "This program helps harmonize intercultural relations.", target: "harmoniser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

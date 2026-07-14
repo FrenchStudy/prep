@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Mondialisation & Relations Internationales</title>
+    <style>
+        :root {
+            --primary: #0284C7;
+            --dark-blue: #0369A1;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F0F9FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🌐 TCF Canada • 50 Interactive Globalization Words</h1>
+        <p>Mondialisation, Diplomatie, Traités & Géopolitique</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Global Economy & Trade Agreements
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 1, fr: "Le commerce international", phon: "luh koh-mairss", en: "International trade", exFr: "Le commerce international stimule la croissance mais accroît la concurrence.", exEn: "International trade boosts growth but increases competition.", target: "commerce" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 2, fr: "L'accord de libre-échange", phon: "lah-kor duh lee-bruh ay-shahnhzh", en: "Free trade agreement", exFr: "L'accord de libre-échange réduit les taxes douanières entre pays.", exEn: "The free trade agreement lowers tariffs between countries.", target: "libre-échange" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 3, fr: "Les barrières tarifaires", phon: "lay bah-ryair tah-ree-fehr", en: "Tariff barriers", exFr: "Supprimer les barrières tarifaires fluidifie le marché mondial.", exEn: "Removing tariff barriers smoothes the global market.", target: "tarifaires" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 4, fr: "La mondialisation de l'économie", phon: "lah mohn-dyah-lee-zah-syon", en: "Economic globalization", exFr: "La mondialisation de l'économie relie directement les bourses du monde.", exEn: "Economic globalization directly connects world stock exchanges.", target: "mondialisation" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 5, fr: "La chaîne de valeur mondiale", phon: "lah shehn duh vah-luhr", en: "Global value chain", exFr: "Une perturbation de la chaîne de valeur mondiale bloque les usines.", exEn: "A disruption in the global value chain halts factories.", target: "valeur" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 6, fr: "La délocalisation industrielle", phon: "lah day-loh-kah-lee-zah-syon", en: "Offshoring", exFr: "La délocalisation industrielle vise à réduire les coûts de production.", exEn: "Offshoring aims to lower production costs.", target: "délocalisation" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 7, fr: "La relocalisation stratégique", phon: "lah ruh-loh-kah-lee-zah-syon", en: "Strategic reshoring", exFr: "La relocalisation stratégique sécurise la souveraineté sanitaire.", exEn: "Strategic reshoring secures healthcare sovereignty.", target: "relocalisation" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 8, fr: "Le protectionnisme économique", phon: "luh proh-tehk-syon-nees-muh", en: "Economic protectionism", exFr: "Le protectionnisme économique protège les entreprises nationales.", exEn: "Economic protectionism protects domestic companies.", target: "protectionnisme" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 9, fr: "L'interdépendance économique", phon: "lahn-tair-day-pahn-dahnss", en: "Economic interdependence", exFr: "L'interdépendance économique rend la coopération nécessaire.", exEn: "Economic interdependence makes cooperation necessary.", target: "interdépendance" },
+        { deck: 1, deckTitle: "Deck 1 • Global Economy & Trade Agreements", id: 10, fr: "Les investissements directs étrangers", phon: "lay zan-vehss-teess-mahn", en: "Foreign Direct Investment", exFr: "Attirer des investissements directs étrangers développe les infrastructures.", exEn: "Attracting FDI develops infrastructure.", target: "investissements" },
+
+        // DECK 2: Diplomacy, Treaties & Alliances
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 11, fr: "Les relations diplomatiques", phon: "lay ruh-lah-syon", en: "Diplomatic relations", exFr: "Les deux nations ont rétabli leurs relations diplomatiques.", exEn: "Both nations restored diplomatic relations.", target: "diplomatiques" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 12, fr: "Un traité international", phon: "ah treh-tay an-tair-nah-syo-nahl", en: "International treaty", exFr: "Un traité international a été signé pour la protection des océans.", exEn: "An international treaty was signed for ocean protection.", target: "traité" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 13, fr: "La diplomatie multilatérale", phon: "lah dee-ploh-mah-see", en: "Multilateral diplomacy", exFr: "La diplomatie multilatérale privilégie le consensus à l'ONU.", exEn: "Multilateral diplomacy favors consensus at the UN.", target: "multilatérale" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 14, fr: "L'alliance stratégique", phon: "lah-lyahnss strah-tay-zheek", en: "Strategic alliance", exFr: "Cette alliance stratégique renforce la sécurité des membres.", exEn: "This strategic alliance strengthens members' security.", target: "alliance" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 15, fr: "La médiation internationale", phon: "lah may-dyah-syon", en: "International mediation", exFr: "La médiation internationale a permis d'obtenir un cessez-le-feu.", exEn: "International mediation achieved a ceasefire.", target: "médiation" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 16, fr: "Les sanctions économiques", phon: "lay sahnk-syon", en: "Economic sanctions", exFr: "Les sanctions économiques visent à isoler les régimes autoritaires.", exEn: "Economic sanctions aim to isolate authoritarian regimes.", target: "sanctions" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 17, fr: "L'immunité diplomatique", phon: "lee-moo-nee-tay", en: "Diplomatic immunity", exFr: "L'immunité diplomatique protège les ambassadeurs à l'étranger.", exEn: "Diplomatic immunity protects ambassadors abroad.", target: "immunité" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 18, fr: "La politique étrangère", phon: "lah poh-lee-teek ay-trahn-zhair", en: "Foreign policy", exFr: "Sa politique étrangère met l'accent sur les droits humains.", exEn: "Its foreign policy emphasizes human rights.", target: "étrangère" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 19, fr: "La résolution des nations unies", phon: "lah ray-zoh-loo-syon", en: "UN resolution", exFr: "Le conseil de sécurité a voté une résolution des nations unies.", exEn: "The Security Council voted on a UN resolution.", target: "résolution" },
+        { deck: 2, deckTitle: "Deck 2 • Diplomacy, Treaties & Alliances", id: 20, fr: "La souveraineté des États", phon: "lah soo-vrahn-tay day zay-tah", en: "State sovereignty", exFr: "Respecter la souveraineté des États est un principe fondamental de l'ONU.", exEn: "Respecting state sovereignty is a fundamental UN principle.", target: "souveraineté" },
+
+        // DECK 3: Geopolitics, Security & Peacekeeping
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 21, fr: "La géopolitique mondiale", phon: "lah zhay-oh-poh-lee-teek", en: "Global geopolitics", exFr: "La géopolitique mondiale évolue vers un monde multipolaire.", exEn: "Global geopolitics is evolving toward a multipolar world.", target: "géopolitique" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 22, fr: "Le maintien de la paix", phon: "luh mahn-tyahn", en: "Peacekeeping", exFr: "Les casques bleus interviennent pour le maintien de la paix.", exEn: "Peacekeepers intervene for peacekeeping.", target: "maintien" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 23, fr: "La zone d'influence", phon: "lah zohn deen-floo-ahnss", en: "Sphere of influence", exFr: "Cette région constitue une zone d'influence historique.", exEn: "This region constitutes a historical sphere of influence.", target: "influence" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 24, fr: "Le conflit géopolitique", phon: "luh kohn-flee", en: "Geopolitical conflict", exFr: "Le conflit géopolitique entraîne des tensions sur l'énergie.", exEn: "The geopolitical conflict causes energy tensions.", target: "conflit" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 25, fr: "La sécurité transfrontalière", phon: "lah say-koo-ree-tay", en: "Cross-border security", exFr: "La coopération policière renforce la sécurité transfrontalière.", exEn: "Police cooperation reinforces cross-border security.", target: "transfrontalière" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 26, fr: "La prolifération nucléaire", phon: "lah proh-lee-fay-rah-syon", en: "Nuclear proliferation", exFr: "Stopper la prolifération nucléaire est une priorité sécuritaire.", exEn: "Stopping nuclear proliferation is a security priority.", target: "prolifération" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 27, fr: "Le multilatéralisme", phon: "luh mool-tee-lah-tay-rah-lees-muh", en: "Multilateralism", exFr: "Défendre le multilatéralisme permet d'éviter l'arbitraire des puissances.", exEn: "Defending multilateralism avoids arbitrary power moves.", target: "multilatéralisme" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 28, fr: "L'hégémonie culturelle", phon: "lay-zhay-moh-nee", en: "Cultural hegemony", exFr: "Le cinéma hollywoodien a longtemps exercé une hégémonie culturelle.", exEn: "Hollywood cinema long exercised cultural hegemony.", target: "hégémonie" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 29, fr: "La crise humanitaire internationale", phon: "lah kreez oo-mah-nee-tair", en: "International humanitarian crisis", exFr: "Les ONG se mobilisent face à la crise humanitaire internationale.", exEn: "NGOs mobilize facing the international humanitarian crisis.", target: "humanitaire" },
+        { deck: 3, deckTitle: "Deck 3 • Geopolitics, Security & Peacekeeping", id: 30, fr: "Le droit international humanitaire", phon: "luh drwah", en: "International humanitarian law", exFr: "Le droit international humanitaire protège les civils pendant la guerre.", exEn: "International humanitarian law protects civilians in war.", target: "droit" },
+
+        // DECK 4: Global Mobility, Migration & Ecology
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 31, fr: "Les flux migratoires mondiaux", phon: "lay floo mee-grah-twahr", en: "Global migration flows", exFr: "Les changements climatiques accentuent les flux migratoires mondiaux.", exEn: "Climate change accentuates global migration flows.", target: "migratoires" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 32, fr: "La fuite des cerveaux", phon: "lah fweet day sair-voh", en: "Brain drain", exFr: "La fuite des cerveaux prive les pays émergents de leurs talents.", exEn: "Brain drain deprives developing countries of talent.", target: "cerveaux" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 33, fr: "Le partenariat international", phon: "luh par-tuh-nah-ryah", en: "International partnership", exFr: "Ce partenariat international finance la recherche médicale.", exEn: "This international partnership funds medical research.", target: "partenariat" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 34, fr: "La gouvernance climatique mondiale", phon: "lah goo-vair-nahnss", en: "Global climate governance", exFr: "La gouvernance climatique mondiale nécessite la COP.", exEn: "Global climate governance requires the COP.", target: "gouvernance" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 35, fr: "La coopération transfrontalière", phon: "lah koh-oh-pay-rah-syon", en: "Cross-border cooperation", exFr: "La coopération transfrontalière gère le bassin fluvial partagé.", exEn: "Cross-border cooperation manages the shared river basin.", target: "coopération" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 36, fr: "La mondialisation culturelle", phon: "lah mohn-dyah-lee-zah-syon", en: "Cultural globalization", exFr: "La mondialisation culturelle favorise le métissage des idées.", exEn: "Cultural globalization promotes the blending of ideas.", target: "culturelle" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 37, fr: "L'aide internationale au développement", phon: "lehd an-tair-nah-syo-nahl", en: "Foreign development aid", exFr: "L'aide internationale au développement finance des écoles.", exEn: "Foreign development aid finances schools.", target: "aide" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 38, fr: "La diplomatie environnementale", phon: "lah dee-ploh-mah-see", en: "Environmental diplomacy", exFr: "La diplomatie environnementale cherche à protéger les espèces.", exEn: "Environmental diplomacy seeks to protect species.", target: "environnementale" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 39, fr: "Les accords de Paris", phon: "lay zah-kor duh pah-ree", en: "Paris Accords", exFr: "Les accords de Paris fixent la baisse des gaz à effet de serre.", exEn: "The Paris Accords fix the reduction of greenhouse gases.", target: "accords" },
+        { deck: 4, deckTitle: "Deck 4 • Global Mobility, Migration & Ecology", id: 40, fr: "La solidarité internationale", phon: "lah soh-lee-dah-ree-tay", en: "International solidarity", exFr: "La solidarité internationale s'est organisée après le séisme.", exEn: "International solidarity organized following the earthquake.", target: "solidarité" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Négocier", phon: "nay-goh-syay", en: "To negotiate", exFr: "Les diplomates se réunissent pour négocier la paix.", exEn: "Diplomats meet to negotiate peace.", target: "négocier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Ratifier", phon: "rah-tee-fyay", en: "To ratify", exFr: "Le Parlement doit ratifier le traité avant son entrée en vigueur.", exEn: "Parliament must ratify the treaty before it takes effect.", target: "ratifier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Coopérer", phon: "koh-oh-pay-ray", en: "To cooperate", exFr: "Les services de renseignement décident de coopérer.", exEn: "Intelligence services decide to cooperate.", target: "coopérer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Délocaliser", phon: "day-loh-kah-lee-zay", en: "To offshore / relocate", exFr: "L'entreprise envisage de délocaliser sa production.", exEn: "The company considers offshoring its production.", target: "délocaliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Relocaliser", phon: "ruh-loh-kah-lee-zay", en: "To reshore", exFr: "Le gouvernement offre des aides pour relocaliser les usines.", exEn: "The government offers grants to reshore factories.", target: "relocaliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Sanctionner", phon: "sahnk-syon-nay", en: "To sanction", exFr: "L'ONU peut sanctionner le pays en cas de violation des droits.", exEn: "The UN can sanction the country in case of rights violations.", target: "sanctionner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Apaiser", phon: "ah-peh-zay", en: "To appease / pacify", exFr: "Les négociations visent à apaiser les tensions militaires.", exEn: "Negotiations aim to appease military tensions.", target: "apaiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Signer", phon: "seen-yay", en: "To sign", exFr: "Les ministres vont signer le pacte bilatéral demain.", exEn: "Ministers will sign the bilateral pact tomorrow.", target: "signer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Intervenir", phon: "ahn-tair-vneer", en: "To intervene", exFr: "Les casques bleus vont intervenir pour sécuriser la zone.", exEn: "Peacekeepers will intervene to secure the zone.", target: "intervenir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Harmoniser", phon: "ar-moh-nee-zay", en: "To harmonize", exFr: "Ce pacte vise à harmoniser les normes fiscales entre États.", exEn: "This pact aims to harmonize tax standards across states.", target: "harmoniser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

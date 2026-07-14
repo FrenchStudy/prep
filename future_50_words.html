@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Avenir & Durabilité</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --dark-green: #047857;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #ECFDF5; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-green); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-green); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #059669; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🔮 TCF Canada • 50 Interactive Future & Sustainability Words</h1>
+        <p>Avenir, Durabilité, Résilience & Prospective</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Resilience & Long-Term Vision
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 1, fr: "La résilience", phon: "lah ray-zee-lyahnss", en: "Resilience", exFr: "La résilience des villes face aux catastrophes climatiques est essentielle.", exEn: "Cities' resilience in the face of climate disasters is essential.", target: "résilience" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 2, fr: "La viabilité", phon: "lah vyah-bee-lee-tay", en: "Viability", exFr: "L'étude confirme la viabilité économique du projet à long terme.", exEn: "The study confirms the long-term economic viability of the project.", target: "viabilité" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 3, fr: "La durabilité", phon: "lah doo-rah-bee-lee-tay", en: "Sustainability", exFr: "La durabilité environnementale doit guider nos choix industriels.", exEn: "Environmental sustainability must guide our industrial choices.", target: "durabilité" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 4, fr: "Les tendances à long terme", phon: "lay tahn-dahnss", en: "Long-term trends", exFr: "Analyser les tendances à long terme aide à préparer l'avenir.", exEn: "Analyzing long-term trends helps prepare the future.", target: "tendances" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 5, fr: "L'adaptation au changement", phon: "lah-dahp-tah-syon", en: "Adaptation to change", exFr: "L'adaptation au changement climatique exige une refonte agricole.", exEn: "Adaptation to climate change requires agricultural overhaul.", target: "adaptation" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 6, fr: "La vision prospective", phon: "lah vee-zyohn prohs-pehks-teev", en: "Prospective vision", exFr: "Une vision prospective permet d'éviter les décisions à court terme.", exEn: "A prospective vision helps avoid short-term decisions.", target: "prospective" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 7, fr: "La pérennité", phon: "lah pay-rehn-nee-tay", en: "Long-term continuity", exFr: "Assurer la pérennité des entreprises garantit l'emploi.", exEn: "Ensuring long-term continuity of businesses guarantees employment.", target: "pérennité" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 8, fr: "La gestion des risques", phon: "lah zhehs-tyohn day reesk", en: "Risk management", exFr: "La gestion des risques anticipe les perturbations futures.", exEn: "Risk management anticipates future disruptions.", target: "risques" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 9, fr: "L'anticipation des crises", phon: "lahn-tee-see-pah-syon", en: "Crisis anticipation", exFr: "L'anticipation des crises sanitaires renforce notre système de santé.", exEn: "Anticipating health crises strengthens our healthcare system.", target: "anticipation" },
+        { deck: 1, deckTitle: "Deck 1 • Resilience & Long-Term Vision", id: 10, fr: "La sobriété écologique", phon: "lah soh-bree-ay-tay", en: "Ecological sobriety", exFr: "Prôner la sobriété écologique réduit la consommation d'énergie.", exEn: "Promoting ecological sobriety reduces energy consumption.", target: "sobriété" },
+
+        // DECK 2: Environmental & Social Sustainability
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 11, fr: "Le développement durable", phon: "luh day-vlohp-mahn", en: "Sustainable development", exFr: "Le développement durable concilie économie, écologie et social.", exEn: "Sustainable development reconciles economy, ecology, and social needs.", target: "durable" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 12, fr: "La neutralité carbone", phon: "lah nuh-trah-lee-tay", en: "Carbon neutrality", exFr: "Atteindre la neutralité carbone d'ici 2050 est un objectif majeur.", exEn: "Achieving carbon neutrality by 2050 is a major goal.", target: "neutralité" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 13, fr: "La préservation des ressources", phon: "lah pray-zair-vah-syon", en: "Resource preservation", exFr: "La préservation des ressources en eau devient critique.", exEn: "Water resource preservation is becoming critical.", target: "préservation" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 14, fr: "L'économie circulaire", phon: "lay-koh-noh-mee seer-koo-lair", en: "Circular economy", exFr: "L'économie circulaire privilégie le réemploi et le recyclage.", exEn: "The circular economy prioritizes reuse and recycling.", target: "circulaire" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 15, fr: "La responsabilité sociétale", phon: "lah rehss-pohn-sah-bee-lee-tay", en: "Corporate Social Responsibility", exFr: "La responsabilité sociétale engage les entreprises à être plus vertes.", exEn: "Corporate Social Responsibility commits businesses to green practices.", target: "sociétale" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 16, fr: "L'équité intergénérationnelle", phon: "lay-kee-tay", en: "Intergenerational equity", exFr: "L'équité intergénérationnelle exige d'éviter de léguer des dettes environnementales.", exEn: "Intergenerational equity requires not leaving environmental debt behind.", target: "équité" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 17, fr: "La transition écologique", phon: "lah trahn-zee-syon", en: "Ecological transition", exFr: "La transition écologique demande des investissements majeurs.", exEn: "The ecological transition requires major investments.", target: "transition" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 18, fr: "L'empreinte environnementale", phon: "lahm-prahnt", en: "Environmental footprint", exFr: "Calculer son empreinte environnementale aide à mieux consommer.", exEn: "Calculating one's environmental footprint helps consume better.", target: "empreinte" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 19, fr: "La biodiversité", phon: "lah bee-oh-dee-vair-see-tay", en: "Biodiversity", exFr: "Protéger la biodiversité garantit la stabilité des écosystèmes.", exEn: "Protecting biodiversity guarantees ecosystem stability.", target: "biodiversité" },
+        { deck: 2, deckTitle: "Deck 2 • Environmental & Social Sustainability", id: 20, fr: "Les énergies de demain", phon: "lay zay-nair-zhee", en: "Future energies", exFr: "L'hydrogène vert fait partie des énergies de demain.", exEn: "Green hydrogen is among the energies of tomorrow.", target: "énergies" },
+
+        // DECK 3: Technological & Global Future
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 21, fr: "La transformation numérique durable", phon: "lah trahnss-for-mah-syon", en: "Sustainable digital transformation", exFr: "Une transformation numérique durable cherche à réduire la conso d'énergie des serveurs.", exEn: "A sustainable digital transformation aims to lower server energy use.", target: "numérique" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 22, fr: "L'éthique technologique", phon: "lay-teek", en: "Technological ethics", exFr: "L'éthique technologique encadre le développement responsable des algorithmes.", exEn: "Technological ethics frames responsible algorithm development.", target: "éthique" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 23, fr: "La ville intelligente", phon: "lah veel an-tehl-ee-zhahnt", en: "Smart city", exFr: "La ville intelligente optimise l'éclairage public et les transports.", exEn: "The smart city optimizes street lighting and transit.", target: "intelligente" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 24, fr: "L'automatisation responsable", phon: "loh-toh-mah-tee-zah-syon", en: "Responsible automation", exFr: "L'automatisation responsable ne cherche pas à remplacer l'humain.", exEn: "Responsible automation doesn't seek to replace humans.", target: "automatisation" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 25, fr: "Les enjeux mondiaux", phon: "lay zahn-zhuh mohn-dyoh", en: "Global challenges", exFr: "Le climat et l'eau sont les principaux enjeux mondiaux du siècle.", exEn: "Climate and water are the century's main global challenges.", target: "enjeux" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 26, fr: "La souveraineté énergétique", phon: "lah soo-vrahn-tay", en: "Energy sovereignty", exFr: "Développer le solaire renforce la souveraineté énergétique du pays.", exEn: "Developing solar power strengthens energy sovereignty.", target: "souveraineté" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 27, fr: "Le progrès scientifique", phon: "luh proh-greh syahn-tee-feek", en: "Scientific progress", exFr: "Le progrès scientifique offre de nouveaux espoirs en médecine.", exEn: "Scientific progress brings new hope in medicine.", target: "progrès" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 28, fr: "La prospective technologique", phon: "lah prohs-pehks-teev", en: "Technology forecasting", exFr: "La prospective technologique aide les gouvernements à planifier.", exEn: "Technology forecasting helps governments plan.", target: "prospective" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 29, fr: "L'intelligence collective", phon: "lahn-tel-ee-zhahns koh-lehk-teev", en: "Collective intelligence", exFr: "Miser sur l'intelligence collective résout les problèmes plus vite.", exEn: "Relying on collective intelligence solves problems faster.", target: "intelligence" },
+        { deck: 3, deckTitle: "Deck 3 • Technological & Global Future", id: 30, fr: "La cybersécurité du futur", phon: "lah see-bair-say-koo-ree-tay", en: "Future cybersecurity", exFr: "La cybersécurité du futur intègre de l'IA pour bloquer les attaques.", exEn: "Future cybersecurity integrates AI to block attacks.", target: "cybersécurité" },
+
+        // DECK 4: Society & Human Future
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 31, fr: "Le bien-être futur", phon: "luh byahn-neht-ruh", en: "Future well-being", exFr: "Construire des parcs contribue au bien-être futur des citadins.", exEn: "Building parks contributes to city dwellers' future well-being.", target: "bien-être" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 32, fr: "La justice climatique", phon: "lah zhoos-teess klee-mah-teek", en: "Climate justice", exFr: "La justice climatique protège les pays les plus vulnérables.", exEn: "Climate justice protects the most vulnerable countries.", target: "justice" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 33, fr: "L'inclusion durable", phon: "lahn-kloo-zyon doo-rah-bluh", en: "Sustainable inclusion", exFr: "L'inclusion durable garantit un accès permanent aux soins pour tous.", exEn: "Sustainable inclusion guarantees permanent healthcare for all.", target: "inclusion" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 34, fr: "L'évolution des modes de vie", phon: "lay-voh-loo-syon", en: "Evolution of lifestyles", exFr: "L'évolution des modes de vie privilégie le vélo et la sobriété.", exEn: "Lifestyle evolution favors cycling and sobriety.", target: "modes de vie" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 35, fr: "La santé globale", phon: "lah sahn-tay gloh-bahl", en: "Global health", exFr: "La santé globale intègre la santé humaine, animale et environnementale.", exEn: "Global health integrates human, animal, and environmental health.", target: "santé" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 36, fr: "La cohésion future", phon: "lah koh-ay-zyon foo-toor", en: "Future cohesion", exFr: "Investir dans la jeunesse garantit la cohésion future du pays.", exEn: "Investing in youth guarantees future country cohesion.", target: "cohésion" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 37, fr: "L'accès universel", phon: "lahk-seh oo-nee-vair-sehl", en: "Universal access", exFr: "L'accès universel à l'eau potable est un objectif de l'ONU.", exEn: "Universal access to clean water is a UN goal.", target: "accès" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 38, fr: "Le modèle de société", phon: "luh moh-dehl", en: "Societal model", exFr: "Nous devons repenser notre modèle de société vers plus d'équité.", exEn: "We must rethink our societal model toward more fairness.", target: "modèle" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 39, fr: "La conscience écologique", phon: "lah kohn-syahnss", en: "Ecological awareness", exFr: "La conscience écologique grandit chez les jeunes générations.", exEn: "Ecological awareness is growing among young generations.", target: "conscience" },
+        { deck: 4, deckTitle: "Deck 4 • Society & Human Future", id: 40, fr: "L'héritage pour les générations", phon: "lay-ree-tahzh", en: "Legacy for generations", exFr: "Notre planète propre est le plus bel héritage pour les générations futures.", exEn: "Our clean planet is the best legacy for future generations.", target: "héritage" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Anticiper", phon: "ahn-tee-see-pay", en: "To anticipate", exFr: "Il faut anticiper les besoins énergétiques de la décennie.", exEn: "We must anticipate energy needs for the decade.", target: "anticiper" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Préserver", phon: "pray-zair-vay", en: "To preserve", exFr: "Préserver la biodiversité est essentiel pour notre survie.", exEn: "Preserving biodiversity is essential for our survival.", target: "préserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Pérenniser", phon: "pay-reh-nee-zay", en: "To perpetuate / make sustainable", exFr: "Ces mesures visent à pérenniser nos ressources en eau.", exEn: "These measures aim to perpetuate our water resources.", target: "pérenniser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "S'adapter", phon: "sah-dahp-tay", en: "To adapt", exFr: "Les villes doivent s'adapter aux vagues de chaleur.", exEn: "Cities must adapt to heatwaves.", target: "adapter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Maintenir", phon: "mahn-tneer", en: "To maintain", exFr: "Maintenir l'équilibre des écosystèmes est un effort continu.", exEn: "Maintaining ecosystem balance is a continuous effort.", target: "maintenir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Construire", phon: "kohnss-trweer", en: "To build", exFr: "Nous devons construire un avenir plus vert et plus juste.", exEn: "We must build a greener and fairer future.", target: "construire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Sécuriser", phon: "say-koo-ree-zay", en: "To secure", exFr: "Le gouvernement agit pour sécuriser l'approvisionnement en eau.", exEn: "The government is acting to secure water supply.", target: "sécuriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Protéger", phon: "proh-tay-zhay", en: "To protect", exFr: "Chacun doit s'engager pour protéger l'environnement.", exEn: "Everyone must commit to protecting the environment.", target: "protéger" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Inculquer", phon: "ahn-kool-kay", en: "To instill", exFr: "Inculquer le respect de la nature dès l'enfance est crucial.", exEn: "Instilling respect for nature from childhood is crucial.", target: "inculquer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Projeter", phon: "proh-zhut-tay", en: "To project", exFr: "Il faut se projeter à long terme pour réussir la transition.", exEn: "One must project long-term to succeed in the transition.", target: "projeter" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

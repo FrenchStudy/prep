@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Cadre de Vie & Urbanisme Écologique</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --dark-green: #047857;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #ECFDF5; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-green); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-green); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #059669; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🌿 TCF Canada • 50 Interactive Eco-Urbanism Words</h1>
+        <p>Écoquartiers, Mobilité Douce, Déchets & Cadre de Vie</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Eco-Neighborhoods & Sustainable Planning
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 1, fr: "L'écoquartier", phon: "lay-koh-kar-tyay", en: "Eco-neighborhood", exFr: "L'écoquartier intègre des bâtiments à faible consommation d'énergie.", exEn: "The eco-neighborhood integrates low-energy buildings.", target: "écoquartier" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 2, fr: "L'urbanisme durable", phon: "loor-bah-nees-muh doo-rah-bluh", en: "Sustainable urban planning", exFr: "L'urbanisme durable privilégie la proximité des services.", exEn: "Sustainable urban planning favors service proximity.", target: "urbanisme" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 3, fr: "L'aménagement du territoire", phon: "lah-may-nahzh-mahn", en: "Spatial planning", exFr: "L'aménagement du territoire préserve les zones agricoles.", exEn: "Spatial planning preserves agricultural zones.", target: "aménagement" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 4, fr: "La densification douce", phon: "lah dahn-see-fee-kah-syon", en: "Gentle densification", exFr: "La densification douce évite de détruire le paysage local.", exEn: "Gentle densification avoids destroying local landscape.", target: "densification" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 5, fr: "La mixité fonctionnelle", phon: "lah meeks-ee-tay", en: "Mixed-use development", exFr: "La mixité fonctionnelle regroupe logements, commerces et bureaux.", exEn: "Mixed-use development combines housing, shops, and offices.", target: "mixité" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 6, fr: "La revitalisation urbaine", phon: "lah ruh-vee-tah-lee-zah-syon", en: "Urban revitalization", exFr: "La revitalisation urbaine redonne vie aux vieux centres-villes.", exEn: "Urban revitalization breathes life into old downtowns.", target: "revitalisation" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 7, fr: "L'étalement urbain", phon: "lay-tahl-mahn oor-bahn", en: "Urban sprawl", exFr: "Limiter l'étalement urbain protège les forêts environnantes.", exEn: "Limiting urban sprawl protects surrounding forests.", target: "étalement" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 8, fr: "La végétalisation des villes", phon: "lah vay-zhay-tah-lee-zah-syon", en: "Urban greening", exFr: "La végétalisation des villes rafraîchit l'air en été.", exEn: "Urban greening cools the air in summer.", target: "végétalisation" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 9, fr: "La rénovation thermique", phon: "lah ray-noh-vah-syon", en: "Thermal renovation", exFr: "La rénovation thermique des appartements réduit les factures d'énergie.", exEn: "Thermal renovation of apartments reduces energy bills.", target: "rénovation" },
+        { deck: 1, deckTitle: "Deck 1 • Eco-Neighborhoods & Sustainable Planning", id: 10, fr: "L'empreinte écologique urbaine", phon: "lahm-prahnt ay-koh-loh-zheek", en: "Urban ecological footprint", exFr: "Chaque métropole doit réduire son empreinte écologique urbaine.", exEn: "Every metropolis must reduce its urban ecological footprint.", target: "empreinte" },
+
+        // DECK 2: Green Transport & Active Mobility
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 11, fr: "La mobilité douce", phon: "lah moh-bee-lee-tay dooss", en: "Active mobility", exFr: "Favoriser la mobilité douce incite à marcher et faire du vélo.", exEn: "Promoting active mobility encourages walking and cycling.", target: "mobilité" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 12, fr: "Le réseau de transports en commun", phon: "luh ray-zoh", en: "Public transit network", exFr: "Un réseau de transports en commun efficace réduit les bouchons.", exEn: "An efficient public transit network reduces traffic jams.", target: "transports" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 13, fr: "La piste cyclable sécurisée", phon: "lah peest see-klah-bluh", en: "Protected bike lane", exFr: "Construire une piste cyclable sécurisée protège les cyclistes.", exEn: "Building a protected bike lane keeps cyclists safe.", target: "cyclable" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 14, fr: "La zone piétonne", phon: "lah zohn pyay-tohn", en: "Pedestrian zone", exFr: "La zone piétonne rend le centre-ville très agréable.", exEn: "The pedestrian zone makes downtown very pleasant.", target: "piétonne" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 15, fr: "Le vélo en libre-service", phon: "luh vay-loh", en: "Bike-sharing system", exFr: "Utiliser un vélo en libre-service évite d'acheter une voiture.", exEn: "Using bike-sharing avoids buying a car.", target: "libre-service" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 16, fr: "La décarbonation des transports", phon: "lah day-kar-boh-nah-syon", en: "Transport decarbonization", exFr: "La décarbonation des transports passe par les bus électriques.", exEn: "Transport decarbonization relies on electric buses.", target: "décarbonation" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 17, fr: "La zone à faibles émissions", phon: "lah zohn ah feh-bluh zay-mee-syon", en: "Low-emission zone", exFr: "Les véhicules polluants sont interdits dans la zone à faibles émissions.", exEn: "Polluting vehicles are banned in the low-emission zone.", target: "émissions" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 18, fr: "Le covoiturage urbain", phon: "luh koh-vwah-too-rahzh", en: "Urban carpooling", exFr: "Le covoiturage urbain partage les frais de déplacement domicile-travail.", exEn: "Urban carpooling splits commuting costs.", target: "covoiturage" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 19, fr: "L'intermodalité", phon: "lahn-tair-moh-dah-lee-tay", en: "Intermodality", exFr: "L'intermodalité permet de combiner vélo et train facilement.", exEn: "Intermodality makes combining bikes and trains easy.", target: "intermodalité" },
+        { deck: 2, deckTitle: "Deck 2 • Green Transport & Active Mobility", id: 20, fr: "La réduction du trafic automobile", phon: "lah ray-dook-syon", en: "Traffic reduction", exFr: "La réduction du trafic automobile diminue le bruit et la pollution.", exEn: "Traffic reduction lowers noise and pollution.", target: "trafic" },
+
+        // DECK 3: Waste, Energy & Resource Management
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 21, fr: "Le tri sélectif", phon: "luh tree say-lehk-teef", en: "Waste sorting", exFr: "Le tri sélectif est obligatoire dans tous les immeubles.", exEn: "Waste sorting is mandatory in all buildings.", target: "tri" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 22, fr: "La gestion intégrée des déchets", phon: "lah zhehs-tyohn", en: "Integrated waste management", exFr: "La gestion intégrée des déchets vise zéro déchet enfoui.", exEn: "Integrated waste management aims for zero landfilled waste.", target: "déchets" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 23, fr: "La valorisation énergétique", phon: "lah vah-loh-ree-zah-syon", en: "Waste-to-energy recovery", exFr: "La valorisation énergétique transforme les ordures en électricité.", exEn: "Waste-to-energy recovery transforms trash into power.", target: "valorisation" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 24, fr: "Le compostage collectif", phon: "luh kohn-pohss-tahzh", en: "Community composting", exFr: "Un bac de compostage collectif est disponible dans le parc.", exEn: "A community composting bin is available in the park.", target: "compostage" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 25, fr: "Les énergies renouvelables locales", phon: "lay zay-nair-zhee", en: "Local renewable energies", exFr: "L'écoquartier utilise des énergies renouvelables locales.", exEn: "The eco-neighborhood uses local renewable energies.", target: "renouvelables" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 26, fr: "L'éclairage public intelligent", phon: "lay-kleh-rahzh poo-bleek", en: "Smart street lighting", exFr: "L'éclairage public intelligent ne s'allume qu'au passage des piétons.", exEn: "Smart street lighting turns on only when pedestrians pass.", target: "éclairage" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 27, fr: "La récupération des eaux de pluie", phon: "lah ray-koo-pay-rah-syon", en: "Rainwater harvesting", exFr: "La récupération des eaux de pluie sert à arrosser les jardins publics.", exEn: "Rainwater harvesting is used to water public gardens.", target: "récupération" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 28, fr: "L'isolation phonique et thermique", phon: "lee-zoh-lah-syon", en: "Acoustic and thermal insulation", exFr: "Une bonne isolation phonique et thermique garantit le confort.", exEn: "Good acoustic and thermal insulation guarantees comfort.", target: "isolation" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 29, fr: "La réduction des îlots de chaleur", phon: "lah ray-dook-syon", en: "Heat island reduction", exFr: "Planter des arbres contribue à la réduction des îlots de chaleur.", exEn: "Planting trees contributes to heat island reduction.", target: "îlots" },
+        { deck: 3, deckTitle: "Deck 3 • Waste, Energy & Resource Management", id: 30, fr: "La sobriété énergétique", phon: "lah soh-bree-ay-tay", en: "Energy conservation", exFr: "La sobriété énergétique demande de baisser le chauffage en hiver.", exEn: "Energy conservation requires lowering heating in winter.", target: "sobriété" },
+
+        // DECK 4: Community Quality of Life & Inclusivity
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 31, fr: "La qualité du cadre de vie", phon: "lah kah-lee-tay", en: "Quality of living environment", exFr: "La présence de parcs améliore grandement la qualité du cadre de vie.", exEn: "Parks greatly improve the quality of the living environment.", target: "cadre de vie" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 32, fr: "Les espaces verts de proximité", phon: "lay zehss-pahss vair", en: "Local green spaces", exFr: "Les espaces verts de proximité incitent aux promenades en famille.", exEn: "Local green spaces encourage family walks.", target: "espaces verts" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 33, fr: "La cohésion de quartier", phon: "lah koh-ay-zyon", en: "Neighborhood cohesion", exFr: "Organiser une fête des voisins renforce la cohésion de quartier.", exEn: "Organizing a neighbors' party strengthens neighborhood cohesion.", target: "cohésion" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 34, fr: "L'agriculture urbaine", phon: "lah-gree-kool-toor oor-behn", en: "Urban agriculture", exFr: "L'agriculture urbaine cultive des légumes sur les toits des immeubles.", exEn: "Urban agriculture grows vegetables on building rooftops.", target: "agriculture" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 35, fr: "Le jardin communautaire", phon: "luh zhar-dahn", en: "Community garden", exFr: "Le jardin communautaire réunit les résidents autour du potager.", exEn: "The community garden brings residents together around vegetable plots.", target: "jardin" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 36, fr: "La réduction de la pollution sonore", phon: "lah ray-dook-syon", en: "Noise pollution reduction", exFr: "Poser des murs anti-bruit participe à la réduction de la pollution sonore.", exEn: "Installing noise barriers contributes to noise reduction.", target: "sonore" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 37, fr: "L'accessibilité pour tous", phon: "lahk-seh-see-bee-lee-tay", en: "Universal accessibility", exFr: "Installer des rampes garantit l'accessibilité pour tous dans le métro.", exEn: "Installing ramps guarantees accessibility for all in the subway.", target: "accessibilité" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 38, fr: "La sécurité du quartier", phon: "lah say-koo-ree-tay", en: "Neighborhood safety", exFr: "Un bon éclairage améliore le sentiment de sécurité du quartier.", exEn: "Good lighting improves neighborhood safety feeling.", target: "sécurité" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 39, fr: "La préservation de la biodiversité urbaine", phon: "lah pray-zair-vah-syon", en: "Urban biodiversity preservation", exFr: "Créer des nichoirs favorise la préservation de la biodiversité urbaine.", exEn: "Creating birdhouses fosters urban biodiversity preservation.", target: "biodiversité" },
+        { deck: 4, deckTitle: "Deck 4 • Community Quality of Life & Inclusivity", id: 40, fr: "Le vivre-ensemble communautaire", phon: "luh vee-vruh ahn-sahm-bluh", en: "Community living together", exFr: "Le vivre-ensemble communautaire repose sur le respect et le partage.", exEn: "Community living together relies on respect and sharing.", target: "vivre-ensemble" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Aménager", phon: "ah-may-nah-zhay", en: "To plan / develop", exFr: "La ville souhaite aménager une nouvelle place centrale.", exEn: "The city wishes to develop a new central plaza.", target: "aménager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Végétaliser", phon: "vay-zhay-tah-lee-zay", en: "To green / plant", exFr: "Nous allons végétaliser les façades de l'école.", exEn: "We are going to green the school's facades.", target: "végétaliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Rénover", phon: "ray-noh-vay", en: "To renovate", exFr: "Le propriétaire va rénover l'isolation du toit.", exEn: "The landlord will renovate the roof insulation.", target: "rénover" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Recycler", phon: "ruh-see-klay", en: "To recycle", exFr: "Chaque habitant apprend à mieux recycler ses emballages.", exEn: "Every resident learns to better recycle their packaging.", target: "recycler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Redynamiser", phon: "ruh-dee-nah-mee-zay", en: "To revitalize", exFr: "Ouvrir des commerces aide à redynamiser le quartier.", exEn: "Opening shops helps revitalize the neighborhood.", target: "redynamiser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Réduire", phon: "ray-dweer", en: "To reduce", exFr: "Il est impératif de réduire la vitesse en zone résidentielle.", exEn: "It is imperative to reduce speed in residential zones.", target: "réduire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Favoriser", phon: "fah-vah-ree-zay", en: "To promote / foster", exFr: "Ce plan vise à favoriser les déplacements à pied.", exEn: "This plan aims to promote walking travel.", target: "favoriser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Isoler", phon: "ee-zoh-lay", en: "To insulate", exFr: "Mieux isoler les bâtiments évite le gaspillage de chauffage.", exEn: "Better insulating buildings avoids heating waste.", target: "isoler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Piétonniser", phon: "pyay-tohn-nee-zay", en: "To pedestrianize", exFr: "La mairie a décidé de piétonniser la rue commerçante.", exEn: "City hall decided to pedestrianize the shopping street.", target: "piétonniser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Préserver", phon: "pray-zair-vay", en: "To preserve", exFr: "Protéger ces arbres centenaires aide à préserver le paysage.", exEn: "Protecting these century-old trees helps preserve the landscape.", target: "préserver" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

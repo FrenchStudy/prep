@@ -3,221 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCF Canada • Interactive Learning Hub</title>
+    <title>TCF Canada • Master Vocabulary Suite (1,050 Words)</title>
     <style>
         :root {
-            --primary: #0055A5;
-            --dark-blue: #003A70;
-            --accent: #EF4135;
+            --primary: #1E3A8A;
+            --accent: #2563EB;
             --dark: #0F172A;
             --light: #F8FAFC;
-            --green: #10B981;
+            --card-bg: #FFFFFF;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        body {
-            background-color: #E2E8F0;
-            color: var(--dark);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .hub-card {
-            background: white;
-            max-width: 900px;
-            width: 100%;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border-top: 8px solid var(--primary);
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%);
-            color: white;
-            padding: 35px 25px;
-            text-align: center;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #F1F5F9; color: var(--dark); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { max-width: 1000px; width: 100%; }
+        .header { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2); }
         .header h1 { font-size: 2.2rem; margin-bottom: 8px; }
-        .header p { opacity: 0.95; font-size: 1rem; }
-
-        .coaches-banner {
-            display: flex;
-            gap: 15px;
-            background: #F0F7FF;
-            border-left: 5px solid var(--primary);
-            padding: 16px 20px;
-            margin: 25px 30px 10px 30px;
-            border-radius: 12px;
-            align-items: center;
-        }
-
-        .content { padding: 25px 30px 35px 30px; }
-
-        .content h2 {
-            font-size: 1.3rem;
-            color: var(--dark-blue);
-            margin-bottom: 15px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 16px;
-        }
-
-        .topic-card {
-            background: var(--light);
-            border: 2px solid #E2E8F0;
-            border-radius: 16px;
-            padding: 20px;
-            text-decoration: none;
-            color: var(--dark);
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .topic-card:hover {
-            border-color: var(--primary);
-            background: #F0F7FF;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0,85,165,0.1);
-        }
-
-        .topic-card.disabled {
-            opacity: 0.55;
-            pointer-events: none;
-            border-style: dashed;
-        }
-
-        .card-tag {
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
-        .card-desc {
-            font-size: 0.85rem;
-            color: #64748B;
-            line-height: 1.35;
-        }
-
-        .status {
-            margin-top: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--green);
-        }
-
-        .status.coming-soon {
-            color: #94A3B8;
-        }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .stats-banner { display: flex; justify-content: space-around; background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; }
+        .stat-item h3 { font-size: 1.8rem; color: var(--accent); }
+        .stat-item p { font-size: 0.9rem; color: #64748B; font-weight: 600; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .topic-card { background: var(--card-bg); border-radius: 16px; padding: 22px; text-decoration: none; color: var(--dark); border: 2px solid #E2E8F0; transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between; }
+        .topic-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12); }
+        .topic-icon { font-size: 2rem; margin-bottom: 12px; }
+        .topic-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; color: var(--dark); }
+        .topic-desc { font-size: 0.88rem; color: #64748B; margin-bottom: 16px; line-height: 1.4; }
+        .topic-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; color: var(--accent); border-top: 1px solid #F1F5F9; padding-top: 12px; }
+        .badge { background: #EFF6FF; padding: 4px 10px; border-radius: 20px; color: var(--accent); }
     </style>
 </head>
 <body>
 
-<div class="hub-card">
+<div class="container">
     <div class="header">
-        <h1>🇨🇦 TCF Canada Prep Hub</h1>
-        <p>Interactive Audio-Visual Modules • <strong>S.W.E.E.T. C.H.E.F. P.</strong> Framework</p>
+        <h1>🇨🇦 TCF Canada Prep • Master Vocabulary Suite</h1>
+        <p>21 High-Yield Interactive Modules • 1,050 Words with Voice Coaching</p>
     </div>
 
-    <!-- Coaching Staff Banner -->
-    <div class="coaches-banner">
-        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
-        <div>
-            <strong>Meet Your Virtual AI Coaches:</strong><br>
-            <span style="color: #475569; font-size: 0.88rem;">
-                <strong>Marc</strong> models native pronunciation • <strong>Élodie</strong> transcribes your microphone input • <strong>Léa</strong> provides live voice feedback!
-            </span>
+    <div class="stats-banner">
+        <div class="stat-item">
+            <h3>21</h3>
+            <p>TOTAL MODULES</p>
+        </div>
+        <div class="stat-item">
+            <h3>1,050</h3>
+            <p>TARGET WORDS</p>
+        </div>
+        <div class="stat-item">
+            <h3>3</h3>
+            <p>VOICE COACHES</p>
         </div>
     </div>
 
-    <div class="content">
-        <h2>📚 Topic Modules (S.W.E.E.T. C.H.E.F. P.)</h2>
-        
-        <div class="grid">
-            <!-- HEALTH MODULE (H) -->
-            <a href="health_50_words.html" class="topic-card">
-                <div>
-                    <span class="card-tag">Module H • Health</span>
-                    <div class="card-title">🏥 La Santé & Bien-être</div>
-                    <div class="card-desc">50 words on healthcare systems, prevention, lifestyle factors, and key verbs.</div>
-                </div>
-                <div class="status">✓ 50 Words Active</div>
-            </a>
+    <div class="grid">
+        <a href="health_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🏥</div>
+                <div class="topic-title">1. Santé & Bien-être</div>
+                <div class="topic-desc">Medical system, public health, preventive care & wellness.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
 
-            <!-- WORK MODULE (W) -->
-            <a href="work_50_words.html" class="topic-card">
-                <div>
-                    <span class="card-tag">Module W • Work</span>
-                    <div class="card-title">💼 Le Travail & Emploi</div>
-                    <div class="card-desc">50 words on labor markets, remote work, upskilling, and professional rights.</div>
-                </div>
-                <div class="status">✓ 50 Words Active</div>
-            </a>
+        <a href="work_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">💼</div>
+                <div class="topic-title">2. Travail & Emploi</div>
+                <div class="topic-desc">Employment, career growth, corporate culture & labor rights.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
 
-            <!-- ENVIRONMENT MODULE (E) -->
-            <a href="environment_50_words.html" class="topic-card">
-                <div>
-                    <span class="card-tag">Module E • Environment</span>
-                    <div class="card-title">🌱 L'Environnement</div>
-                    <div class="card-desc">50 words on climate change, carbon footprint, renewables, and ecology.</div>
-                </div>
-                <div class="status">✓ 50 Words Active</div>
-            </a>
+        <a href="environment_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🌱</div>
+                <div class="topic-title">3. Environnement & Écologie</div>
+                <div class="topic-desc">Climate change, biodiversity, green transition & conservation.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
 
-            <!-- EDUCATION MODULE (E) -->
-            <a href="#" class="topic-card disabled">
-                <div>
-                    <span class="card-tag">Module E • Education</span>
-                    <div class="card-title">🎓 Éducation & Formation</div>
-                    <div class="card-desc">Academic systems, knowledge transfer, and digital learning.</div>
-                </div>
-                <div class="status coming-soon">⏳ Coming Soon</div>
-            </a>
+        <a href="travel_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">✈️</div>
+                <div class="topic-title">4. Voyages & Mobilité</div>
+                <div class="topic-desc">Transportation, tourism, eco-travel & international transit.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
 
-            <!-- ECONOMY MODULE (E) -->
-            <a href="#" class="topic-card disabled">
-                <div>
-                    <span class="card-tag">Module E • Economy</span>
-                    <div class="card-title">📊 Économie & Finances</div>
-                    <div class="card-desc">Trade, fiscal prudence, market trends, and purchasing power.</div>
-                </div>
-                <div class="status coming-soon">⏳ Coming Soon</div>
-            </a>
+        <a href="hobbies_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🎨</div>
+                <div class="topic-title">5. Loisirs & Passions</div>
+                <div class="topic-desc">Arts, sports, creative pursuits & cultural entertainment.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
 
-            <!-- SOCIETY MODULE (S) -->
-            <a href="#" class="topic-card disabled">
-                <div>
-                    <span class="card-tag">Module S • Society</span>
-                    <div class="card-title">🏛️ Société & Integration</div>
-                    <div class="card-desc">Civic engagement, multiculturalism, social cohesion, and demographic shifts.</div>
-                </div>
-                <div class="status coming-soon">⏳ Coming Soon</div>
-            </a>
-        </div>
+        <a href="tech_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">📱</div>
+                <div class="topic-title">6. Technologie & I.A.</div>
+                <div class="topic-desc">Artificial intelligence, cybersecurity & digital transformation.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="housing_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🏡</div>
+                <div class="topic-title">7. Logement & Urbanisme</div>
+                <div class="topic-desc">Real estate, urban development, tenancy & housing policies.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="education_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🎓</div>
+                <div class="topic-title">8. Éducation & Formation</div>
+                <div class="topic-desc">Academic systems, lifelong learning & skill development.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="society_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🏛️</div>
+                <div class="topic-title">9. Société & Civisme</div>
+                <div class="topic-desc">Civic engagement, community life, social welfare & duties.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="consumption_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🛍️</div>
+                <div class="topic-title">10. Consommation & Médias</div>
+                <div class="topic-desc">Consumer habits, advertising, e-commerce & market impact.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="immigration_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🇨🇦</div>
+                <div class="topic-title">11. Immigration & Intégration</div>
+                <div class="topic-desc">Newcomer settlement, citizenship, integration & diversity.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="agriculture_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🌾</div>
+                <div class="topic-title">12. Agriculture & Alimentation</div>
+                <div class="topic-desc">Organic farming, food security, supply chains & nutrition.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="culture_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🎭</div>
+                <div class="topic-title">13. Culture & Patrimoine</div>
+                <div class="topic-desc">Heritage preservation, fine arts, museums & cultural policy.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="equality_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">⚖️</div>
+                <div class="topic-title">14. Égalité & Diversité</div>
+                <div class="topic-desc">Gender parity, social inclusion, human rights & accessibility.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="economy_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">📊</div>
+                <div class="topic-title">15. Économie & Finances</div>
+                <div class="topic-desc">Macroeconomics, banking, taxation & global markets.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="time_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">⏱️</div>
+                <div class="topic-title">16. Gestion du Temps</div>
+                <div class="topic-desc">Prioritization, deadlines, productivity & work-life balance.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="change_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🔄</div>
+                <div class="topic-title">17. Changement & Innovation</div>
+                <div class="topic-desc">Transformation, agility, R&D & disruptive technology.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="future_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🔮</div>
+                <div class="topic-title">18. Avenir & Durabilité</div>
+                <div class="topic-desc">Resilience, forecasting, sustainability & future ethics.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="psychology_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🧠</div>
+                <div class="topic-title">19. Psychologie & Comportement</div>
+                <div class="topic-desc">Mental health, empathy, cognitive biases & motivation.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="justice_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🚨</div>
+                <div class="topic-title">20. Justice & Droits Citoyens</div>
+                <div class="topic-desc">Rule of law, legal system, digital rights & civic duty.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="media_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">📰</div>
+                <div class="topic-title">21. Médias & Information</div>
+                <div class="topic-desc">Fact-checking, press ethics, social networks & opinion.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="politics_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🏛️</div>
+                <div class="topic-title">22. Politique & Gouvernance</div>
+                <div class="topic-desc">Public policy, elections, transparency & democracy.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="globalization_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🌐</div>
+                <div class="topic-title">23. Mondialisation & Relations</div>
+                <div class="topic-desc">Global trade, diplomacy, treaties & geopolitics.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
+
+        <a href="ecourbanism_50_words.html" class="topic-card">
+            <div>
+                <div class="topic-icon">🌿</div>
+                <div class="topic-title">24. Cadre de Vie & Urbanisme</div>
+                <div class="topic-desc">Eco-neighborhoods, green transit, waste & quality of life.</div>
+            </div>
+            <div class="topic-meta"><span class="badge">50 Words</span> <span>Start →</span></div>
+        </a>
     </div>
 </div>
 

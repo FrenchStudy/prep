@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Agriculture & Alimentation</title>
+    <style>
+        :root {
+            --primary: #15803D;
+            --dark-green: #166534;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #DCFCE7; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-green); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-green); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #15803D; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🌾 TCF Canada • 50 Interactive Agriculture Words</h1>
+        <p>Agriculture Biologique, Sécurité Alimentaire & Écologie</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Sustainable Farming & Production
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 1, fr: "L'agriculture biologique", phon: "lah-gree-kool-toor bee-oh-loh-zheek", en: "Organic farming", exFr: "L'agriculture biologique bannit les engrais chimiques.", exEn: "Organic farming bans chemical fertilizers.", target: "biologique" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 2, fr: "La sécurité alimentaire", phon: "lah say-koo-ree-tay", en: "Food security", exFr: "La sécurité alimentaire garantit des repas pour tous.", exEn: "Food security guarantees meals for everyone.", target: "sécurité" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 3, fr: "Les circuits courts", phon: "lay seer-kwee koor", en: "Short supply chains", exFr: "Favoriser les circuits courts réduit les coûts de transport.", exEn: "Promoting short supply chains reduces transport costs.", target: "circuits courts" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 4, fr: "Le gaspillage alimentaire", phon: "luh gahss-pee-yahzh", en: "Food waste", exFr: "Réduire le gaspillage alimentaire évite les pertes financières.", exEn: "Reducing food waste prevents financial losses.", target: "gaspillage" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 5, fr: "L'autosuffisance alimentaire", phon: "loh-toh-soo-fee-zahnss", en: "Food self-sufficiency", exFr: "Viser l'autosuffisance alimentaire protège contre les pénuries.", exEn: "Aiming for food self-sufficiency protects against shortages.", target: "autosuffisance" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 6, fr: "Les emballages plastiques", phon: "lay zahm-bah-lahzh", en: "Plastic packaging", exFr: "Les supermarchés réduisent les emballages plastiques.", exEn: "Supermarkets are reducing plastic packaging.", target: "emballages" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 7, fr: "La souveraineté alimentaire", phon: "lah soo-vrahn-tay", en: "Food sovereignty", exFr: "La souveraineté alimentaire permet aux pays de choisir leurs cultures.", exEn: "Food sovereignty allows countries to choose their crops.", target: "souveraineté" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 8, fr: "Les produits de saison", phon: "lay proh-dwee duh say-zohn", en: "Seasonal produce", exFr: "Consommer des produits de saison a meilleur goût.", exEn: "Consuming seasonal produce tastes better.", target: "saison" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 9, fr: "L'empreinte carbone de l'alimentation", phon: "lahm-prahnt car-boh-nuh", en: "Food carbon footprint", exFr: "Importer des fruits augmente l'empreinte carbone de l'alimentation.", exEn: "Importing fruit increases food's carbon footprint.", target: "empreinte" },
+        { deck: 1, deckTitle: "Deck 1 • Sustainable Farming & Production", id: 10, fr: "La transition agricole", phon: "lah trahn-zee-syon", en: "Agricultural transition", exFr: "La transition agricole exige des aides de l'État.", exEn: "Agricultural transition requires state aid.", target: "transition" },
+
+        // DECK 2: Farming Practices & Environment
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 11, fr: "L'agriculture raisonnée", phon: "lah-gree-kool-toor", en: "Sustainable agriculture", exFr: "L'agriculture raisonnée limite l'usage de produits chimiques.", exEn: "Sustainable agriculture limits chemical use.", target: "raisonnée" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 12, fr: "La monoculture", phon: "lah moh-noh-kool-toor", en: "Monoculture", exFr: "La monoculture appauvrit la qualité des sols.", exEn: "Monoculture depletes soil quality.", target: "monoculture" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 13, fr: "L'utilisation des pesticides", phon: "loo-tee-lee-zah-syon", en: "Pesticide use", exFr: "Réduire l'utilisation des pesticides prévient la pollution des eaux.", exEn: "Reducing pesticide use prevents water pollution.", target: "pesticides" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 14, fr: "L'élevage intensif", phon: "lay-lvahzh an-tahn-seef", en: "Factory farming", exFr: "L'élevage intensif pose des questions sur le bien-être animal.", exEn: "Factory farming raises animal welfare questions.", target: "élevage" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 15, fr: "La fertilité des sols", phon: "lah fair-tee-lee-tay", en: "Soil fertility", exFr: "Utiliser du compost restaure la fertilité des sols.", exEn: "Using compost restores soil fertility.", target: "fertilité" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 16, fr: "L'irrigation durable", phon: "lee-ree-gah-syon doo-rah-bluh", en: "Sustainable irrigation", exFr: "L'irrigation durable économise l'eau en période de sécheresse.", exEn: "Sustainable irrigation saves water during drought.", target: "irrigation" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 17, fr: "La déforestation", phon: "lah day-foh-rehss-tah-syon", en: "Deforestation", exFr: "L'expansion des terres agricoles cause la déforestation.", exEn: "Agricultural land expansion causes deforestation.", target: "déforestation" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 18, fr: "La biodiversité agricole", phon: "lah bee-oh-dee-vair-see-tay", en: "Agricultural biodiversity", exFr: "Protéger la biodiversité agricole préserve les insectes pollinisateurs.", exEn: "Protecting agricultural biodiversity preserves pollinating insects.", target: "biodiversité" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 19, fr: "Les semences paysannes", phon: "lay suh-mahnss", en: "Heirloom seeds", exFr: "Les semences paysannes s'adaptent mieux aux changements climatiques.", exEn: "Heirloom seeds adapt better to climate change.", target: "semences" },
+        { deck: 2, deckTitle: "Deck 2 • Farming Practices & Environment", id: 20, fr: "La permaculture", phon: "lah pair-mah-kool-toor", en: "Permaculture", exFr: "La permaculture s'inspire des écosystèmes naturels.", exEn: "Permaculture is inspired by natural ecosystems.", target: "permaculture" },
+
+        // DECK 3: Food Consumption & Health
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 21, fr: "Les produits du terroir", phon: "lay proh-dwee doo tair-vwahr", en: "Local products", exFr: "Les touristes aiment goûter les produits du terroir.", exEn: "Tourists enjoy tasting local products.", target: "terroir" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 22, fr: "La qualité nutritionnelle", phon: "lah kah-lee-tay", en: "Nutritional quality", exFr: "Cuisiner maison améliore la qualité nutritionnelle.", exEn: "Home cooking improves nutritional quality.", target: "nutritionnelle" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 23, fr: "Les aliments ultra-transformés", phon: "lay zah-lee-mahn", en: "Ultra-processed foods", exFr: "Éviter les aliments ultra-transformés protège la santé.", exEn: "Avoiding ultra-processed foods protects health.", target: "transformés" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 24, fr: "Le commerce de proximité", phon: "luh koh-mairss", en: "Local neighborhood store", exFr: "Faire ses courses au commerce de proximité dynamise le quartier.", exEn: "Shopping at the local store boosts the neighborhood.", target: "proximité" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 25, fr: "La traçabilité des aliments", phon: "lah trah-sah-bee-lee-tay", en: "Food traceability", exFr: "La traçabilité des aliments garantit l'origine des produits.", exEn: "Food traceability guarantees product origin.", target: "traçabilité" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 26, fr: "Les habitudes alimentaires", phon: "lay zah-bee-tood", en: "Dietary habits", exFr: "Changer ses habitudes alimentaires prend du temps.", exEn: "Changing dietary habits takes time.", target: "habitudes" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 27, fr: "Le régime végétarien", phon: "luh ray-zheem", en: "Vegetarian diet", exFr: "Adopter un régime végétarien réduit les émissions de CO2.", exEn: "Adopting a vegetarian diet reduces CO2 emissions.", target: "végétarien" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 28, fr: "La consommation responsable", phon: "lah kohn-soh-mah-syon", en: "Responsible consumption", exFr: "La consommation responsable prive les entreprises polluantes.", exEn: "Responsible consumption deprives polluting companies.", target: "responsable" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 29, fr: "L'étiquetage nutritionnel", phon: "lay-tee-kuh-tahzh", en: "Nutritional labeling", exFr: "L'étiquetage nutritionnel aide à choisir de bons produits.", exEn: "Nutritional labeling helps choose good products.", target: "étiquetage" },
+        { deck: 3, deckTitle: "Deck 3 • Food Consumption & Health", id: 30, fr: "La fraîcheur des produits", phon: "lah freh-shuhr", en: "Product freshness", exFr: "Les marchés locaux garantissent la fraîcheur des produits.", exEn: "Local markets guarantee product freshness.", target: "fraîcheur" },
+
+        // DECK 4: Economic & Global Impact
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 31, fr: "La crise agricole", phon: "lah kreez ah-gree-kohl", en: "Agricultural crisis", exFr: "La crise agricole touche de nombreux producteurs locaux.", exEn: "The agricultural crisis affects many local producers.", target: "crise" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 32, fr: "Le revenu paysan", phon: "luh ruh-vnoo pay-zahm", en: "Farmer income", exFr: "Garantir un juste revenu paysan est indispensable.", exEn: "Guaranteeing a fair farmer income is essential.", target: "revenu" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 33, fr: "Les subventions agricoles", phon: "lay soob-vahn-syon", en: "Agricultural subsidies", exFr: "Les subventions agricoles aident à la transition verte.", exEn: "Agricultural subsidies help with the green transition.", target: "subventions" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 34, fr: "Le coût de la nourriture", phon: "luh koo duh lah noo-ree-toor", en: "Cost of food", exFr: "Le coût de la nourriture augmente en période d'inflation.", exEn: "The cost of food rises during inflation.", target: "coût" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 35, fr: "La chaîne d'approvisionnement", phon: "lah shehn dah-proh-vee-zyohn-mahn", en: "Supply chain", exFr: "Une rupture de la chaîne d'approvisionnement crée des pénuries.", exEn: "A supply chain break creates shortages.", target: "approvisionnement" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 36, fr: "L'exportation agricole", phon: "lehks-por-tah-syon", en: "Agricultural export", exFr: "L'exportation agricole soutient l'économie nationale.", exEn: "Agricultural export supports the national economy.", target: "exportation" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 37, fr: "L'équité commerciale", phon: "lay-kee-tay koh-mair-syahl", en: "Commercial fairness", exFr: "L'équité commerciale protège les petits agriculteurs.", exEn: "Commercial fairness protects small farmers.", target: "équité" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 38, fr: "La pénurie alimentaire", phon: "lah pay-noo-ree", en: "Food shortage", exFr: "La sécheresse peut causer une pénurie alimentaire grave.", exEn: "Drought can cause a severe food shortage.", target: "pénurie" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 39, fr: "Les normes sanitaires", phon: "lay norm sah-nee-tair", en: "Sanitary standards", exFr: "Les normes sanitaires strictes protègent la santé des consommateurs.", exEn: "Strict sanitary standards protect consumer health.", target: "normes" },
+        { deck: 4, deckTitle: "Deck 4 • Economic & Global Impact", id: 40, fr: "Le gaspillage des ressources", phon: "luh gahss-pee-yahzh", en: "Waste of resources", exFr: "La surproduction conduit au gaspillage des ressources en eau.", exEn: "Overproduction leads to waste of water resources.", target: "ressources" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Cultiver", phon: "kool-tee-vay", en: "To cultivate / grow", exFr: "Les agriculteurs apprennent à cultiver sans produits chimiques.", exEn: "Farmers learn to cultivate without chemicals.", target: "cultiver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Produire", phon: "proh-dweer", en: "To produce", exFr: "L'objectif est de produire suffisamment de nourriture locale.", exEn: "The goal is to produce enough local food.", target: "produire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Réduire", phon: "ray-dweer", en: "To reduce", exFr: "Il faut réduire le plastique dans les emballages.", exEn: "Plastic packaging must be reduced.", target: "réduire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Préserver", phon: "pray-zair-vay", en: "To preserve", exFr: "Préserver la qualité des sols est indispensable pour l'avenir.", exEn: "Preserving soil quality is essential for the future.", target: "préserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Nourrir", phon: "noo-reer", en: "To feed / nourish", exFr: "L'agriculture durable doit nourrir la population sans polluer.", exEn: "Sustainable agriculture must feed the population without polluting.", target: "nourrir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Recycler", phon: "ruh-see-klay", en: "To recycle", exFr: "Recycler les déchets organiques permet de faire du compost.", exEn: "Recycling organic waste makes compost.", target: "recycler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Récolter", phon: "ray-kohl-tay", en: "To harvest", exFr: "Les fermiers vont récolter le blé à la fin de l'été.", exEn: "Farmers will harvest wheat at the end of summer.", target: "récolter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Conserver", phon: "kohn-sair-vay", en: "To preserve / store", exFr: "Bien conserver les aliments évite le gaspillage.", exEn: "Storing food properly prevents waste.", target: "conserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Consommer", phon: "kohn-soh-may", en: "To consume", exFr: "Consommer local aide les producteurs régionaux.", exEn: "Consuming local helps regional producers.", target: "consommer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Transformer", phon: "trahnss-for-may", en: "To process / transform", exFr: "La ferme choisit de transformer son lait en fromage.", exEn: "The farm chooses to process its milk into cheese.", target: "transformer" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

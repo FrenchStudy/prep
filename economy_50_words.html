@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Économie & Finances</title>
+    <style>
+        :root {
+            --primary: #0284C7;
+            --dark-blue: #0369A1;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F0F9FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>📊 TCF Canada • 50 Interactive Economy Words</h1>
+        <p>Économie, Finances, Fiscalité & Commerce</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Macroeconomics & Markets
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 1, fr: "Le pouvoir d'achat", phon: "luh poo-vwahr dah-shah", en: "Purchasing power", exFr: "Maintenir le pouvoir d'achat est une priorité pour le gouvernement.", exEn: "Maintaining purchasing power is a priority for the government.", target: "pouvoir" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 2, fr: "Le multiplicateur fiscal", phon: "luh mool-tee-plee-kah-tuhr", en: "Fiscal multiplier", exFr: "Le multiplicateur fiscal évalue l'impact des dépenses publiques.", exEn: "The fiscal multiplier evaluates the impact of public spending.", target: "multiplicateur" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 3, fr: "La stabilité financière", phon: "lah stah-bee-lee-tay", en: "Financial stability", exFr: "La banque centrale veille à la stabilité financière du pays.", exEn: "The central bank oversees the country's financial stability.", target: "stabilité" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 4, fr: "Le taux d'inflation", phon: "luh toh dahn-flah-syon", en: "Inflation rate", exFr: "Une hausse du taux d'inflation renchérit le coût des biens.", exEn: "A rise in the inflation rate increases the cost of goods.", target: "inflation" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 5, fr: "La croissance économique", phon: "lah krwah-sahnss", en: "Economic growth", exFr: "La croissance économique crée de nouveaux emplois.", exEn: "Economic growth creates new jobs.", target: "croissance" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 6, fr: "Le produit intérieur brut", phon: "luh proh-dwee an-tay-ryuhr broot", en: "Gross Domestic Product (GDP)", exFr: "Le produit intérieur brut mesure la richesse produite par la nation.", exEn: "Gross Domestic Product measures the wealth produced by the nation.", target: "brut" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 7, fr: "La politique budgétaire", phon: "lah poh-lee-teek bood-zhay-tair", en: "Fiscal policy", exFr: "La politique budgétaire équilibre les dépenses et les recettes.", exEn: "Fiscal policy balances spending and revenue.", target: "budgétaire" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 8, fr: "Le déficit public", phon: "luh day-fee-see poo-bleek", en: "Public deficit", exFr: "Réduire le déficit public exige une gestion rigoureuse.", exEn: "Reducing the public deficit requires strict management.", target: "déficit" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 9, fr: "La dette souveraine", phon: "lah deht soo-vrahn", en: "Sovereign debt", exFr: "La dette souveraine inquiète les marchés financiers.", exEn: "Sovereign debt worries financial markets.", target: "dette" },
+        { deck: 1, deckTitle: "Deck 1 • Macroeconomics & Markets", id: 10, fr: "Les marchés financiers", phon: "lay mar-shay fee-nahn-syay", en: "Financial markets", exFr: "Les marchés financiers réagissent rapidement aux crises.", exEn: "Financial markets react quickly to crises.", target: "marchés" },
+
+        // DECK 2: Banking, Investment & Commerce
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 11, fr: "La prudence financière", phon: "lah proo-dahnss", en: "Financial prudence", exFr: "La prudence financière recommande d'éviter le surendettement.", exEn: "Financial prudence recommends avoiding over-indebtedness.", target: "prudence" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 12, fr: "Le taux d'intérêt", phon: "luh toh dahn-tay-ray", en: "Interest rate", exFr: "Une baisse du taux d'intérêt stimule l'emprunt bancaire.", exEn: "A drop in interest rates stimulates bank borrowing.", target: "intérêt" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 13, fr: "Un investissement rentable", phon: "ah nan-veehs-teess-mahn", en: "Profitable investment", exFr: "Acheter cet immeuble s'est avéré un investissement rentable.", exEn: "Buying this building turned out to be a profitable investment.", target: "rentable" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 14, fr: "Le fonds de roulement", phon: "luh fohn duh rool-mahn", en: "Working capital", exFr: "Conserver un fonds de roulement suffisant protège l'entreprise.", exEn: "Keeping sufficient working capital protects the business.", target: "roulement" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 15, fr: "La capacité d'emprunt", phon: "lah kah-pah-see-tay", en: "Borrowing capacity", exFr: "Votre salaire détermine votre capacité d'emprunt.", exEn: "Your salary determines your borrowing capacity.", target: "capacité" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 16, fr: "La balance commerciale", phon: "lah bah-lahnss", en: "Trade balance", exFr: "La balance commerciale est excédentaire cette année.", exEn: "The trade balance shows a surplus this year.", target: "balance" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 17, fr: "L'épargne", phon: "lay-parn-yuh", en: "Savings", exFr: "Placer son épargne sur un compte sécurisé rapporte peu.", exEn: "Placing savings in a secure account yields little.", target: "épargne" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 18, fr: "Le capital d'amorçage", phon: "luh kah-pee-tahl", en: "Seed capital", exFr: "Cette startup a obtenu un capital d'amorçage important.", exEn: "This startup secured significant seed capital.", target: "amorçage" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 19, fr: "La politique monétaire", phon: "lah poh-lee-teek moh-nay-tair", en: "Monetary policy", exFr: "La politique monétaire ajuste la masse monétaire en circulation.", exEn: "Monetary policy adjusts the money supply in circulation.", target: "monétaire" },
+        { deck: 2, deckTitle: "Deck 2 • Banking, Investment & Commerce", id: 20, fr: "La fuite des capitaux", phon: "lah fweet day kah-pee-toh", en: "Capital flight", exFr: "La fuite des capitaux affaiblit l'économie locale.", exEn: "Capital flight weakens the local economy.", target: "capitaux" },
+
+        // DECK 3: Taxation & Public Finance
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 21, fr: "La fiscalité progressive", phon: "lah fees-kah-lee-tay", en: "Progressive taxation", exFr: "La fiscalité progressive adapte l'impôt aux revenus élevés.", exEn: "Progressive taxation adapts taxes to higher incomes.", target: "fiscalité" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 22, fr: "La fraude fiscale", phon: "lah frohd fees-kahl", en: "Tax fraud", exFr: "Lutter contre la fraude fiscale rapporte des milliards à l'État.", exEn: "Fighting tax fraud brings billions to the State.", target: "fraude" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 23, fr: "La pression fiscale", phon: "lah prehss-syon", en: "Tax burden", exFr: "Les entreprises déplorent une pression fiscale trop lourde.", exEn: "Companies complain about a tax burden that is too heavy.", target: "pression" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 24, fr: "Les cotisations sociales", phon: "lay koh-tee-zah-syon", en: "Social security contributions", exFr: "Les cotisations sociales financent la santé et la retraite.", exEn: "Social contributions finance healthcare and pensions.", target: "cotisations" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 25, fr: "L'exonération fiscale", phon: "lehg-zoh-nay-rah-syon", en: "Tax exemption", exFr: "Les nouvelles entreprises bénéficient d'une exonération fiscale.", exEn: "New businesses benefit from a tax exemption.", target: "exonération" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 26, fr: "Les dépenses publiques", phon: "lay day-pahnss poo-bleek", en: "Public spending", exFr: "Maîtriser les dépenses publiques préserve l'équilibre du budget.", exEn: "Controlling public spending preserves budget balance.", target: "dépenses" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 27, fr: "Les recettes fiscales", phon: "lay ruh-seht", en: "Tax revenue", exFr: "Les recettes fiscales financent la construction des hôpitaux.", exEn: "Tax revenues finance hospital construction.", target: "recettes" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 28, fr: "L'impôt sur le revenu", phon: "lahm-poh soor luh ruh-vnoo", en: "Income tax", exFr: "Chaque citoyen déclare ses gains pour l'impôt sur le revenu.", exEn: "Every citizen declares their earnings for income tax.", target: "impôt" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 29, fr: "L'évasion fiscale", phon: "lay-vah-zyon fees-kahl", en: "Tax evasion", exFr: "L'évasion fiscale prive la collectivité de ressources majeures.", exEn: "Tax evasion deprives the community of major resources.", target: "évasion" },
+        { deck: 3, deckTitle: "Deck 3 • Taxation & Public Finance", id: 30, fr: "La redistribution des richesses", phon: "lah ray-deess-tree-boo-syon", en: "Wealth redistribution", exFr: "La redistribution des richesses réduit les écarts sociaux.", exEn: "Wealth redistribution reduces social gaps.", target: "redistribution" },
+
+        // DECK 4: Labor & Trade Impact
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 31, fr: "Le coût du travail", phon: "luh koo doo trah-vahy", en: "Labor cost", exFr: "Un coût du travail élevé peut freiner la compétitivité.", exEn: "High labor cost can hinder competitiveness.", target: "coût" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 32, fr: "La compétitivité", phon: "lah kohn-pay-tee-tee-vee-tay", en: "Competitiveness", exFr: "L'innovation renforce la compétitivité sur le marché mondial.", exEn: "Innovation reinforces competitiveness on the global market.", target: "compétitivité" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 33, fr: "La spéculation financière", phon: "lah speh-koo-lah-syon", en: "Financial speculation", exFr: "La spéculation financière déstabilise les cours des matières premières.", exEn: "Financial speculation destabilizes raw material prices.", target: "spéculation" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 34, fr: "Le pouvoir de négociation", phon: "luh poo-vwahr", en: "Bargaining power", exFr: "Les syndicats augmentent le pouvoir de négociation des salariés.", exEn: "Unions increase employees' bargaining power.", target: "négociation" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 35, fr: "La dévaluation de la monnaie", phon: "lah day-vah-loo-ah-syon", en: "Currency devaluation", exFr: "La dévaluation de la monnaie stimule les exportations.", exEn: "Currency devaluation stimulates exports.", target: "dévaluation" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 36, fr: "Les barrières douanières", phon: "lay bah-ryair dwoo-ah-nyair", en: "Customs barriers", exFr: "Supprimer les barrières douanières facilite les échanges internationaux.", exEn: "Removing customs barriers facilitates international trade.", target: "douanières" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 37, fr: "La relance économique", phon: "lah ruh-lahnss", en: "Economic recovery", exFr: "Le gouvernement lance un plan pour la relance économique.", exEn: "The government launches a plan for economic recovery.", target: "relance" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 38, fr: "L'austérité budgétaire", phon: "lohs-tay-ree-tay", en: "Fiscal austerity", exFr: "L'austérité budgétaire réduit le financement des services publics.", exEn: "Fiscal austerity reduces public service funding.", target: "austérité" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 39, fr: "Le libre-échange", phon: "luh lee-bruh ay-shahnhzh", en: "Free trade", exFr: "Le libre-échange accélère la circulation des biens.", exEn: "Free trade accelerates the flow of goods.", target: "libre-échange" },
+        { deck: 4, deckTitle: "Deck 4 • Labor & Trade Impact", id: 40, fr: "La mondialisation", phon: "lah mohn-dyah-lee-zah-syon", en: "Globalization", exFr: "La mondialisation interconnecte les marchés de la planète.", exEn: "Globalization interconnects world markets.", target: "mondialisation" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Investir", phon: "ahn-vehss-teer", en: "To invest", exFr: "L'entreprise décide d'investir dans les énergies propres.", exEn: "The company decides to invest in clean energy.", target: "investir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Financer", phon: "fee-nahn-say", en: "To finance", exFr: "La banque accepte de financer ce projet d'infrastructure.", exEn: "The bank agrees to finance this infrastructure project.", target: "financer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Épargner", phon: "ay-parn-yay", en: "To save", exFr: "Il est conseillé d'épargner une partie de son salaire mensuel.", exEn: "It is recommended to save part of your monthly salary.", target: "épargner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Emprunter", phon: "ahn-pruhn-tay", en: "To borrow", exFr: "Ils doivent emprunter de l'argent pour acheter leur logement.", exEn: "They must borrow money to buy their home.", target: "emprunter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Réguler", phon: "ray-goo-lay", en: "To regulate", exFr: "L'État intervient pour réguler le marché bancaire.", exEn: "The State intervenes to regulate the banking market.", target: "réguler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Stimuler", phon: "stee-moo-lay", en: "To stimulate", exFr: "Baisser les impôts peut stimuler la consommation.", exEn: "Lowering taxes can stimulate consumption.", target: "stimuler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Amortir", phon: "ah-mor-teer", en: "To amortize / cushion", exFr: "Ces aides publiques permettent d'amortir le choc financier.", exEn: "This public aid cushions the financial shock.", target: "amortir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Négocier", phon: "nay-goh-syay", en: "To negotiate", exFr: "Les deux pays se rencontrent pour négocier un accord commercial.", exEn: "The two countries meet to negotiate a trade agreement.", target: "négocier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Rembourser", phon: "rahm-boor-say", en: "To reimburse / pay back", exFr: "Elle s'engage à rembourser son prêt bancaire en cinq ans.", exEn: "She commits to paying back her bank loan in five years.", target: "rembourser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Prospérer", phon: "prohss-pay-ray", en: "To prosper / thrive", exFr: "Grâce à l'exportation, la société continue de prospérer.", exEn: "Thanks to export, the company continues to prosper.", target: "prospérer" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

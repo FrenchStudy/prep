@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Voyages & Mobilité</title>
+    <style>
+        :root {
+            --primary: #0284C7;
+            --dark-blue: #0369A1;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F0F9FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>✈️ TCF Canada • 50 Interactive Travel Words</h1>
+        <p>Voyages, Tourisme & Mobilité</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Travel Essentials & Booking
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 1, fr: "Un itinéraire", phon: "ah nee-tee-nay-rair", en: "Itinerary", exFr: "Nous préparons un itinéraire détaillé pour nos vacances.", exEn: "We are preparing a detailed itinerary for our vacation.", target: "itinéraire" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 2, fr: "Une réservation", phon: "ewn ray-zair-vah-syon", en: "Reservation / Booking", exFr: "J'ai confirmé ma réservation d'hôtel hier soir.", exEn: "I confirmed my hotel booking last night.", target: "réservation" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 3, fr: "La destination", phon: "lah dess-tee-nah-syon", en: "Destination", exFr: "Cette ville est une destination touristique très populaire.", exEn: "This city is a very popular tourist destination.", target: "destination" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 4, fr: "Le dépaysement", phon: "luh day-pay-eez-mahn", en: "Change of scenery", exFr: "Voyager permet de vivre un vrai dépaysement.", exEn: "Traveling allows one to experience a real change of scenery.", target: "dépaysement" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 5, fr: "L'hébergement", phon: "lay-bairzh-mahn", en: "Accommodation / Lodging", exFr: "L'hébergement représente une grande partie du budget.", exEn: "Accommodation accounts for a large part of the budget.", target: "hébergement" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 6, fr: "La haute saison", phon: "lah oht say-zohn", en: "High season", exFr: "Les prix augmentent fortement durant la haute saison.", exEn: "Prices rise sharply during the high season.", target: "haute saison" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 7, fr: "Un séjour", phon: "ah say-zhoor", en: "A stay", exFr: "Notre séjour à la montagne s'est très bien passé.", exEn: "Our stay in the mountains went very well.", target: "séjour" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 8, fr: "Une agence de voyages", phon: "ewn ah-zhahns duh vwah-yahzh", en: "Travel agency", exFr: "L'agence de voyages propose des circuits organisés.", exEn: "The travel agency offers organized tours.", target: "agence" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 9, fr: "Un passeport valide", phon: "ah pahss-por vah-leed", en: "Valid passport", exFr: "Il faut vérifier la validité de son passeport.", exEn: "One must check the validity of one's passport.", target: "passeport" },
+        { deck: 1, deckTitle: "Deck 1 • Travel Essentials & Booking", id: 10, fr: "L'escale", phon: "less-kahl", en: "Layover / Stopover", exFr: "Nous avons une escale de deux heures à l'aéroport.", exEn: "We have a two-hour layover at the airport.", target: "escale" },
+
+        // DECK 2: Transport & Mobility
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 11, fr: "Les transports en commun", phon: "lay trahn-spor ahn koh-mahn", en: "Public transportation", exFr: "Utiliser les transports en commun réduit la pollution.", exEn: "Using public transport reduces pollution.", target: "transports" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 12, fr: "La mobilité douce", phon: "lah moh-bee-lee-tay dooss", en: "Soft mobility (cycling, walking)", exFr: "La ville encourage la mobilité douce en centre-ville.", exEn: "The city encourages soft mobility downtown.", target: "mobilité douce" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 13, fr: "Un billet aller-retour", phon: "ah bee-yeh ah-lay ruh-toor", en: "Round-trip ticket", exFr: "J'ai acheté un billet aller-retour pour Paris.", exEn: "I bought a round-trip ticket to Paris.", target: "aller-retour" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 14, fr: "Le covoiturage", phon: "luh koh-vwah-too-rahzh", en: "Carpooling", exFr: "Le covoiturage est économique et écologique.", exEn: "Carpooling is economical and ecological.", target: "covoiturage" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 15, fr: "Les infrastructures routières", phon: "lay zahn-frah-strook-toor", en: "Road infrastructure", exFr: "La modernisation des infrastructures facilite le trafic.", exEn: "Modernizing infrastructure eases traffic.", target: "infrastructures" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 16, fr: "Le réseau ferroviaire", phon: "luh ray-zoh fair-roh-vyair", en: "Railway network", exFr: "Le réseau ferroviaire permet de voyager rapidement.", exEn: "The railway network allows fast travel.", target: "ferroviaire" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 17, fr: "Les embouteillages", phon: "lay zahm-boo-tay-yahzh", en: "Traffic jams", exFr: "Les embouteillages sont fréquents aux heures de pointe.", exEn: "Traffic jams are frequent during rush hours.", target: "embouteillages" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 18, fr: "La piste cyclable", phon: "lah pees-tuh see-klah-bluh", en: "Bike lane", exFr: "Cette piste cyclable traverse toute la ville.", exEn: "This bike lane crosses the entire city.", target: "cyclable" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 19, fr: "Le vol long-courrier", phon: "luh vohl mohn-koor-yay", en: "Long-haul flight", exFr: "Un vol long-courrier exige une bonne préparation.", exEn: "A long-haul flight requires good preparation.", target: "long-courrier" },
+        { deck: 2, deckTitle: "Deck 2 • Transport & Mobility", id: 20, fr: "Le tarif réduit", phon: "luh tah-reef ray-dwee", en: "Discounted fare", exFr: "Les étudiants bénéficient d'un tarif réduit.", exEn: "Students benefit from a discounted fare.", target: "tarif" },
+
+        // DECK 3: Over-tourism & Economic Impact
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 21, fr: "Le surtourisme", phon: "luh soor-too-rees-muh", en: "Over-tourism", exFr: "Le surtourisme dégrade la qualité de vie des habitants.", exEn: "Over-tourism degrades the inhabitants' quality of life.", target: "surtourisme" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 22, fr: "La fréquentation touristique", phon: "lah fray-kahn-tah-syon", en: "Tourist attendance / Influx", exFr: "La fréquentation touristique a battu un record cet été.", exEn: "Tourist attendance broke a record this summer.", target: "fréquentation" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 23, fr: "L'impact économique", phon: "lahm-pahk ay-koh-noh-meek", en: "Economic impact", exFr: "Le tourisme génère un impact économique positif.", exEn: "Tourism generates a positive economic impact.", target: "impact économique" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 24, fr: "La préservation des sites", phon: "lah pray-zair-vah-syon", en: "Preservation of sites", exFr: "La préservation des sites historiques est prioritaire.", exEn: "Preserving historical sites is a priority.", target: "préservation" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 25, fr: "La dégradation du patrimoine", phon: "lah day-grah-dah-syon", en: "Degradation of heritage", exFr: "L'afflux massif cause la dégradation du patrimoine.", exEn: "Massive influx causes degradation of heritage.", target: "patrimoine" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 26, fr: "Les retombées financières", phon: "lay ruh-tohm-bay", en: "Financial benefits", exFr: "Les retombées financières profitent aux commerces locaux.", exEn: "Financial benefits profit local businesses.", target: "retombées" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 27, fr: "La régulation des flux", phon: "lah ray-goo-lah-syon", en: "Regulation of tourist flows", exFr: "La régulation des flux évite la saturation des lieux.", exEn: "Regulating flows avoids saturating locations.", target: "régulation" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 28, fr: "Le quota de visiteurs", phon: "luh kwoh-tah", en: "Visitor quota", exFr: "Un quota de visiteurs a été instauré sur cette île.", exEn: "A visitor quota was established on this island.", target: "quota" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 29, fr: "La nuisance sonore", phon: "lah nwee-zahns soh-nor", en: "Noise pollution", exFr: "Les résidents se plaignent de la nuisance sonore nocturne.", exEn: "Residents complain about nighttime noise pollution.", target: "nuisance" },
+        { deck: 3, deckTitle: "Deck 3 • Over-tourism & Economic Impact", id: 30, fr: "L'attractivité territoriale", phon: "lah-trahk-tee-vee-tay", en: "Regional attractiveness", exFr: "Ce festival renforce l'attractivité territoriale.", exEn: "This festival reinforces regional attractiveness.", target: "attractivité" },
+
+        // DECK 4: Eco-tourism & Culture
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 31, fr: "L'écotourisme", phon: "lay-koh-too-rees-muh", en: "Eco-tourism", exFr: "L'écotourisme privilégie le respect de la nature.", exEn: "Eco-tourism favors respect for nature.", target: "écotourisme" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 32, fr: "L'immersion culturelle", phon: "lah-mair-syon kool-too-rel", en: "Cultural immersion", exFr: "Loger chez l'habitant favorise l'immersion culturelle.", exEn: "Staying with locals promotes cultural immersion.", target: "immersion" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 33, fr: "Le tourisme écoresponsable", phon: "luh too-rees-muh ay-koh-rehss-pohn-sah-bluh", en: "Eco-friendly tourism", exFr: "Le tourisme écoresponsable réduit les déchets plastique.", exEn: "Eco-friendly tourism reduces plastic waste.", target: "écoresponsable" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 34, fr: "L'artisanat local", phon: "lar-tee-zah-nah loh-kahl", en: "Local craftsmanship", exFr: "Acheter de l'artisanat local soutient l'économie régionale.", exEn: "Buying local crafts supports the regional economy.", target: "artisanat" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 35, fr: "Le patrimoine culturel", phon: "luh pah-tree-mwahn kool-too-rel", en: "Cultural heritage", exFr: "L'UNESCO protège le patrimoine culturel mondial.", exEn: "UNESCO protects world cultural heritage.", target: "patrimoine" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 36, fr: "Un guide touristique", phon: "ah gheed too-rees-teek", en: "Tour guide", exFr: "Le guide touristique explique l'histoire des monuments.", exEn: "The tour guide explains the history of monuments.", target: "guide" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 37, fr: "La gastronomie locale", phon: "lah gahss-troh-noh-mee", en: "Local cuisine", exFr: "Découvrir la gastronomie locale est un vrai plaisir.", exEn: "Discovering local cuisine is a real pleasure.", target: "gastronomie" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 38, fr: "Le tourisme durable", phon: "luh too-rees-muh doo-rah-bluh", en: "Sustainable tourism", exFr: "Le tourisme durable préserve les ressources naturelles.", exEn: "Sustainable tourism preserves natural resources.", target: "durabilité" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 39, fr: "Un échange interculturel", phon: "ah nehy-shahnhzh", en: "Intercultural exchange", exFr: "Les voyages facilitent l'échange interculturel.", exEn: "Travel facilitates intercultural exchange.", target: "interculturel" },
+        { deck: 4, deckTitle: "Deck 4 • Eco-tourism & Culture", id: 40, fr: "Les traditions locales", phon: "lay trah-dee-syon", en: "Local traditions", exFr: "Ce village préserve ses traditions locales intactes.", exEn: "This village preserves its local traditions intact.", target: "traditions" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Voyager", phon: "vwah-yah-zhay", en: "To travel", exFr: "Voyager ouvre l'esprit et enrichit l'expérience.", exEn: "Traveling opens the mind and enriches experience.", target: "voyager" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Explorer", phon: "ehks-ploh-ray", en: "To explore", exFr: "Nous aimons explorer de nouveaux paysages.", exEn: "We love exploring new landscapes.", target: "explorer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Réserver", phon: "ray-zair-vay", en: "To book / reserve", exFr: "Pensez à réserver vos billets à l'avance.", exEn: "Remember to book your tickets in advance.", target: "réserver" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Se déplacer", phon: "suh day-plah-say", en: "To get around", exFr: "Il est très facile de se déplacer en métro.", exEn: "It is very easy to get around by subway.", target: "déplacer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "S'évader", phon: "say-vah-day", en: "To escape / get away", exFr: "Partir en week-end permet de s'évader du quotidien.", exEn: "Going away for the weekend allows one to escape the routine.", target: "évader" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Promouvoir", phon: "proh-moo-vwahr", en: "To promote", exFr: "La ville veut promouvoir son tourisme vert.", exEn: "The city wants to promote its green tourism.", target: "promouvoir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Accueillir", phon: "ah-kuh-yeer", en: "To welcome / host", exFr: "Cet hôtel sait parfaitement accueillir les clients.", exEn: "This hotel knows perfectly how to welcome guests.", target: "accueillir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Respecter", phon: "rehss-pehk-tay", en: "To respect", exFr: "Les visiteurs doivent respecter la faune locale.", exEn: "Visitors must respect local wildlife.", target: "respecter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Réguler", phon: "ray-goo-lay", en: "To regulate", exFr: "La municipalité décide de réguler les locations saisonnières.", exEn: "The municipality decides to regulate seasonal rentals.", target: "réguler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "Il faut sensibiliser les touristes à la propreté.", exEn: "We must raise tourists' awareness about cleanliness.", target: "sensibiliser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

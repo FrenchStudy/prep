@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Consommation & Médias</title>
+    <style>
+        :root {
+            --primary: #EC4899;
+            --dark-pink: #BE185D;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-pink) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #FDF2F8; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-pink); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-pink); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #EC4899; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🛍️ TCF Canada • 50 Interactive Consumption & Media Words</h1>
+        <p>Consommation, Publicité, Presse & Information</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Consumer Habits & Advertising
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 1, fr: "La société de consommation", phon: "lah soh-syay-tay duh kohn-soh-mah-syon", en: "Consumer society", exFr: "La société de consommation encourage l'achat fréquent.", exEn: "Consumer society encourages frequent purchasing.", target: "consommation" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 2, fr: "L'influence publicitaire", phon: "lahn-floo-ahns poo-blee-see-tair", en: "Advertising influence", exFr: "L'influence publicitaire s'exerce dès le plus jeune âge.", exEn: "Advertising influence is exerted from a very young age.", target: "publicitaire" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 3, fr: "Le consommer local", phon: "luh kohn-soh-may loh-kahl", en: "Buying local", exFr: "Le consommer local soutient les producteurs de la région.", exEn: "Buying local supports regional producers.", target: "local" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 4, fr: "Le surendettement", phon: "luh soor-ahn-deht-mahn", en: "Over-indebtedness", exFr: "L'accumulation de crédits peut conduire au surendettement.", exEn: "Accumulating credit can lead to over-indebtedness.", target: "surendettement" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 5, fr: "Le pouvoir d'achat", phon: "luh poo-vwahr dah-shah", en: "Purchasing power", exFr: "L'inflation réduit directement le pouvoir d'achat des ménages.", exEn: "Inflation directly reduces household purchasing power.", target: "pouvoir" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 6, fr: "Un produit de première nécessité", phon: "ah proh-dwee duh pruh-myair", en: "Essential product", exFr: "Le pain est un produit de première nécessité.", exEn: "Bread is an essential product.", target: "nécessité" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 7, fr: "Le commerce en ligne", phon: "luh koh-mairss ahn leen-yuh", en: "E-commerce", exFr: "Le commerce en ligne simplifie les achats au quotidien.", exEn: "E-commerce simplifies daily shopping.", target: "commerce" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 8, fr: "L'achat impulsif", phon: "lah-shah eem-pool-seef", en: "Impulse buy", exFr: "Placer les bonbons en caisse incite à l'achat impulsif.", exEn: "Placing candy at the checkout encourages impulse buying.", target: "impulsif" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 9, fr: "Le boycottage", phon: "luh bwah-yoh-tahzh", en: "Boycott", exFr: "Le boycottage d'une marque exprime un désaccord éthique.", exEn: "Boycotting a brand expresses ethical disagreement.", target: "boycottage" },
+        { deck: 1, deckTitle: "Deck 1 • Consumer Habits & Advertising", id: 10, fr: "La garantie du consommateur", phon: "lah gah-rahn-tee", en: "Consumer warranty", exFr: "La garantie du consommateur s'applique pendant deux ans.", exEn: "The consumer warranty applies for two years.", target: "garantie" },
+
+        // DECK 2: Advertising Strategies & Retail
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 11, fr: "Le marketing ciblé", phon: "luh mar-kay-teeng see-blay", en: "Targeted marketing", exFr: "Le marketing ciblé s'appuie sur la collecte de données.", exEn: "Targeted marketing relies on data collection.", target: "marketing" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 12, fr: "La stratégie commerciale", phon: "lah strah-tay-zhee", en: "Commercial strategy", exFr: "Sa stratégie commerciale repose sur des prix très bas.", exEn: "Its commercial strategy relies on very low prices.", target: "stratégie" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 13, fr: "La fidélisation de la clientèle", phon: "lah fee-day-lee-zah-syon", en: "Customer loyalty", exFr: "Offrir des réductions favorise la fidélisation de la clientèle.", exEn: "Offering discounts fosters customer loyalty.", target: "fidélisation" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 14, fr: "Le rapport qualité-prix", phon: "luh rah-por kah-lee-tay kree", en: "Value for money", exFr: "Ce produit présente un excellent rapport qualité-prix.", exEn: "This product offers excellent value for money.", target: "rapport" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 15, fr: "Une promotion exceptionnelle", phon: "ewn proh-moh-syon", en: "Special promotion", exFr: "Le magasin propose une promotion exceptionnelle sur l'électronique.", exEn: "The store offers a special promotion on electronics.", target: "promotion" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 16, fr: "La transparence des prix", phon: "lah trahnss-pah-rahnss", en: "Price transparency", exFr: "La transparence des prix rassure les consommateurs.", exEn: "Price transparency reassures consumers.", target: "transparence" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 17, fr: "L'obsolescence programmée", phon: "lohb-soh-lehss-ahns", en: "Planned obsolescence", exFr: "L'obsolescence programmée réduit la durée de vie des appareils.", exEn: "Planned obsolescence reduces device lifespan.", target: "obsolescence" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 18, fr: "Un emballage superflu", phon: "ah nahm-bah-lahzh", en: "Excessive packaging", exFr: "Éviter tout emballage superflu préserve l'environnement.", exEn: "Avoiding all excessive packaging preserves the environment.", target: "emballage" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 19, fr: "Le commerce équitable", phon: "luh koh-mairss ay-kee-tah-bluh", en: "Fair trade", exFr: "Acheter du café du commerce équitable rémunère mieux l'agriculteur.", exEn: "Buying fair trade coffee pays the farmer better.", target: "équitable" },
+        { deck: 2, deckTitle: "Deck 2 • Advertising Strategies & Retail", id: 20, fr: "La grande distribution", phon: "lah grahnd deess-tree-boo-syon", en: "Mass retail", exFr: "La grande distribution domine le secteur alimentaire.", exEn: "Mass retail dominates the food sector.", target: "distribution" },
+
+        // DECK 3: Information & Media Literacy
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 21, fr: "Les fausses informations", phon: "lay fohss zahn-for-mah-syon", en: "Fake news", exFr: "Les fausses informations circulent rapidement sur Internet.", exEn: "Fake news circulates quickly on the Internet.", target: "fausses informations" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 22, fr: "La littératie médiatique", phon: "lah lee-tay-rah-see", en: "Media literacy", exFr: "La littératie médiatique aide à repérer la désinformation.", exEn: "Media literacy helps spot disinformation.", target: "littératie" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 23, fr: "La vérification des faits", phon: "lah vay-ree-fee-kah-syon", en: "Fact-checking", exFr: "La vérification des faits est une étape clé du journalisme.", exEn: "Fact-checking is a key step in journalism.", target: "vérification" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 24, fr: "La déontologie journalistique", phon: "lah day-ohn-toh-loh-zhee", en: "Journalistic ethics", exFr: "Respecter la déontologie journalistique garantit l'honnêteté.", exEn: "Respecting journalistic ethics guarantees honesty.", target: "déontologie" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 25, fr: "La liberté de la presse", phon: "lah lee-bair-tay", en: "Freedom of the press", exFr: "La liberté de la presse est essentielle pour une démocratie.", exEn: "Freedom of the press is essential for a democracy.", target: "presse" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 26, fr: "Le traitement médiatique", phon: "luh treht-mahn may-dyah-teek", en: "Media coverage", exFr: "Le traitement médiatique de cette affaire a été très intense.", exEn: "Media coverage of this case was very intense.", target: "traitement" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 27, fr: "La manipulation de l'information", phon: "lah mah-nee-poo-lah-syon", en: "Information manipulation", exFr: "La manipulation de l'information peut biaiser les élections.", exEn: "Information manipulation can bias elections.", target: "manipulation" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 28, fr: "Une source fiable", phon: "ewn soors fyah-bluh", en: "A reliable source", exFr: "Il faut s'appuyer sur une source fiable avant de partager un article.", exEn: "One must rely on a reliable source before sharing an article.", target: "source" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 29, fr: "La ligne éditoriale", phon: "lah leen-yuh ay-dee-toh-ryahl", en: "Editorial line", exFr: "Chaque journal suit une ligne éditoriale spécifique.", exEn: "Each newspaper follows a specific editorial line.", target: "éditoriale" },
+        { deck: 3, deckTitle: "Deck 3 • Information & Media Literacy", id: 30, fr: "L'esprit critique", phon: "less-pree kree-teek", en: "Critical thinking", exFr: "Exercer son esprit critique évite de tomber dans le piège des rumeurs.", exEn: "Exercising critical thinking prevents falling into rumor traps.", target: "esprit critique" },
+
+        // DECK 4: Digital Press & Algorithms
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 31, fr: "La presse numérique", phon: "lah premss noo-may-reek", en: "Digital press", exFr: "La presse numérique remplace progressivement les journaux papier.", exEn: "Digital press is gradually replacing print newspapers.", target: "numérique" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 32, fr: "Le journalisme d'investigation", phon: "luh zhoor-nah-lees-muh", en: "Investigative journalism", exFr: "Le journalisme d'investigation révèle des scandales importants.", exEn: "Investigative journalism reveals major scandals.", target: "investigation" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 33, fr: "La liberté d'expression", phon: "lah lee-bair-tay", en: "Freedom of speech", exFr: "La liberté d'expression est un droit fondamental mais encadré.", exEn: "Freedom of speech is a fundamental but regulated right.", target: "expression" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 34, fr: "Le sensationnalisme", phon: "luh sahn-sah-syon-nah-lees-muh", en: "Sensationalism", exFr: "Le sensationnalisme recherche l'émotion au détriment des faits.", exEn: "Sensationalism seeks emotion at the expense of facts.", target: "sensationnalisme" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 35, fr: "La désinformation de masse", phon: "lah day-zan-for-mah-syon", en: "Mass disinformation", exFr: "La désinformation de masse menace la stabilité sociale.", exEn: "Mass disinformation threatens social stability.", target: "désinformation" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 36, fr: "L'orientation des algorithmes", phon: "loh-ryahn-tah-syon", en: "Algorithm orientation", exFr: "L'orientation des algorithmes filtre le contenu affiché.", exEn: "Algorithm orientation filters displayed content.", target: "orientation" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 37, fr: "La bulle d'information", phon: "lah bool dahn-for-mah-syon", en: "Information bubble", exFr: "Rester dans sa bulle d'information empêche le débat d'idées.", exEn: "Staying in one's information bubble prevents debate of ideas.", target: "bulle" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 38, fr: "La pluralité des médias", phon: "lah ploo-rah-lee-tay", en: "Media plurality", exFr: "La pluralité des médias garantit la diversité des opinions.", exEn: "Media plurality guarantees diversity of opinions.", target: "pluralité" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 39, fr: "Un droit de réponse", phon: "ah drwah duh ray-pohnss", en: "Right of reply", exFr: "Toute personne mise en cause peut exercer un droit de réponse.", exEn: "Anyone named in an article can exercise a right of reply.", target: "réponse" },
+        { deck: 4, deckTitle: "Deck 4 • Digital Press & Algorithms", id: 40, fr: "L'accès à l'information", phon: "lahk-seh ah lahn-for-mah-syon", en: "Access to information", exFr: "L'accès à l'information est un enjeu démocratique crucial.", exEn: "Access to information is a crucial democratic issue.", target: "accès" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Consommer", phon: "kohn-soh-may", en: "To consume", exFr: "Il vaut mieux consommer avec modération et réflexion.", exEn: "It is better to consume with moderation and thought.", target: "consommer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Informer", phon: "ahn-for-may", en: "To inform", exFr: "Le rôle du journaliste est d'informer le public sans parti pris.", exEn: "The role of the journalist is to inform the public without bias.", target: "informer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Vérifier", phon: "vay-ree-fee-ay", en: "To verify / check", exFr: "Prenez le temps de vérifier l'exactitude d'une rumeur.", exEn: "Take time to verify the accuracy of a rumor.", target: "vérifier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Cibler", phon: "see-blay", en: "To target", exFr: "Cette campagne cherche à cibler un public jeune.", exEn: "This campaign seeks to target a young audience.", target: "cibler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Influencer", phon: "ahn-floo-ahn-say", en: "To influence", exFr: "Les réseaux sociaux peuvent influencer nos habitudes d'achat.", exEn: "Social networks can influence our shopping habits.", target: "influencer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Comparer", phon: "kohn-pah-ray", en: "To compare", exFr: "Il faut comparer les tarifs avant de commander en ligne.", exEn: "One must compare prices before ordering online.", target: "comparer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Boycotter", phon: "bwah-yoh-tay", en: "To boycott", exFr: "Des citoyens choisissent de boycotter cette entreprise.", exEn: "Citizens choose to boycott this company.", target: "boycotter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "Le média tente de sensibiliser le grand public aux enjeux climatiques.", exEn: "The media attempts to raise public awareness of climate issues.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Diffuser", phon: "dee-foo-zay", en: "To broadcast / disseminate", exFr: "La chaîne va diffuser ce reportage en direct ce soir.", exEn: "The channel will broadcast this report live tonight.", target: "diffuser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Décoder", phon: "day-koh-day", en: "To decode / decipher", exFr: "L'école apprend aux enfants à décoder les images publicitaires.", exEn: "School teaches children to decode ad images.", target: "décoder" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Changement & Innovation</title>
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --dark-purple: #6D28D9;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-purple) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #F5F3FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-purple); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-purple); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #7C3AED; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>🔄 TCF Canada • 50 Interactive Innovation Words</h1>
+        <p>Changement, Innovation, Agilité & Transformation</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Catalysts & Transformation
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 1, fr: "Un changement de paradigme", phon: "ah shahnzh-mahn", en: "Paradigm shift", exFr: "L'adoption de l'IA provoque un réel changement de paradigme.", exEn: "AI adoption triggers a real paradigm shift.", target: "paradigme" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 2, fr: "Un catalyseur de changement", phon: "ah kah-tah-lee-zuhr", en: "Catalyst for change", exFr: "La crise sanitaire a été un catalyseur de changement pour le télétravail.", exEn: "The health crisis was a catalyst for change for remote work.", target: "catalyseur" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 3, fr: "L'inertie", phon: "lee-nair-see", en: "Inertia / Resistance", exFr: "L'inertie des grandes structures freine parfois l'innovation.", exEn: "Inertia in large structures sometimes slows innovation.", target: "inertie" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 4, fr: "La transformation numérique", phon: "lah trahnss-for-mah-syon", en: "Digital transformation", exFr: "La transformation numérique modifie tous les processus internes.", exEn: "Digital transformation modifies all internal processes.", target: "transformation" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 5, fr: "L'innovation de rupture", phon: "lee-noh-vah-syon", en: "Disruptive innovation", exFr: "L'arrivée des smartphones fut une innovation de rupture majeure.", exEn: "The arrival of smartphones was a major disruptive innovation.", target: "rupture" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 6, fr: "La conduite du changement", phon: "lah kohn-dweet", en: "Change management", exFr: "Réussir un projet demande une bonne conduite du changement.", exEn: "Succeeding in a project requires good change management.", target: "conduite" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 7, fr: "La résistance au changement", phon: "lah ray-zees-tahnss", en: "Resistance to change", exFr: "La peur de l'inconnu alimente la résistance au changement.", exEn: "Fear of the unknown fuels resistance to change.", target: "résistance" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 8, fr: "L'adaptabilité", phon: "lah-dahp-tah-bee-lee-tay", en: "Adaptability", exFr: "L'adaptabilité est une qualité clé dans un marché en évolution.", exEn: "Adaptability is a key quality in an evolving market.", target: "adaptabilité" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 9, fr: "Le renouvellement", phon: "luh ruh-noo-vehl-mahn", en: "Renewal", exFr: "Le renouvellement des compétences est indispensable.", exEn: "Skills renewal is essential.", target: "renouvellement" },
+        { deck: 1, deckTitle: "Deck 1 • Catalysts & Transformation", id: 10, fr: "La modernisation", phon: "lah moh-dair-nee-zah-syon", en: "Modernization", exFr: "La modernisation de nos outils améliore la productivité.", exEn: "Modernizing our tools improves productivity.", target: "modernisation" },
+
+        // DECK 2: Innovation & Research
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 11, fr: "La recherche et développement", phon: "lah ruh-shairsh ay day-vlohp-mahn", en: "Research and development", exFr: "L'entreprise consacre 10% de son budget à la recherche et développement.", exEn: "The company devotes 10% of its budget to R&D.", target: "recherche" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 12, fr: "Une technologie émergente", phon: "ewn tehk-noh-loh-zhee", en: "Emerging technology", exFr: "L'informatique quantique est une technologie émergente prometteuse.", exEn: "Quantum computing is a promising emerging technology.", target: "émergente" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 13, fr: "L'expérimentation", phon: "lehks-pay-ree-mahn-tah-syon", en: "Experimentation", exFr: "L'expérimentation permet de tester de nouveaux concepts sur le terrain.", exEn: "Experimentation allows testing new concepts in the field.", target: "expérimentation" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 14, fr: "Un prototype", phon: "ah proh-toh-teep", en: "Prototype", exFr: "Les ingénieurs ont conçu un premier prototype fonctionnel.", exEn: "Engineers designed a first working prototype.", target: "prototype" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 15, fr: "L'agilité organisationnelle", phon: "lah-zhee-lee-tay", en: "Organizational agility", exFr: "L'agilité organisationnelle aide les startups à réagir très vite.", exEn: "Organizational agility helps startups react very fast.", target: "agilité" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 16, fr: "La propriété intellectuelle", phon: "lah proh-pree-ay-tay", en: "Intellectual property", exFr: "Protéger sa propriété intellectuelle est essentiel pour l'inventeur.", exEn: "Protecting intellectual property is essential for the inventor.", target: "intellectuelle" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 17, fr: "Un transfert de technologie", phon: "ah trahnss-fair", en: "Technology transfer", exFr: "Le transfert de technologie entre l'université et l'industrie crée des produits.", exEn: "Technology transfer between university and industry creates products.", target: "transfert" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 18, fr: "L'esprit d'initiative", phon: "less-pree dee-nee-syah-teev", en: "Spirit of initiative", exFr: "Le manager valorise l'esprit d'initiative au sein de l'équipe.", exEn: "The manager values the spirit of initiative in the team.", target: "initiative" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 19, fr: "La veille technologique", phon: "lah vehy tehk-noh-loh-zheek", en: "Technology watch", exFr: "Faire une veille technologique permet d'anticiper la concurrence.", exEn: "Performing a technology watch helps anticipate competition.", target: "veille" },
+        { deck: 2, deckTitle: "Deck 2 • Innovation & Research", id: 20, fr: "Le brevet d'invention", phon: "luh bruh-veh dan-vahn-syon", en: "Patent", exFr: "Ils ont déposé un brevet d'invention pour protéger leur découverte.", exEn: "They filed a patent to protect their discovery.", target: "brevet" },
+
+        // DECK 3: Adaptation & Evolution
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 21, fr: "L'évolution des pratiques", phon: "lay-voh-loo-syon", en: "Evolution of practices", exFr: "L'évolution des pratiques de travail s'accélère avec le numérique.", exEn: "The evolution of work practices accelerates with digital tech.", target: "évolution" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 22, fr: "La remise en question", phon: "lah ruh-meez ahn kehss-tyohn", en: "Questioning / Reassessment", exFr: "La remise en question permet de corriger les erreurs passées.", exEn: "Reassessment allows correcting past mistakes.", target: "remise" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 23, fr: "La flexibilité des structures", phon: "lah flehk-see-bee-lee-tay", en: "Structural flexibility", exFr: "La flexibilité des structures facilite la réorganisation interne.", exEn: "Structural flexibility facilitates internal reorganization.", target: "flexibilité" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 24, fr: "La transition organisationnelle", phon: "lah trahn-zee-syon", en: "Organizational transition", exFr: "L'accompagnement RH sécurise la transition organisationnelle.", exEn: "HR support secures organizational transition.", target: "transition" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 25, fr: "L'amélioration continue", phon: "lah-may-lyoh-rah-syon", en: "Continuous improvement", exFr: "L'amélioration continue vise la perfection par petits pas.", exEn: "Continuous improvement aims for perfection in small steps.", target: "amélioration" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 26, fr: "L'apprentissage organisationnel", phon: "lah-prahn-tee-sahzh", en: "Organizational learning", exFr: "L'apprentissage organisationnel se nourrit des retours d'expérience.", exEn: "Organizational learning builds on feedback.", target: "apprentissage" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 27, fr: "Le pivot stratégique", phon: "luh pee-voh", en: "Strategic pivot", exFr: "Face à l'échec du produit, la startup a réussi son pivot stratégique.", exEn: "Facing product failure, the startup made a successful strategic pivot.", target: "pivot" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 28, fr: "La restructuration", phon: "lah ruh-strook-too-rah-syon", en: "Restructuring", exFr: "La restructuration de l'entreprise a sauvegardé des emplois.", exEn: "Company restructuring saved jobs.", target: "restructuration" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 29, fr: "La synergie", phon: "lah see-nair-zhee", en: "Synergy", exFr: "Créer une synergie entre les départements augmente les gains.", exEn: "Creating synergy between departments increases gains.", target: "synergie" },
+        { deck: 3, deckTitle: "Deck 3 • Adaptation & Evolution", id: 30, fr: "La culture du changement", phon: "lah kool-toor", en: "Culture of change", exFr: "Développer une vraie culture du changement stimule l'audace.", exEn: "Developing a true culture of change stimulates boldness.", target: "culture" },
+
+        // DECK 4: Future-Proofing & Trends
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 31, fr: "Une tendance lourde", phon: "ewn tahn-dahnss loord", en: "Major trend", exFr: "Le développement durable est une tendance lourde de l'économie.", exEn: "Sustainable development is a major economic trend.", target: "tendance" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 32, fr: "Le facteur d'accélération", phon: "luh fahk-tuhr", en: "Acceleration factor", exFr: "L'IA est un puissant facteur d'accélération des découvertes.", exEn: "AI is a powerful acceleration factor for discoveries.", target: "facteur" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 33, fr: "L'obsolescence", phon: "lohb-soh-lehss-ahns", en: "Obsolescence", exFr: "L'obsolescence rapide des logiciels exige des mises à jour.", exEn: "Rapid software obsolescence requires updates.", target: "obsolescence" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 34, fr: "La création de valeur", phon: "lah kray-ah-syon duh vah-luhr", en: "Value creation", exFr: "L'innovation reste le premier moteur de la création de valeur.", exEn: "Innovation remains the top driver of value creation.", target: "valeur" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 35, fr: "La compétitivité", phon: "lah kohn-pay-tee-tee-vee-tay", en: "Competitiveness", exFr: "Innover garantit la compétitivité face aux rivaux mondiaux.", exEn: "Innovating guarantees competitiveness against global rivals.", target: "compétitivité" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 36, fr: "L'impact du changement", phon: "lahm-pahk", en: "Impact of change", exFr: "Mesurer l'impact du changement aide à réajuster la trajectoire.", exEn: "Measuring the impact of change helps readjust trajectory.", target: "impact" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 37, fr: "La vision stratégique", phon: "lah vee-zyohn", en: "Strategic vision", exFr: "Une vision stratégique claire oriente les investissements.", exEn: "A clear strategic vision guides investments.", target: "vision" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 38, fr: "L'intégration des nouveautés", phon: "lahn-tay-grah-syon", en: "Integration of novelties", exFr: "L'intégration des nouveautés demande de former le personnel.", exEn: "Integrating novelties requires staff training.", target: "nouveautés" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 39, fr: "Le déploiement", phon: "luh day-plwah-mahn", en: "Deployment / Rollout", exFr: "Le déploiement de la solution réseau se fera sur trois mois.", exEn: "The network solution rollout will take three months.", target: "déploiement" },
+        { deck: 4, deckTitle: "Deck 4 • Future-Proofing & Trends", id: 40, fr: "La maturité technologique", phon: "lah mah-too-ree-tay", en: "Technological maturity", exFr: "Ce produit atteint enfin une forte maturité technologique.", exEn: "This product is finally reaching high technological maturity.", target: "maturité" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Innover", phon: "ee-noh-vay", en: "To innovate", exFr: "Pour survivre sur le marché, il faut continuellement innover.", exEn: "To survive in the market, one must continuously innovate.", target: "innover" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Transformer", phon: "trahnss-for-may", en: "To transform", exFr: "Ce projet vise à transformer complètement la chaîne logistique.", exEn: "This project aims to completely transform the supply chain.", target: "transformer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "S'adapter", phon: "sah-dahp-tay", en: "To adapt", exFr: "Les entreprises doivent s'adapter rapidement aux attentes des clients.", exEn: "Companies must quickly adapt to customer expectations.", target: "adapter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Évoluer", phon: "ay-voh-loo-ay", en: "To evolve", exFr: "Les réglementations vont évoluer au cours des prochains mois.", exEn: "Regulations will evolve over the coming months.", target: "évoluer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Réinventer", phon: "ray-ahn-vahn-tay", en: "To reinvent", exFr: "Il faut réinventer notre modèle économique pour rester vert.", exEn: "We must reinvent our business model to stay green.", target: "réinventer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Bouleverser", phon: "bool-vair-say", en: "To disrupt / overturn", exFr: "Cette découverte va bouleverser l'industrie médicale.", exEn: "This discovery will disrupt the medical industry.", target: "bouleverser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Moderniser", phon: "moh-dair-nee-zay", en: "To modernize", exFr: "L'État investit pour moderniser le système ferroviaire.", exEn: "The State is investing to modernize the railway system.", target: "moderniser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Accompagner", phon: "ah-kohn-pahn-yay", en: "To accompany / guide", exFr: "Un consultant vient accompagner l'équipe pendant la transition.", exEn: "A consultant comes to guide the team through transition.", target: "accompagner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Pionnier", phon: "pyoh-nyay", en: "To pioneer", exFr: "Ce laboratoire a su pionnier dans la recherche contre le cancer.", exEn: "This lab pioneered cancer research.", target: "pionnier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Déployer", phon: "day-plwah-yay", en: "To deploy / roll out", exFr: "Nous allons déployer la nouvelle mise à jour demain.", exEn: "We will deploy the new update tomorrow.", target: "déployer" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>

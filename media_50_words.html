@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF 50 Words • Médias & Information</title>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --dark-blue: #1E40AF;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --green: #10B981;
+            --accent: #EF4135;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #E2E8F0; color: var(--dark); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { background: white; max-width: 900px; width: 100%; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 8px solid var(--primary); }
+        .header { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+        .coaches-banner { display: flex; gap: 15px; background: #EFF6FF; border-left: 5px solid var(--primary); padding: 15px; border-radius: 10px; margin-bottom: 25px; align-items: center; }
+        .deck-header { color: var(--dark-blue); font-size: 1.3rem; margin: 30px 0 15px 0; border-bottom: 2px solid #CBD5E1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .vocab-card-interactive { background: var(--light); border: 2px solid #CBD5E1; border-radius: 16px; padding: 18px; margin-bottom: 16px; transition: all 0.2s ease; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
+        .word-phonetic { font-size: 0.85rem; color: #2563EB; margin-top: 2px; }
+        .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
+        .speaker-btn { font-size: 1.3rem; background: #E2E8F0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .speaker-btn:hover { background: #CBD5E1; }
+        .example-box { background: white; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.95rem; }
+        .example-fr { font-weight: 600; color: var(--dark); }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
+        .mic-section { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .btn-mic { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .feedback-container { margin-top: 12px; background: #ECFDF5; border: 1px solid var(--green); padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+        .coach-tag { font-weight: bold; color: #065F46; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>📰 TCF Canada • 50 Interactive Media & Info Words</h1>
+        <p>Vérification des faits, Déontologie, Réseaux & Opinion</p>
+    </div>
+
+    <div class="coaches-banner">
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
+        <div>
+            <strong>Interactive Voice Coaching:</strong><br>
+            <span style="color: #475569; font-size: 0.9rem;">
+                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to practice speaking—<strong>Élodie</strong> transcribes your voice and <strong>Léa speaks back with live feedback!</strong>
+            </span>
+        </div>
+    </div>
+
+    <div id="vocab-container"></div>
+</div>
+
+<script>
+    const vocabData = [
+        // DECK 1: Information Integrity & Verification
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 1, fr: "La liberté de la presse", phon: "lah lee-bair-tay", en: "Freedom of the press", exFr: "La liberté de la presse garantit le contrôle démocratique du pouvoir.", exEn: "Freedom of the press guarantees democratic oversight of power.", target: "presse" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 2, fr: "La désinformation de masse", phon: "lah day-zan-for-mah-syon", en: "Mass disinformation", exFr: "La désinformation de masse cherche à manipuler l'opinion publique.", exEn: "Mass disinformation seeks to manipulate public opinion.", target: "désinformation" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 3, fr: "La vérification des faits", phon: "lah vay-ree-fee-kah-syon", en: "Fact-checking", exFr: "La vérification des faits évite la propagation de fausses rumeurs.", exEn: "Fact-checking prevents the spread of false rumors.", target: "vérification" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 4, fr: "La pluralité des sources", phon: "lah ploo-rah-lee-tay", en: "Plurality of sources", exFr: "Croiser la pluralité des sources est indispensable pour le journaliste.", exEn: "Cross-referencing a plurality of sources is essential for journalists.", target: "sources" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 5, fr: "La théorie du complot", phon: "lah tay-oh-ree doo kohn-ploh", en: "Conspiracy theory", exFr: "Cette théorie du complot s'est diffusée sur les réseaux sociaux.", exEn: "This conspiracy theory spread on social networks.", target: "complot" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 6, fr: "Une source anonyme", phon: "ewn soors ah-noh-neem", en: "An anonymous source", exFr: "Une source anonyme a révélé les détails du scandale.", exEn: "An anonymous source revealed details of the scandal.", target: "source" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 7, fr: "La manipulation des faits", phon: "lah mah-nee-poo-lah-syon", en: "Fact manipulation", exFr: "La manipulation des faits déforme la réalité d'un événement.", exEn: "Fact manipulation distorts the reality of an event.", target: "manipulation" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 8, fr: "L'esprit critique", phon: "less-pree kree-teek", en: "Critical thinking", exFr: "Développer son esprit critique aide à déceler le faux du vrai.", exEn: "Developing critical thinking helps separate fake from real.", target: "esprit critique" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 9, fr: "La rumeur virale", phon: "lah roo-muhr vee-rahl", en: "Viral rumor", exFr: "Une rumeur virale peut détruire la réputation d'une personne en heures.", exEn: "A viral rumor can destroy a person's reputation in hours.", target: "rumeur" },
+        { deck: 1, deckTitle: "Deck 1 • Information Integrity & Verification", id: 10, fr: "L'impartialité journalistique", phon: "leem-par-syah-lee-tay", en: "Journalistic impartiality", exFr: "L'impartialité journalistique impose de présenter tous les points de vue.", exEn: "Journalistic impartiality requires presenting all points of view.", target: "impartialité" },
+
+        // DECK 2: Journalism & Editorial Standards
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 11, fr: "Le journalisme d'investigation", phon: "luh zhoor-nah-lees-muh", en: "Investigative journalism", exFr: "Le journalisme d'investigation prend des mois pour vérifier les faits.", exEn: "Investigative journalism takes months to verify facts.", target: "investigation" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 12, fr: "La ligne éditoriale", phon: "lah leen-yuh ay-dee-toh-ryahl", en: "Editorial stance", exFr: "La ligne éditoriale de ce journal privilégie les sujets économiques.", exEn: "This paper's editorial stance favors economic topics.", target: "éditoriale" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 13, fr: "La déontologie des médias", phon: "lah day-ohn-toh-loh-zhee", en: "Media ethics", exFr: "Respecter la déontologie des médias est le gage d'une presse fiable.", exEn: "Respecting media ethics is the sign of a trustworthy press.", target: "déontologie" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 14, fr: "Le traitement médiatique", phon: "luh treht-mahn may-dyah-teek", en: "Media coverage", exFr: "Le traitement médiatique de ce fait divers a suscité l'émotion.", exEn: "Media coverage of this event sparked emotion.", target: "traitement" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 15, fr: "Le sensationnalisme", phon: "luh sahn-sah-syon-nah-lees-muh", en: "Sensationalism", exFr: "Certains médias cèdent au sensationnalisme pour augmenter les clics.", exEn: "Some media yield to sensationalism to boost clicks.", target: "sensationnalisme" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 16, fr: "Le secret des sources", phon: "luh suh-kreh day soors", en: "Confidentiality of sources", exFr: "Le secret des sources est protégé par la loi pour les journalistes.", exEn: "Confidentiality of sources is law-protected for journalists.", target: "secret" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 17, fr: "Le droit de réponse", phon: "luh drwah duh ray-pohnss", en: "Right of reply", exFr: "La personne mise en cause a exercé son droit de réponse.", exEn: "The individual involved exercised their right of reply.", target: "réponse" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 18, fr: "Un reportage exclusif", phon: "ah ruh-por-tahzh ehks-kloo-zeef", en: "An exclusive report", exFr: "La chaîne a diffusé un reportage exclusif sur la zone de conflit.", exEn: "The channel broadcast an exclusive report on the conflict zone.", target: "reportage" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 19, fr: "La dépêche de presse", phon: "lah day-pehsh", en: "Press dispatch", exFr: "Une dépêche de presse vient d'annoncer la signature de l'accord.", exEn: "A press dispatch just announced the agreement signing.", target: "dépêche" },
+        { deck: 2, deckTitle: "Deck 2 • Journalism & Editorial Standards", id: 20, fr: "La liberté d'opinion", phon: "lah lee-bair-tay doh-pee-nyohn", en: "Freedom of opinion", exFr: "La liberté d'opinion permet à chacun d'exprimer son point de vue.", exEn: "Freedom of opinion allows everyone to express their point of view.", target: "opinion" },
+
+        // DECK 3: Digital Media & Social Networks
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 21, fr: "Les réseaux sociaux", phon: "lay ray-zoh soh-syoh", en: "Social networks", exFr: "Les réseaux sociaux accélèrent la diffusion de l'information.", exEn: "Social networks speed up information dissemination.", target: "réseaux" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 22, fr: "La bulle de filtres", phon: "lah bool duh feel-truh", en: "Filter bubble", exFr: "La bulle de filtres enferme l'utilisateur dans ses propres idées.", exEn: "The filter bubble locks users inside their own ideas.", target: "bulle" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 23, fr: "L'algorithme de recommandation", phon: "lahl-goh-reet-muh", en: "Recommendation algorithm", exFr: "L'algorithme de recommandation sélectionne les vidéos affichées.", exEn: "The recommendation algorithm selects displayed videos.", target: "algorithme" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 24, fr: "La chambre d'écho", phon: "lah shahm-bruh day-koh", en: "Echo chamber", exFr: "Échanger uniquement entre personnes du même avis crée une chambre d'écho.", exEn: "Exchanging only among like-minded people creates an echo chamber.", target: "chambre" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 25, fr: "La sobriété numérique", phon: "lah soh-bree-ay-tay", en: "Digital sobriety", exFr: "La sobriété numérique consiste à limiter son temps d'écran.", exEn: "Digital sobriety consists in limiting screen time.", target: "sobriété" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 26, fr: "La fuite d'informations", phon: "lah fweet dahn-for-mah-syon", en: "Information leak", exFr: "Une fuite d'informations confidentielles a secoué le gouvernement.", exEn: "A leak of confidential information shook the government.", target: "fuite" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 27, fr: "Le média citoyen", phon: "luh may-dyah see-twah-yahn", en: "Citizen media", exFr: "Ce média citoyen donne la parole aux habitants du quartier.", exEn: "This citizen media gives a voice to neighborhood residents.", target: "citoyen" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 28, fr: "Le créateur de contenu", phon: "luh kray-ah-tuhr", en: "Content creator", exFr: "Ce créateur de contenu produit des capsules explicatives en ligne.", exEn: "This content creator produces explanatory online videos.", target: "contenu" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 29, fr: "La monétisation des contenus", phon: "lah moh-nay-tee-zah-syon", en: "Content monetization", exFr: "La monétisation des contenus repose sur les revenus publicitaires.", exEn: "Content monetization relies on ad revenues.", target: "monétisation" },
+        { deck: 3, deckTitle: "Deck 3 • Digital Media & Social Networks", id: 30, fr: "La modération de contenu", phon: "lah moh-day-rah-syon", en: "Content moderation", exFr: "La modération de contenu supprime les messages haineux des plateformes.", exEn: "Content moderation removes hateful posts from platforms.", target: "modération" },
+
+        // DECK 4: Public Opinion & Communication
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 31, fr: "L'opinion publique", phon: "loh-pee-nyohn poo-bleek", en: "Public opinion", exFr: "L'opinion publique est très attentive aux annonces économiques.", exEn: "Public opinion is very attentive to economic announcements.", target: "opinion" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 32, fr: "La stratégie de communication", phon: "lah strah-tay-zhee", en: "Communication strategy", exFr: "Une bonne stratégie de communication clarifie le message clé.", exEn: "A good communication strategy clarifies the key message.", target: "stratégie" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 33, fr: "Les relations de presse", phon: "lay ruh-lah-syon", en: "Press relations", exFr: "Le service des relations de presse organise les interviews.", exEn: "The press relations department organizes interviews.", target: "relations" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 34, fr: "Le communiqué de presse", phon: "luh koh-moo-nee-kay", en: "Press release", exFr: "L'entreprise a diffusé un communiqué de presse ce matin.", exEn: "The company issued a press release this morning.", target: "communiqué" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 35, fr: "La gestion de crise médiatique", phon: "lah zhehs-tyohn", en: "Media crisis management", exFr: "La gestion de crise médiatique exige de répondre rapidement et clairement.", exEn: "Media crisis management requires responding quickly and clearly.", target: "crise" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 36, fr: "La campagne de sensibilisation", phon: "lah kahn-pahn-yuh", en: "Awareness campaign", exFr: "Cette campagne de sensibilisation prévient les accidents de la route.", exEn: "This awareness campaign prevents road accidents.", target: "sensibilisation" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 37, fr: "L'audience télévisuelle", phon: "loh-dyahnss", en: "TV audience", exFr: "L'audience télévisuelle a augmenté pendant la finale sportive.", exEn: "TV audience increased during the sports final.", target: "audience" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 38, fr: "L'impact médiatique", phon: "lahm-pahk may-dyah-teek", en: "Media impact", exFr: "L'impact médiatique de ce livre a surpris tous les éditeurs.", exEn: "The media impact of this book surprised all publishers.", target: "impact" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 39, fr: "Le sondage d'opinion", phon: "luh sohn-dahzh", en: "Opinion poll", exFr: "Ce dernier sondage d'opinion montre un changement de tendance.", exEn: "This latest opinion poll shows a shift in trend.", target: "sondage" },
+        { deck: 4, deckTitle: "Deck 4 • Public Opinion & Communication", id: 40, fr: "La souveraineté de l'information", phon: "lah soo-vrahn-tay", en: "Information sovereignty", exFr: "Garantir la souveraineté de l'information protège contre les ingérences.", exEn: "Guaranteeing information sovereignty protects against interference.", target: "souveraineté" },
+
+        // DECK 5: Action Verbs
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Informer", phon: "ahn-for-may", en: "To inform", exFr: "Le devoir du journaliste est d'informer le public de manière neutre.", exEn: "The journalist's duty is to inform the public neutrally.", target: "informer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Vérifier", phon: "vay-ree-fee-ay", en: "To verify / check", exFr: "Il est indispensable de vérifier l'origine d'un document avant publication.", exEn: "It is essential to verify a document's origin before publishing.", target: "vérifier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Diffuser", phon: "dee-foo-zay", en: "To broadcast / disseminate", exFr: "La station va diffuser le discours du président en direct.", exEn: "The station will broadcast the president's speech live.", target: "diffuser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Décoder", phon: "day-koh-day", en: "To decode / decipher", exFr: "Cet article aide à décoder les stratégies publicitaires.", exEn: "This article helps decode advertising strategies.", target: "décoder" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "Le reportage cherche à sensibiliser aux dangers du réchauffement.", exEn: "The report seeks to raise awareness about global warming risks.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Manipuler", phon: "mah-nee-poo-lay", en: "To manipulate", exFr: "Certains groupes cherchent à manipuler l'opinion en véhiculant de fausses infos.", exEn: "Some groups seek to manipulate opinion by spreading fake news.", target: "manipuler" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Publier", phon: "poo-blee-ay", en: "To publish", exFr: "Le quotidien va publier une enquête exclusive demain.", exEn: "The daily newspaper will publish an exclusive investigation tomorrow.", target: "publier" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Enquêter", phon: "ahn-keh-tay", en: "To investigate", exFr: "Le journaliste va enquêter sur ce scandale financier.", exEn: "The journalist will investigate this financial scandal.", target: "enquêter" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Démentir", phon: "day-mahn-teer", en: "To deny / refute", exFr: "Le ministre est venu démentir immédiatement ces accusations.", exEn: "The minister came to immediately deny these allegations.", target: "démentir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Analyser", phon: "ah-nah-lee-zay", en: "To analyze", exFr: "Les experts vont analyser les résultats du sondage.", exEn: "Experts will analyze the poll results.", target: "analyser" }
+    ];
+
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    let recognition, isRecording = false, activeCardId = null, activeTarget = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
+        };
+
+        recognition.onend = () => {
+            if (activeCardId) document.getElementById(`mic-btn-${activeCardId}`).classList.remove('recording');
+            isRecording = false;
+        };
+    }
+
+    function toggleRecord(id, targetWord) {
+        if (!recognition) return alert("Requires Google Chrome or Microsoft Edge.");
+        activeCardId = id; activeTarget = targetWord.toLowerCase();
+        const btn = document.getElementById(`mic-btn-${id}`);
+        if (isRecording) { recognition.stop(); } else {
+            document.getElementById(`feedback-${id}`).style.display = "block";
+            document.getElementById(`transcript-${id}`).innerText = "Listening...";
+            document.getElementById(`eval-${id}`).innerText = "Evaluating...";
+            btn.classList.add('recording'); isRecording = true; recognition.start();
+        }
+    }
+
+    function processCoachFeedback(id, spokenText, target) {
+        document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
+        const evalSpan = document.getElementById(`eval-${id}`);
+        let leaSpokenMessage = "";
+
+        if (spokenText.includes(target) || target.includes(spokenText)) {
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Pronunciation matched closely!";
+            evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellent travail.";
+        } else {
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again.`;
+            evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
+        }
+        speakAsLea(leaSpokenMessage);
+    }
+
+    function speakAsMarc(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.85; speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR'; speech.rate = 0.92; speech.pitch = 1.25;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+</script>
+</body>
+</html>
