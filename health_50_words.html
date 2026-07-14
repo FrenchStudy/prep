@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCF 50 Words • Interactive Practice</title>
+    <title>TCF 50 Words • Santé et Bien-être</title>
     <style>
         :root {
             --primary: #0055A5;
@@ -45,6 +45,8 @@
             margin-bottom: 25px;
         }
 
+        .header h1 { font-size: 1.8rem; margin-bottom: 4px; }
+
         .coaches-banner {
             display: flex;
             gap: 15px;
@@ -56,13 +58,23 @@
             align-items: center;
         }
 
-        /* Interactive Card Layout */
+        .deck-header {
+            color: var(--dark-blue);
+            font-size: 1.3rem;
+            margin: 30px 0 15px 0;
+            border-bottom: 2px solid #CBD5E1;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .vocab-card-interactive {
             background: var(--light);
             border: 2px solid #CBD5E1;
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
             transition: all 0.2s ease;
         }
 
@@ -70,41 +82,40 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.3rem; }
+        .word-fr { font-weight: bold; color: var(--dark-blue); font-size: 1.25rem; }
         .word-phonetic { font-size: 0.85rem; color: #0284C7; margin-top: 2px; }
         .word-en { font-size: 0.95rem; color: #64748B; margin-top: 2px; }
 
         .speaker-btn {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             background: #E2E8F0;
             border: none;
             padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
+            transition: background 0.2s;
         }
         .speaker-btn:hover { background: #CBD5E1; }
 
-        /* Example Sentence Section */
         .example-box {
             background: white;
             border-left: 4px solid var(--primary);
             padding: 10px 14px;
             border-radius: 6px;
-            margin: 12px 0;
+            margin: 10px 0;
             font-size: 0.95rem;
         }
         .example-fr { font-weight: 600; color: var(--dark); }
-        .example-en { font-size: 0.85rem; color: #64748B; }
+        .example-en { font-size: 0.85rem; color: #64748B; margin-top: 2px; }
 
-        /* Interactive Mic Controls */
         .mic-section {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 12px;
         }
 
         .btn-mic {
@@ -118,6 +129,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: background 0.2s;
         }
         .btn-mic.recording { background: var(--accent); animation: pulse 1.2s infinite; }
 
@@ -127,7 +139,6 @@
             100% { opacity: 1; }
         }
 
-        /* Feedback Box */
         .feedback-container {
             margin-top: 12px;
             background: #ECFDF5;
@@ -144,85 +155,134 @@
 
 <div class="card">
     <div class="header">
-        <h1>🏥 Interactive Vocab Practice • Health</h1>
-        <p>Listen, repeat, and get instant feedback from your coaches!</p>
+        <h1>🏥 TCF Canada • 50 Interactive Health Words</h1>
+        <p>S.W.E.E.T. C.H.E.F. P. Framework • Module H (Health)</p>
     </div>
 
     <div class="coaches-banner">
-        <span style="font-size: 2rem;">👩‍💻👨‍💼👩‍⚖️</span>
+        <span style="font-size: 2rem;">👨‍💼👩‍💻👩‍⚖️</span>
         <div>
-            <strong>Interactive Coaching Mode:</strong><br>
+            <strong>Interactive Voice Coaching:</strong><br>
             <span style="color: #475569; font-size: 0.9rem;">
-                Click 🔊 to hear <strong>Marc</strong> read the example sentence. Click 🎙️ to speak into your mic—<strong>Élodie</strong> will transcribe your speech and <strong>Léa</strong> will evaluate your pronunciation!
+                Click 🔊 to hear <strong>Marc</strong> read the target sentence. Click 🎙️ to practice speaking into your microphone—<strong>Élodie</strong> transcribes your words and <strong>Léa speaks back to you with live corrections!</strong>
             </span>
         </div>
     </div>
 
-    <!-- WORD 1 -->
-    <div class="vocab-card-interactive" id="card-1">
-        <div class="card-top">
-            <div>
-                <div class="word-fr">1. La santé</div>
-                <div class="word-phonetic">[lah sahn-tay]</div>
-                <div class="word-en">Health</div>
-            </div>
-            <button class="speaker-btn" onclick="say('La santé. Une bonne alimentation est essentielle pour la santé.')">🔊</button>
-        </div>
-
-        <!-- Sentence Example -->
-        <div class="example-box">
-            <div class="example-fr">💬 Example: « Une bonne alimentation est essentielle pour <strong>la santé</strong>. »</div>
-            <div class="example-en">A good diet is essential for health.</div>
-        </div>
-
-        <!-- Speech-to-Text Button -->
-        <div class="mic-section">
-            <button class="btn-mic" id="mic-btn-1" onclick="toggleRecord(1, 'la santé')">
-                🎙️ Practice Saying "La santé"
-            </button>
-        </div>
-
-        <!-- Coach Feedback Output -->
-        <div class="feedback-container" id="feedback-1">
-            <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-1">...</span></p>
-            <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-1">...</span></p>
-        </div>
-    </div>
-
-    <!-- WORD 2 -->
-    <div class="vocab-card-interactive" id="card-2">
-        <div class="card-top">
-            <div>
-                <div class="word-fr">2. Un médecin traitant</div>
-                <div class="word-phonetic">[ah med-sahn tray-tahn]</div>
-                <div class="word-en">Primary Care Physician</div>
-            </div>
-            <button class="speaker-btn" onclick="say('Un médecin traitant. Je dois consulter mon médecin traitant pour cette ordonnance.')">🔊</button>
-        </div>
-
-        <div class="example-box">
-            <div class="example-fr">💬 Example: « Je dois consulter mon <strong>médecin traitant</strong> pour cette ordonnance. »</div>
-            <div class="example-en">I need to consult my primary doctor for this prescription.</div>
-        </div>
-
-        <div class="mic-section">
-            <button class="btn-mic" id="mic-btn-2" onclick="toggleRecord(2, 'un médecin traitant')">
-                🎙️ Practice Saying "Un médecin traitant"
-            </button>
-        </div>
-
-        <div class="feedback-container" id="feedback-2">
-            <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-2">...</span></p>
-            <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-2">...</span></p>
-        </div>
-    </div>
-
+    <div id="vocab-container"></div>
 </div>
 
 <script>
+    // 50 COMPLETE HEALTH WORDS WITH EXAMPLES AND TARGET MATCHES
+    const vocabData = [
+        // DECK 1
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 1, fr: "La santé", phon: "lah sahn-tay", en: "Health", exFr: "Une bonne alimentation est essentielle pour la santé.", exEn: "A good diet is essential for health.", target: "la santé" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 2, fr: "Le bien-être", phon: "luh byah-neh-truh", en: "Well-being", exFr: "Le sport favorise le bien-être physique et mental.", exEn: "Sport promotes physical and mental well-being.", target: "le bien-être" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 3, fr: "L'espérance de vie", phon: "less-pay-rahns duh vee", en: "Life expectancy", exFr: "L'espérance de vie a augmenté ces dernières décennies.", exEn: "Life expectancy has increased in recent decades.", target: "l'espérance de vie" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 4, fr: "Le taux de mortalité", phon: "luh toh duh mor-tah-lee-tay", en: "Mortality rate", exFr: "La prévention aide à réduire le taux de mortalité.", exEn: "Prevention helps reduce the mortality rate.", target: "mortalité" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 5, fr: "Une hygiène de vie", phon: "ewn ee-zhyen duh vee", en: "Healthy lifestyle", exFr: "Avoir une bonne hygiène de vie évite les maladies.", exEn: "Having a healthy lifestyle prevents diseases.", target: "hygiène de vie" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 6, fr: "La prévention", phon: "lah pray-vahn-syon", en: "Prevention", exFr: "La prévention médicale coûte moins cher que les soins.", exEn: "Medical prevention costs less than treatments.", target: "la prévention" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 7, fr: "La sédentarité", phon: "lah say-dahn-tah-ree-tay", en: "Sedentary lifestyle", exFr: "La sédentarité au travail est un risque majeur.", exEn: "Sedentary behavior at work is a major risk.", target: "la sédentarité" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 8, fr: "Un mode de vie actif", phon: "ah mohd duh vee ahk-teef", en: "Active lifestyle", exFr: "Adopter un mode de vie actif améliore l'énergie.", exEn: "Adopting an active lifestyle improves energy.", target: "mode de vie actif" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 9, fr: "L'épuisement", phon: "lay-pweez-mahn", en: "Burnout / Exhaustion", exFr: "Le surmenage mène à l'épuisement professionnel.", exEn: "Overwork leads to professional burnout.", target: "épuisement" },
+        { deck: 1, deckTitle: "Deck 1 • General Health & Well-being", id: 10, fr: "La santé mentale", phon: "lah sahn-tay mahn-tahl", en: "Mental health", exFr: "Il faut prendre soin de sa santé mentale.", exEn: "One must take care of one's mental health.", target: "santé mentale" },
+
+        // DECK 2
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 11, fr: "Le système de santé", phon: "luh sees-tem duh sahn-tay", en: "Healthcare system", exFr: "Le système de santé doit être accessible à tous.", exEn: "The healthcare system must be accessible to all.", target: "système de santé" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 12, fr: "Un médecin traitant", phon: "ah med-sahn tray-tahn", en: "Primary care physician", exFr: "Mon médecin traitant m'a donné une ordonnance.", exEn: "My primary doctor gave me a prescription.", target: "médecin traitant" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 13, fr: "Une consultation", phon: "ewn kohn-sool-tah-syon", en: "Medical consultation", exFr: "J'ai pris rendez-vous pour une consultation.", exEn: "I booked an appointment for a consultation.", target: "consultation" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 14, fr: "Un diagnostic", phon: "ah dee-ahg-nohs-teek", en: "Diagnosis", exFr: "Le docteur a confirmé le diagnostic rapidement.", exEn: "The doctor confirmed the diagnosis quickly.", target: "diagnostic" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 15, fr: "Une ordonnance", phon: "ewn or-dohn-nahns", en: "Prescription", exFr: "Le pharmacien demande l'ordonnance du médecin.", exEn: "The pharmacist asks for the doctor's prescription.", target: "ordonnance" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 16, fr: "Un traitement", phon: "ah tret-mahn", en: "Medical treatment", exFr: "Ce traitement est très efficace contre la douleur.", exEn: "This treatment is very effective against pain.", target: "traitement" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 17, fr: "Un médicament", phon: "ah may-dee-kah-mahn", en: "Medication", exFr: "Prenez ce médicament deux fois par jour.", exEn: "Take this medication twice a day.", target: "médicament" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 18, fr: "Un vaccin", phon: "ah vahk-sahn", en: "Vaccine", exFr: "Le vaccin protège contre le virus.", exEn: "The vaccine protects against the virus.", target: "vaccin" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 19, fr: "Un examen médical", phon: "ah nehg-zah-mahn may-dee-kahl", en: "Medical check-up", exFr: "Il fait un examen médical chaque année.", exEn: "He undergoes a medical check-up every year.", target: "examen médical" },
+        { deck: 2, deckTitle: "Deck 2 • Medical Care & Healthcare System", id: 20, fr: "L'assurance maladie", phon: "lah-sew-rahns mah-lah-dee", en: "Health insurance", exFr: "L'assurance maladie rembourse les frais de santé.", exEn: "Health insurance reimburses healthcare costs.", target: "assurance maladie" },
+
+        // DECK 3
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 21, fr: "Une maladie chronique", phon: "ewn mah-lah-dee kroh-neek", en: "Chronic illness", exFr: "Le diabète est une maladie chronique fréquente.", exEn: "Diabetes is a common chronic illness.", target: "maladie chronique" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 22, fr: "Une maladie contagieuse", phon: "kohn-tah-zhyuhz", en: "Contagious disease", exFr: "Portez un masque contre les maladies contagieuses.", exEn: "Wear a mask against contagious diseases.", target: "contagieuse" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 23, fr: "Les symptômes", phon: "lay sahmp-tohm", en: "Symptoms", exFr: "La fièvre est l'un des symptômes principaux.", exEn: "Fever is one of the main symptoms.", target: "symptômes" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 24, fr: "Une épidémie", phon: "ewn ay-pee-day-mee", en: "Epidemic", exFr: "L'épidémie s'est propagée dans la région.", exEn: "The epidemic spread throughout the region.", target: "épidémie" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 25, fr: "L'obésité", phon: "loh-bay-zee-tay", en: "Obesity", exFr: "L'obésité touche de nombreux adultes.", exEn: "Obesity affects many adults.", target: "obésité" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 26, fr: "Une allergie", phon: "ewn ah-ler-zhee", en: "Allergy", exFr: "Elle a une allergie sévère au pollen.", exEn: "She has a severe allergy to pollen.", target: "allergie" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 27, fr: "La détérioration", phon: "day-tay-ryoh-rah-syon", en: "Deterioration", exFr: "On observe une détérioration de sa santé.", exEn: "We observe a deterioration in his health.", target: "détérioration" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 28, fr: "La guérison", phon: "lah gay-ree-zohn", en: "Recovery / Healing", exFr: "Le repos est nécessaire pour une guérison complète.", exEn: "Rest is necessary for complete recovery.", target: "guérison" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 29, fr: "Un effet secondaire", phon: "ah neh-feh suh-kohn-dair", en: "Side effect", exFr: "Ce médicament n'a aucun effet secondaire.", exEn: "This medicine has no side effects.", target: "effet secondaire" },
+        { deck: 3, deckTitle: "Deck 3 • Diseases & Pathology", id: 30, fr: "Une rechute", phon: "ewn ruh-shoot", en: "Relapse", exFr: "Il faut éviter une rechute de la maladie.", exEn: "One must avoid a relapse of the illness.", target: "rechute" },
+
+        // DECK 4
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 31, fr: "Une alimentation équilibrée", phon: "ay-kee-lee-bray", en: "Balanced diet", exFr: "Une alimentation équilibrée protège le cœur.", exEn: "A balanced diet protects the heart.", target: "alimentation équilibrée" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 32, fr: "Les carences", phon: "lay kah-rahns", en: "Nutritional deficiencies", exFr: "Le manque de vitamines provoque des carences.", exEn: "Lack of vitamins causes deficiencies.", target: "carences" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 33, fr: "L'activité physique", phon: "lahk-tee-vee-tay fee-zeek", en: "Physical activity", exFr: "L'activité physique quotidienne est recommandée.", exEn: "Daily physical activity is recommended.", target: "activité physique" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 34, fr: "Le sommeil", phon: "luh soh-may-yuh", en: "Sleep", exFr: "Un bon sommeil améliore la mémoire.", exEn: "Good sleep improves memory.", target: "sommeil" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 35, fr: "La gestion du stress", phon: "lah zhes-tyohn doo stress", en: "Stress management", exFr: "La méditation aide pour la gestion du stress.", exEn: "Meditation helps with stress management.", target: "gestion du stress" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 36, fr: "La nocivité", phon: "lah noh-see-vee-tay", en: "Harmfulness", exFr: "La nocivité du tabac est scientifiquement prouvée.", exEn: "The harmfulness of tobacco is scientifically proven.", target: "nocivité" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 37, fr: "Un facteur de risque", phon: "ah fahk-tuhr duh reesk", en: "Risk factor", exFr: "Fumer est un facteur de risque pour les poumons.", exEn: "Smoking is a risk factor for lungs.", target: "facteur de risque" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 38, fr: "Le surpoids", phon: "luh soor-pwah", en: "Overweight", exFr: "Une mauvaise alimentation entraîne le surpoids.", exEn: "A poor diet leads to overweight.", target: "surpoids" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 39, fr: "L'addiction", phon: "lah-deek-syon", en: "Addiction", exFr: "L'addiction aux écrans touche les jeunes.", exEn: "Screen addiction affects young people.", target: "addiction" },
+        { deck: 4, deckTitle: "Deck 4 • Nutrition & Lifestyle Factors", id: 40, fr: "L'espérance de santé", phon: "less-pay-rahns duh sahn-tay", en: "Healthy life years", exFr: "L'espérance de santé compte autant que la longévité.", exEn: "Healthy life expectancy matters as much as longevity.", target: "espérance de santé" },
+
+        // DECK 5
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 41, fr: "Prévenir", phon: "pray-vuh-neer", en: "To prevent", exFr: "Il vaut mieux prévenir que guérir.", exEn: "Prevention is better than cure.", target: "prévenir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 42, fr: "Soigner", phon: "swah-nyay", en: "To treat / care for", exFr: "Le médecin travaille pour soigner les malades.", exEn: "The doctor works to care for the sick.", target: "soigner" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 43, fr: "Guérir", phon: "gay-reer", en: "To cure / heal", exFr: "Ce médicament aide le patient à guérir.", exEn: "This medicine helps the patient heal.", target: "guérir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 44, fr: "Se détériorer", phon: "suh day-tay-ryoh-ray", en: "To decline / worsen", exFr: "Sans soins, son état peut se détériorer.", exEn: "Without care, his condition may worsen.", target: "détériorer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 45, fr: "S'améliorer", phon: "sah-may-lyoh-ray", en: "To improve", exFr: "Sa santé commence à s'améliorer.", exEn: "Her health is starting to improve.", target: "améliorer" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 46, fr: "Nuire à la santé", phon: "nweer ah lah sahn-tay", en: "To harm health", exFr: "La pollution peut nuire à la santé.", exEn: "Pollution can harm health.", target: "nuire" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 47, fr: "Sensibiliser", phon: "sahn-see-bee-lee-zay", en: "To raise awareness", exFr: "La campagne vise à sensibiliser le public.", exEn: "The campaign aims to raise public awareness.", target: "sensibiliser" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 48, fr: "Prendre soin de", phon: "prahn-druh swahn duh", en: "To take care of", exFr: "Il faut prendre soin de sa santé tous les jours.", exEn: "One must take care of one's health daily.", target: "prendre soin" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 49, fr: "Promouvoir", phon: "proh-moo-vwahr", en: "To promote", exFr: "L'État doit promouvoir des activités sportives.", exEn: "The state must promote sports activities.", target: "promouvoir" },
+        { deck: 5, deckTitle: "Deck 5 • Key Action Verbs", id: 50, fr: "Souffrir de", phon: "soo-freer duh", en: "To suffer from", exFr: "Beaucoup de gens souffrent de stress chronique.", exEn: "Many people suffer from chronic stress.", target: "souffrir" }
+    ];
+
+    // RENDER ALL 50 CARDS DYNAMICALLY
+    const container = document.getElementById('vocab-container');
+    let currentDeck = 0;
+
+    vocabData.forEach(item => {
+        if (item.deck !== currentDeck) {
+            currentDeck = item.deck;
+            const deckHeader = document.createElement('div');
+            deckHeader.className = 'deck-header';
+            deckHeader.innerHTML = `<span>${item.deckTitle}</span><span style="font-size: 0.85rem; color: var(--primary);">10 Words</span>`;
+            container.appendChild(deckHeader);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'vocab-card-interactive';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="word-fr">${item.id}. ${item.fr}</div>
+                    <div class="word-phonetic">[${item.phon}]</div>
+                    <div class="word-en">${item.en}</div>
+                </div>
+                <button class="speaker-btn" onclick="speakAsMarc('${item.fr}. ${item.exFr}')">🔊</button>
+            </div>
+            <div class="example-box">
+                <div class="example-fr">💬 Example: « ${item.exFr} »</div>
+                <div class="example-en">${item.exEn}</div>
+            </div>
+            <div class="mic-section">
+                <button class="btn-mic" id="mic-btn-${item.id}" onclick="toggleRecord(${item.id}, '${item.target}')">
+                    🎙️ Practice Saying "${item.fr}"
+                </button>
+            </div>
+            <div class="feedback-container" id="feedback-${item.id}">
+                <p><span class="coach-tag">👩‍💻 Élodie (Transcript):</span> <span id="transcript-${item.id}">...</span></p>
+                <p><span class="coach-tag">👩‍⚖️ Léa (Evaluation):</span> <span id="eval-${item.id}">...</span></p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    // SPEECH RECOGNITION & VOICE SYNTHESIS ENGINE
     let recognition;
     let isRecording = false;
     let activeCardId = null;
+    let activeTarget = "";
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -233,7 +293,7 @@
 
         recognition.onresult = (event) => {
             const spokenText = event.results[0][0].transcript.toLowerCase();
-            processCoachFeedback(activeCardId, spokenText, currentTargetWord);
+            processCoachFeedback(activeCardId, spokenText, activeTarget);
         };
 
         recognition.onend = () => {
@@ -244,16 +304,14 @@
         };
     }
 
-    let currentTargetWord = "";
-
     function toggleRecord(id, targetWord) {
         if (!recognition) {
-            alert("Speech recognition requires Chrome or Edge.");
+            alert("Speech recognition requires Google Chrome or Microsoft Edge.");
             return;
         }
 
         activeCardId = id;
-        currentTargetWord = targetWord.toLowerCase();
+        activeTarget = targetWord.toLowerCase();
         const btn = document.getElementById(`mic-btn-${id}`);
 
         if (isRecording) {
@@ -270,25 +328,42 @@
 
     function processCoachFeedback(id, spokenText, target) {
         document.getElementById(`transcript-${id}`).innerText = `"${spokenText}"`;
-
         const evalSpan = document.getElementById(`eval-${id}`);
-        
-        // Match checking logic
+        let leaSpokenMessage = "";
+
         if (spokenText.includes(target) || target.includes(spokenText)) {
-            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Your pronunciation matched the target term closely. Keep going!";
+            evalSpan.innerHTML = "✅ <strong>Parfait !</strong> Your pronunciation matched the term closely!";
             evalSpan.style.color = "#065F46";
+            leaSpokenMessage = "Parfait ! Excellente prononciation.";
         } else {
-            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Léa detected <em>"${spokenText}"</em>. Click the 🔊 button above to listen to Marc again, then retry!`;
+            evalSpan.innerHTML = `⚠️ <strong>Close try!</strong> Léa detected <em>"${spokenText}"</em>. Click 🔊 to listen to Marc again, then retry.`;
             evalSpan.style.color = "#991B1B";
+            leaSpokenMessage = "Presque ! Réécoutez Marc et réessayez.";
         }
+
+        speakAsLea(leaSpokenMessage);
     }
 
-    function say(text) {
+    // MARC'S VOICE (Deeper tone, steady rate)
+    function speakAsMarc(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const speech = new SpeechSynthesisUtterance(text);
             speech.lang = 'fr-FR';
             speech.rate = 0.85;
+            speech.pitch = 0.9;
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    // LÉA'S VOICE (Bright, expressive pitch for spoken evaluation)
+    function speakAsLea(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'fr-FR';
+            speech.rate = 0.92;
+            speech.pitch = 1.25;
             window.speechSynthesis.speak(speech);
         }
     }
