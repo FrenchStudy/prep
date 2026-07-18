@@ -89,7 +89,7 @@
         .pool-counter p { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
         .pool-counter .count { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
 
-        /* Flashcard Component Layout */
+        /* Flashcard Layout */
         .flashcard-wrapper {
             background: var(--card-bg);
             border-radius: 20px;
@@ -122,7 +122,7 @@
         .translation-box { margin-top: 25px; font-size: 1.5rem; color: #059669; font-weight: 600; min-height: 36px; }
         .hidden { display: none !important; }
 
-        /* Audio Interaction Bar */
+        /* Audio Interaction Elements */
         .audio-controls {
             display: flex;
             gap: 12px;
@@ -167,11 +167,11 @@
     <div class="header">
         <h1>TCF 5,000 Frequency Suite</h1>
         <p>Active-recall filter matrix</p>
-        <a href="../index.html" class="return-btn">← Return Dashboard</a>
+        <a href="index.html" class="return-btn">← Return Dashboard</a>
     </div>
 
     <div class="workspace">
-        <!-- Sidebar Filter Engine -->
+        <!-- Sidebar Filter Component -->
         <div class="settings-card">
             <h2>Target Filter Settings</h2>
             
@@ -204,7 +204,7 @@
             </div>
         </div>
 
-        <!-- Master Flashcard Workspace Component -->
+        <!-- Main Workspace Component -->
         <div class="flashcard-wrapper">
             <div class="card-top">
                 <div id="rank-display" class="rank-badge">RANK #0000</div>
@@ -212,10 +212,10 @@
             </div>
 
             <div class="card-middle">
-                <div id="word-display" class="target-word">Loading...</div>
-                <div id="type-display" class="part-of-speech">VOCABULARY SYSTEM</div>
+                <div id="word-display" class="target-word">Loading Base...</div>
+                <div id="type-display" class="part-of-speech">VOCABULARY MATRIX</div>
                 
-                <!-- Interactive Media Controls -->
+                <!-- Interactive Controllers -->
                 <div class="audio-controls">
                     <button class="icon-btn" onclick="playAudio()" title="Listen (Text to Speech)">🔊</button>
                     <button id="mic-btn" class="icon-btn" onclick="toggleVoiceCapture()" title="Check Pronunciation (Mic)">🎙️</button>
@@ -240,11 +240,10 @@
     let recognition = null;
     let isListening = false;
 
-    // Asynchronous Database Bootloader
+    // Asynchronous Bootloader File Fetcher
     window.addEventListener('DOMContentLoaded', () => {
         initSpeechRecognition();
         
-        // Fetch strictly from the relative data path
         fetch('./data/vocab_master.json')
             .then(response => {
                 if (!response.ok) throw new Error("Database file missing or unreachable.");
@@ -252,19 +251,19 @@
             })
             .then(data => {
                 if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error("JSON data is empty or not an array.");
+                    throw new Error("JSON payload array configuration mismatch.");
                 }
                 allWords = data; 
                 applyFilters();
             })
             .catch(error => {
-                console.error("Data fetch exception:", error);
+                console.error("Data fetch context mismatch exception:", error);
                 document.getElementById("word-display").innerText = "Database Error";
-                document.getElementById("type-display").innerText = "COULD NOT LOAD DATA/VOCAB_MASTER.JSON";
+                document.getElementById("type-display").innerText = "COULD NOT PARSE DATA/VOCAB_MASTER.JSON";
             });
     });
 
-    // Sanitized Filtering Pipeline mapping string variants cleanly
+    // Filtering Normalization Mapping
     function applyFilters() {
         const selectedLevel = document.getElementById("level-filter").value;
         const selectedType = document.getElementById("type-filter").value;
@@ -283,7 +282,7 @@
         updateCardUI();
     }
 
-    // Dynamic UI Renderer updating layout metadata instantly on changes
+    // Dynamic Engine Card Renderer with Integrated Smart Key Recovery fallback paths
     function updateCardUI() {
         const poolCountDisplay = document.getElementById("pool-count");
         const rankDisplay = document.getElementById("rank-display");
@@ -298,6 +297,7 @@
 
         poolCountDisplay.innerText = filteredPool.length;
 
+        // Gracefully handle empty states completely to update headers accurately
         if (filteredPool.length === 0) {
             const levelSelect = document.getElementById("level-filter");
             const typeSelect = document.getElementById("type-filter");
@@ -311,23 +311,27 @@
 
         const activeWord = filteredPool[currentIndex];
         
-        wordDisplay.innerText = activeWord.french || activeWord.French || "Missing Word";
-        
-        const rawType = activeWord.type || activeWord.Type || "UNKNOWN";
-        typeDisplay.innerText = rawType.toUpperCase();
-        
-        const rawRank = activeWord.rank || activeWord.Rank || "----";
-        rankDisplay.innerText = `RANK #${rawRank}`;
-        
-        const rawLevel = activeWord.level || activeWord.Level || "A1";
-        levelBadge.innerText = rawLevel.toUpperCase();
+        // 🔍 SMART KEY AUTO-RECOVERY PIPELINE
+        const frenchWord = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
+        const wordType = activeWord.type || activeWord.Type || activeWord.category || activeWord.pos || "UNKNOWN";
+        const rankValue = activeWord.rank || activeWord.Rank || activeWord.id || activeWord.Id || (currentIndex + 1);
+        const cefrLevel = activeWord.level || activeWord.Level || "A1-A2";
+
+        wordDisplay.innerText = frenchWord || "Property Extraction Mismatch";
+        typeDisplay.innerText = wordType.toString().toUpperCase();
+        rankDisplay.innerText = `RANK #${rankValue}`;
+        levelBadge.innerText = cefrLevel.toString().toUpperCase();
     }
 
     function revealTranslation() {
         if (filteredPool.length === 0) return;
         const transBox = document.getElementById("translation-display");
         const activeWord = filteredPool[currentIndex];
-        transBox.innerText = activeWord.english || activeWord.English || "No translation loaded.";
+        
+        // Smart Recovery fallback targets for English variants
+        const englishTranslation = activeWord.english || activeWord.English || activeWord.translation || activeWord.Translation || activeWord.en || activeWord.En;
+        
+        transBox.innerText = englishTranslation || "No explicit translation translation parameter detected.";
         transBox.classList.remove("hidden");
     }
 
@@ -337,14 +341,15 @@
         updateCardUI();
     }
 
-    // Browser-Secure Text to Speech Trigger Controller
+    // Audio Output Playback Module
     function playAudio() {
         if (filteredPool.length === 0) return;
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel(); 
             
             const activeWord = filteredPool[currentIndex];
-            const textToSpeak = activeWord.french || activeWord.French;
+            const textToSpeak = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
+            
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'fr-FR';
 
@@ -354,15 +359,15 @@
 
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Speech audio engine missing or blocked on this device layout.");
+            alert("Audio speech synthesis modules are blocked or missing from this browser profile.");
         }
     }
 
-    // High Accuracy Speech Evaluation Suite
+    // Speech Evaluation Microphone Pipeline Environment Setup
     function initSpeechRecognition() {
         const SpeechClass = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechClass) {
-            console.warn("Speech capture engine unsupported on this browser flavor.");
+            console.warn("Speech API layer inaccessible or unsupported in this engine.");
             document.getElementById("mic-btn").style.display = "none";
             return;
         }
@@ -375,7 +380,7 @@
         recognition.onstart = () => {
             isListening = true;
             document.getElementById("mic-btn").classList.add("active");
-            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the French word.";
+            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the target term.";
         };
 
         recognition.onend = () => {
@@ -385,13 +390,14 @@
 
         recognition.onerror = (e) => {
             console.error(e);
-            document.getElementById("voice-feedback").innerText = `Mic Event Code: ${e.error}`;
+            document.getElementById("voice-feedback").innerText = `Mic API Exception Context: ${e.error}`;
         };
 
         recognition.onresult = (event) => {
             const resultString = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             const activeWord = filteredPool[currentIndex];
-            const targetString = (activeWord.french || activeWord.French).toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+            const targetWord = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
+            const targetString = targetWord.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             
             const feedbackElement = document.getElementById("voice-feedback");
 
@@ -407,7 +413,7 @@
 
     function toggleVoiceCapture() {
         if (!recognition) {
-            alert("Voice comparison API requires Google Chrome, Microsoft Edge or Safari over HTTPS.");
+            alert("Secure runtime browser verification mismatch: Voice capture layer expects modern browsers over HTTPS.");
             return;
         }
         if (filteredPool.length === 0) return;
