@@ -371,48 +371,50 @@
     });
 
     function applyFilters() {
-        const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
-        const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
+    const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
+    const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
-        filteredPool = allWords.filter(word => {
-            if (!word) return false;
+    filteredPool = allWords.filter(word => {
+        if (!word) return false;
 
-            // Extract values and convert everything to string string-matching safety
-            const targetLevel = (word.level || word.cefr || word.tier || "").toString().toLowerCase().trim();
-            const targetType = (word.pos || word.type || word.category || "").toString().toLowerCase().trim();
-            const fullRawString = JSON.stringify(word).toLowerCase();
+        // Extract values cleanly
+        const targetLevel = (word.level || word.cefr || "").toString().toLowerCase().trim();
+        const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
+        const fullRawString = JSON.stringify(word).toLowerCase();
 
-            // Match combined level ranges seamlessly
-            let matchesLevel = false;
-            if (selectedLevel === "all") { 
-                matchesLevel = true; 
-            } else if (selectedLevel === "a1-a2") { 
-                matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2") || fullRawString.includes('"a1"') || fullRawString.includes('"a2"'); 
-            } else if (selectedLevel === "c1-c2") { 
-                matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2") || fullRawString.includes('"c1"') || fullRawString.includes('"c2"'); 
-            } else { 
-                matchesLevel = targetLevel.includes(selectedLevel) || fullRawString.includes(`"${selectedLevel}"`); 
-            }
+        // 1. Level Filter Logic (A1/A2 and C1/C2 grouping)
+        let matchesLevel = false;
+        if (selectedLevel === "all") { 
+            matchesLevel = true; 
+        } else if (selectedLevel === "a1-a2") { 
+            matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2"); 
+        } else if (selectedLevel === "c1-c2") { 
+            matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2"); 
+        } else { 
+            matchesLevel = targetLevel.includes(selectedLevel); 
+        }
 
-            // Match Part of Speech variations smoothly
-            let matchesType = false;
-            if (selectedType === "all") { 
-                matchesType = true; 
-            } else if (selectedType === "verb") { 
-                matchesType = targetType.includes("verb") || targetType.includes("v") || fullRawString.includes('"v"'); 
-            } else if (selectedType === "noun") { 
-                matchesType = targetType.includes("noun") || targetType.includes("nom") || targetType.includes("n") || fullRawString.includes('"n"'); 
-            } else if (selectedType === "adjective") { 
-                matchesType = targetType.includes("adj") || fullRawString.includes('"adj"'); 
-            }
-            
-            return matchesLevel && matchesType;
-        });
+        // 2. Strict Part of Speech Filter Logic
+        let matchesType = false;
+        if (selectedType === "all") { 
+            matchesType = true; 
+        } else if (selectedType === "verb") { 
+            // Matches "verbs", "verb", or an isolated exact "v" property value
+            matchesType = targetType.includes("verb") || targetType === "v"; 
+        } else if (selectedType === "noun") { 
+            // Matches "nouns", "noun", "nom", or exact "n"
+            matchesType = targetType.includes("noun") || targetType.includes("nom") || targetType === "n"; 
+        } else if (selectedType === "adjective") { 
+            // Matches "adjectives", "adjective", or "adj"
+            matchesType = targetType.includes("adj"); 
+        }
+        
+        return matchesLevel && matchesType;
+    });
 
-        currentIndex = 0;
-        updateCardUI();
-    }
-
+    currentIndex = 0;
+    updateCardUI();
+}
     // High-Probability Wikipedia Image Extractor
     function fetchWordImage(wordObj) {
         const imgElement = document.getElementById("word-image");
