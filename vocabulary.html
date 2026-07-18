@@ -244,20 +244,23 @@
     window.addEventListener('DOMContentLoaded', () => {
         initSpeechRecognition();
         
-        // Dynamically loads the JSON database you created in your data folder
+        // Fetch strictly from the relative data path
         fetch('./data/vocab_master.json')
             .then(response => {
                 if (!response.ok) throw new Error("Database file missing or unreachable.");
                 return response.json();
             })
             .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error("JSON data is empty or not an array.");
+                }
                 allWords = data; 
                 applyFilters();
             })
             .catch(error => {
                 console.error("Data fetch exception:", error);
                 document.getElementById("word-display").innerText = "Database Error";
-                document.getElementById("type-display").innerText = "CHECK DATA/VOCAB_MASTER.JSON LOCATION";
+                document.getElementById("type-display").innerText = "COULD NOT LOAD DATA/VOCAB_MASTER.JSON";
             });
     });
 
@@ -267,7 +270,6 @@
         const selectedType = document.getElementById("type-filter").value;
 
         filteredPool = allWords.filter(word => {
-            // Converts target fields into reliable matching conditions
             const targetLevel = (word.level || word.Level || "").toString().trim().toUpperCase();
             const targetType = (word.type || word.Type || "").toString().trim().toLowerCase();
 
@@ -296,7 +298,6 @@
 
         poolCountDisplay.innerText = filteredPool.length;
 
-        // Handles empty state updates gracefully rather than retaining stale details
         if (filteredPool.length === 0) {
             const levelSelect = document.getElementById("level-filter");
             const typeSelect = document.getElementById("type-filter");
@@ -310,7 +311,6 @@
 
         const activeWord = filteredPool[currentIndex];
         
-        // Supports both lowercase 'french' and capitalized 'French' key setups natively
         wordDisplay.innerText = activeWord.french || activeWord.French || "Missing Word";
         
         const rawType = activeWord.type || activeWord.Type || "UNKNOWN";
