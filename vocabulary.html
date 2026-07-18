@@ -245,7 +245,7 @@
         initSpeechRecognition();
         
         // Dynamically loads the JSON database you created in your data folder
-        fetch('data/vocab_master.json')
+        fetch('./data/vocab_master.json')
             .then(response => {
                 if (!response.ok) throw new Error("Database file missing or unreachable.");
                 return response.json();
