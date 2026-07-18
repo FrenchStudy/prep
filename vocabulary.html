@@ -289,35 +289,46 @@
 
     // Filtering Normalization Mapping
     function applyFilters() {
-        const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
-        const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
+    const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
+    const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
-        filteredPool = allWords.filter(word => {
-            // Target precise fallback properties
-            const targetLevel = (word.level || "").toString().toLowerCase().trim();
-            const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
+    filteredPool = allWords.filter(word => {
+        const targetLevel = (word.level || "").toString().toLowerCase().trim();
+        const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
 
-            // Match Level strings safely
-            const matchesLevel = (selectedLevel === "all") || targetLevel.includes(selectedLevel);
+        // Smart level matching for grouped brackets (e.g., "a1-a2" or "c1-c2")
+        let matchesLevel = false;
+        if (selectedLevel === "all") {
+            matchesLevel = true;
+        } else if (selectedLevel === "a1" || selectedLevel === "a2") {
+            // If user selects A1 or A2, match if the JSON contains "a1" or "a2"
+            matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2");
+        } else if (selectedLevel === "c1" || selectedLevel === "c2") {
+            // If user selects C1 or C2, match if the JSON contains "c1" or "c2"
+            matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2");
+        } else {
+            // Default exact matching for B1, B2, etc.
+            matchesLevel = targetLevel.includes(selectedLevel);
+        }
 
-            // Match Part of Speech variations flexibly
-            let matchesType = false;
-            if (selectedType === "all") {
-                matchesType = true;
-            } else if (selectedType === "verb") {
-                matchesType = targetType.includes("verb");
-            } else if (selectedType === "noun") {
-                matchesType = targetType.includes("noun") || targetType.includes("nom");
-            } else if (selectedType === "adjective") {
-                matchesType = targetType.includes("adj");
-            }
-            
-            return matchesLevel && matchesType;
-        });
+        // Match Part of Speech variations flexibly
+        let matchesType = false;
+        if (selectedType === "all") {
+            matchesType = true;
+        } else if (selectedType === "verb") {
+            matchesType = targetType.includes("verb");
+        } else if (selectedType === "noun") {
+            matchesType = targetType.includes("noun") || targetType.includes("nom");
+        } else if (selectedType === "adjective") {
+            matchesType = targetType.includes("adj");
+        }
+        
+        return matchesLevel && matchesType;
+    });
 
-        currentIndex = 0;
-        updateCardUI();
-    }
+    currentIndex = 0;
+    updateCardUI();
+}
 
     // Dynamic Engine Card Renderer
     function updateCardUI() {
