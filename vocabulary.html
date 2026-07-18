@@ -89,7 +89,7 @@
         .pool-counter p { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
         .pool-counter .count { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
 
-        /* Flashcard Core Layout */
+        /* Flashcard Component Layout */
         .flashcard-wrapper {
             background: var(--card-bg);
             border-radius: 20px;
@@ -122,7 +122,7 @@
         .translation-box { margin-top: 25px; font-size: 1.5rem; color: #059669; font-weight: 600; min-height: 36px; }
         .hidden { display: none !important; }
 
-        /* Media Controls Layout */
+        /* Audio Interaction Bar */
         .audio-controls {
             display: flex;
             gap: 12px;
@@ -234,34 +234,46 @@
 </div>
 
 <script>
-    // Robust Mock Data Core Array matching TCF standards
-    let allWords = [
-        { rank: "0102", french: "parler", english: "to speak / to talk", level: "A1", type: "verb" },
-        { rank: "0450", french: "environnement", english: "environment", level: "B2", type: "noun" },
-        { rank: "1205", french: "analyser", english: "to analyze", level: "B1", type: "verb" },
-        { rank: "3153", french: "pertinent", english: "relevant / applicable", level: "C1", type: "adjective" },
-        { rank: "3200", french: "revendiquer", english: "to claim / demand", level: "C1", type: "verb" }
-    ];
-
+    let allWords = []; 
     let filteredPool = [];
     let currentIndex = 0;
     let recognition = null;
     let isListening = false;
 
-    // Initialize Application Logic
+    // Asynchronous Database Bootloader
     window.addEventListener('DOMContentLoaded', () => {
         initSpeechRecognition();
-        applyFilters();
+        
+        // Dynamically loads the JSON database you created in your data folder
+        fetch('data/vocab_master.json')
+            .then(response => {
+                if (!response.ok) throw new Error("Database file missing or unreachable.");
+                return response.json();
+            })
+            .then(data => {
+                allWords = data; 
+                applyFilters();
+            })
+            .catch(error => {
+                console.error("Data fetch exception:", error);
+                document.getElementById("word-display").innerText = "Database Error";
+                document.getElementById("type-display").innerText = "CHECK DATA/VOCAB_MASTER.JSON LOCATION";
+            });
     });
 
-    // Clean String Filters fixing the "Empty Pool" type layout updates
+    // Sanitized Filtering Pipeline mapping string variants cleanly
     function applyFilters() {
         const selectedLevel = document.getElementById("level-filter").value;
         const selectedType = document.getElementById("type-filter").value;
 
         filteredPool = allWords.filter(word => {
-            const matchesLevel = (selectedLevel === "all") || (word.level.toUpperCase() === selectedLevel.toUpperCase());
-            const matchesType = (selectedType === "all") || (word.type.toLowerCase() === selectedType.toLowerCase());
+            // Converts target fields into reliable matching conditions
+            const targetLevel = (word.level || word.Level || "").toString().trim().toUpperCase();
+            const targetType = (word.type || word.Type || "").toString().trim().toLowerCase();
+
+            const matchesLevel = (selectedLevel === "all") || (targetLevel === selectedLevel.toUpperCase());
+            const matchesType = (selectedType === "all") || (targetType === selectedType.toLowerCase());
+            
             return matchesLevel && matchesType;
         });
 
@@ -269,7 +281,7 @@
         updateCardUI();
     }
 
-    // Comprehensive rendering pipeline updating states uniformly 
+    // Dynamic UI Renderer updating layout metadata instantly on changes
     function updateCardUI() {
         const poolCountDisplay = document.getElementById("pool-count");
         const rankDisplay = document.getElementById("rank-display");
@@ -278,14 +290,13 @@
         const typeDisplay = document.getElementById("type-display");
         const feedbackDisplay = document.getElementById("voice-feedback");
         
-        // Hide prior translations automatically
         document.getElementById("translation-display").classList.add("hidden");
         feedbackDisplay.innerText = "";
         feedbackDisplay.className = "voice-feedback";
 
         poolCountDisplay.innerText = filteredPool.length;
 
-        // Fallback checks fixing the stuck labels freeze bug
+        // Handles empty state updates gracefully rather than retaining stale details
         if (filteredPool.length === 0) {
             const levelSelect = document.getElementById("level-filter");
             const typeSelect = document.getElementById("type-filter");
@@ -297,18 +308,26 @@
             return;
         }
 
-        // Render target active list index entry configuration
         const activeWord = filteredPool[currentIndex];
-        wordDisplay.innerText = activeWord.french;
-        typeDisplay.innerText = activeWord.type.toUpperCase();
-        rankDisplay.innerText = `RANK #${activeWord.rank}`;
-        levelBadge.innerText = activeWord.level.toUpperCase();
+        
+        // Supports both lowercase 'french' and capitalized 'French' key setups natively
+        wordDisplay.innerText = activeWord.french || activeWord.French || "Missing Word";
+        
+        const rawType = activeWord.type || activeWord.Type || "UNKNOWN";
+        typeDisplay.innerText = rawType.toUpperCase();
+        
+        const rawRank = activeWord.rank || activeWord.Rank || "----";
+        rankDisplay.innerText = `RANK #${rawRank}`;
+        
+        const rawLevel = activeWord.level || activeWord.Level || "A1";
+        levelBadge.innerText = rawLevel.toUpperCase();
     }
 
     function revealTranslation() {
         if (filteredPool.length === 0) return;
         const transBox = document.getElementById("translation-display");
-        transBox.innerText = filteredPool[currentIndex].english;
+        const activeWord = filteredPool[currentIndex];
+        transBox.innerText = activeWord.english || activeWord.English || "No translation loaded.";
         transBox.classList.remove("hidden");
     }
 
@@ -318,13 +337,14 @@
         updateCardUI();
     }
 
-    // High-Fidelity User Gestured Text to Speech Native Voice Engine
+    // Browser-Secure Text to Speech Trigger Controller
     function playAudio() {
         if (filteredPool.length === 0) return;
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Abort previous clips instantly
+            window.speechSynthesis.cancel(); 
             
-            const textToSpeak = filteredPool[currentIndex].french;
+            const activeWord = filteredPool[currentIndex];
+            const textToSpeak = activeWord.french || activeWord.French;
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'fr-FR';
 
@@ -334,11 +354,11 @@
 
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Your browser does not support audio synthesis natively.");
+            alert("Speech audio engine missing or blocked on this device layout.");
         }
     }
 
-    // Microphone Core Infrastructure Framework Setup
+    // High Accuracy Speech Evaluation Suite
     function initSpeechRecognition() {
         const SpeechClass = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechClass) {
@@ -355,7 +375,7 @@
         recognition.onstart = () => {
             isListening = true;
             document.getElementById("mic-btn").classList.add("active");
-            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the word.";
+            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the French word.";
         };
 
         recognition.onend = () => {
@@ -365,12 +385,14 @@
 
         recognition.onerror = (e) => {
             console.error(e);
-            document.getElementById("voice-feedback").innerText = `Capture Error: ${e.error}`;
+            document.getElementById("voice-feedback").innerText = `Mic Event Code: ${e.error}`;
         };
 
         recognition.onresult = (event) => {
-            const resultString = event.results[0][0].transcript.toLowerCase().trim();
-            const targetString = filteredPool[currentIndex].french.toLowerCase().trim();
+            const resultString = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+            const activeWord = filteredPool[currentIndex];
+            const targetString = (activeWord.french || activeWord.French).toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+            
             const feedbackElement = document.getElementById("voice-feedback");
 
             if (resultString === targetString) {
@@ -385,7 +407,7 @@
 
     function toggleVoiceCapture() {
         if (!recognition) {
-            alert("Speech capture engine is not supported by your current browser profile.");
+            alert("Voice comparison API requires Google Chrome, Microsoft Edge or Safari over HTTPS.");
             return;
         }
         if (filteredPool.length === 0) return;
@@ -393,7 +415,6 @@
         if (isListening) {
             recognition.stop();
         } else {
-            // Prompts user secure token check cleanly
             recognition.start();
         }
     }
