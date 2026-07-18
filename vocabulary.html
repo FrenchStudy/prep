@@ -98,7 +98,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 450px;
+            min-height: 480px;
             position: relative;
         }
 
@@ -113,20 +113,35 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px 0;
+            padding: 10px 0;
         }
 
         .target-word { font-size: 3rem; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
-        .part-of-speech { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+        .part-of-speech { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; }
         
-        .translation-box { margin-top: 25px; font-size: 1.5rem; color: #059669; font-weight: 600; min-height: 36px; }
+        .translation-box { margin-top: 20px; width: 100%; text-align: center; }
+        .meaning-text { font-size: 1.5rem; color: #059669; font-weight: 600; margin-bottom: 15px; }
+        
+        .example-sentence { 
+            background: #F8FAFC; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 0.95rem; 
+            margin-top: 8px; 
+            border-left: 4px solid #3B82F6;
+            text-align: left;
+            max-width: 600px;
+            width: 100%;
+        }
+        .example-en { color: var(--text-muted); font-style: italic; margin-top: 4px; font-size: 0.9rem; }
+
         .hidden { display: none !important; }
 
         /* Audio Interaction Elements */
         .audio-controls {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-bottom: 15px;
         }
         .icon-btn {
             background: #F1F5F9;
@@ -150,10 +165,10 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        .voice-feedback { font-size: 0.9rem; margin-top: 10px; font-weight: 600; color: var(--text-muted); min-height: 20px; }
+        .voice-feedback { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); min-height: 20px; margin-bottom: 10px; }
         .voice-success { color: #059669 !important; }
 
-        .card-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .card-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
         .btn { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; transition: all 0.2s; text-align: center; }
         .btn-dark { background: #1E293B; color: white; }
         .btn-dark:hover { background: #0F172A; }
@@ -179,12 +194,12 @@
                 <label for="level-filter">CEFR Level</label>
                 <select id="level-filter" onchange="applyFilters()">
                     <option value="all">All Levels (A1-C2)</option>
-                    <option value="A1">A1 (Beginner)</option>
-                    <option value="A2">A2 (High Beginner)</option>
-                    <option value="B1">B1 (Intermediate)</option>
-                    <option value="B2">B2 (Advanced Intermediate)</option>
-                    <option value="C1">C1 (Advanced Lexicon)</option>
-                    <option value="C2">C2 (Mastery)</option>
+                    <option value="a1">A1 Level</option>
+                    <option value="a2">A2 Level</option>
+                    <option value="b1">B1 Level</option>
+                    <option value="b2">B2 Level</option>
+                    <option value="c1">C1 Level</option>
+                    <option value="c2">C2 Level</option>
                 </select>
             </div>
 
@@ -222,7 +237,14 @@
                 </div>
                 <div id="voice-feedback" class="voice-feedback"></div>
 
-                <div id="translation-display" class="translation-box hidden">Translation</div>
+                <!-- Custom Translation & Context Box -->
+                <div id="translation-display" class="translation-box hidden">
+                    <div id="meaning-display" class="meaning-text">Translation</div>
+                    <div id="sentence-box" class="example-sentence">
+                        <div id="sentence-fr-display">French Sentence</div>
+                        <div id="sentence-en-display" class="example-en">English Translation</div>
+                    </div>
+                </div>
             </div>
 
             <div class="card-bottom">
@@ -240,7 +262,7 @@
     let recognition = null;
     let isListening = false;
 
-    // Asynchronous Bootloader File Fetcher
+    // Asynchronous JSON Bootloader File Fetcher
     window.addEventListener('DOMContentLoaded', () => {
         initSpeechRecognition();
         
@@ -250,9 +272,6 @@
                 return response.json();
             })
             .then(data => {
-                if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error("JSON payload array configuration mismatch.");
-                }
                 allWords = data; 
                 applyFilters();
             })
@@ -263,17 +282,30 @@
             });
     });
 
-    // Filtering Normalization Mapping
+    // Filtering Normalization Mapping specifically built for your JSON architecture
     function applyFilters() {
-        const selectedLevel = document.getElementById("level-filter").value;
-        const selectedType = document.getElementById("type-filter").value;
+        const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
+        const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
         filteredPool = allWords.filter(word => {
-            const targetLevel = (word.level || word.Level || "").toString().trim().toUpperCase();
-            const targetType = (word.type || word.Type || "").toString().trim().toLowerCase();
+            // Safe extraction pointing precisely to your JSON keys
+            const targetLevel = (word.level || "").toString().toLowerCase().trim();
+            const targetType = (word.pos || "").toString().toLowerCase().trim();
 
-            const matchesLevel = (selectedLevel === "all") || (targetLevel === selectedLevel.toUpperCase());
-            const matchesType = (selectedType === "all") || (targetType === selectedType.toLowerCase());
+            // Match Level strings like "a1-a2 (essential)" or "b1 (intermediate)"
+            const matchesLevel = (selectedLevel === "all") || targetLevel.includes(selectedLevel);
+
+            // Match Part of Speech variations flexibly
+            let matchesType = false;
+            if (selectedType === "all") {
+                matchesType = true;
+            } else if (selectedType === "verb") {
+                matchesType = targetType.includes("verb");
+            } else if (selectedType === "noun") {
+                matchesType = targetType.includes("noun") || targetType.includes("nom");
+            } else if (selectedType === "adjective") {
+                matchesType = targetType.includes("adj");
+            }
             
             return matchesLevel && matchesType;
         });
@@ -282,7 +314,7 @@
         updateCardUI();
     }
 
-    // Dynamic Engine Card Renderer with Integrated Smart Key Recovery fallback paths
+    // Dynamic Engine Card Renderer
     function updateCardUI() {
         const poolCountDisplay = document.getElementById("pool-count");
         const rankDisplay = document.getElementById("rank-display");
@@ -297,7 +329,7 @@
 
         poolCountDisplay.innerText = filteredPool.length;
 
-        // Gracefully handle empty states completely to update headers accurately
+        // Graceful handling of 0 results layout matching
         if (filteredPool.length === 0) {
             const levelSelect = document.getElementById("level-filter");
             const typeSelect = document.getElementById("type-filter");
@@ -311,27 +343,36 @@
 
         const activeWord = filteredPool[currentIndex];
         
-        // 🔍 SMART KEY AUTO-RECOVERY PIPELINE
-        const frenchWord = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
-        const wordType = activeWord.type || activeWord.Type || activeWord.category || activeWord.pos || "UNKNOWN";
-        const rankValue = activeWord.rank || activeWord.Rank || activeWord.id || activeWord.Id || (currentIndex + 1);
-        const cefrLevel = activeWord.level || activeWord.Level || "A1-A2";
-
-        wordDisplay.innerText = frenchWord || "Property Extraction Mismatch";
-        typeDisplay.innerText = wordType.toString().toUpperCase();
-        rankDisplay.innerText = `RANK #${rankValue}`;
-        levelBadge.innerText = cefrLevel.toString().toUpperCase();
+        wordDisplay.innerText = activeWord.word || "Missing Word";
+        typeDisplay.innerText = (activeWord.pos || "UNKNOWN").toUpperCase();
+        rankDisplay.innerText = `RANK #${activeWord.rank || "----"}`;
+        
+        // Clean up display strings for the badge layout
+        const displayLevel = activeWord.level ? activeWord.level.split(" ")[0] : "A1";
+        levelBadge.innerText = displayLevel.toUpperCase();
     }
 
+    // Enhanced Translation Revealer using your complete example parameters
     function revealTranslation() {
         if (filteredPool.length === 0) return;
-        const transBox = document.getElementById("translation-display");
+        
         const activeWord = filteredPool[currentIndex];
+        const transBox = document.getElementById("translation-display");
         
-        // Smart Recovery fallback targets for English variants
-        const englishTranslation = activeWord.english || activeWord.English || activeWord.translation || activeWord.Translation || activeWord.en || activeWord.En;
+        document.getElementById("meaning-display").innerText = activeWord.english || "No definition found.";
         
-        transBox.innerText = englishTranslation || "No explicit translation translation parameter detected.";
+        const frSentence = activeWord.sentence_fr || "";
+        const enSentence = activeWord.sentence_en || "";
+        const sentenceBox = document.getElementById("sentence-box");
+
+        if (frSentence || enSentence) {
+            sentenceBox.classList.remove("hidden");
+            document.getElementById("sentence-fr-display").innerHTML = `<strong>Ex:</strong> ${frSentence}`;
+            document.getElementById("sentence-en-display").innerText = enSentence;
+        } else {
+            sentenceBox.classList.add("hidden");
+        }
+        
         transBox.classList.remove("hidden");
     }
 
@@ -347,9 +388,7 @@
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel(); 
             
-            const activeWord = filteredPool[currentIndex];
-            const textToSpeak = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
-            
+            const textToSpeak = filteredPool[currentIndex].word;
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'fr-FR';
 
@@ -359,11 +398,11 @@
 
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Audio speech synthesis modules are blocked or missing from this browser profile.");
+            alert("Audio speech synthesis components are not supported or blocked on this browser profile.");
         }
     }
 
-    // Speech Evaluation Microphone Pipeline Environment Setup
+    // High Accuracy Speech Evaluation Microphone Pipeline
     function initSpeechRecognition() {
         const SpeechClass = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechClass) {
@@ -380,7 +419,7 @@
         recognition.onstart = () => {
             isListening = true;
             document.getElementById("mic-btn").classList.add("active");
-            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the target term.";
+            document.getElementById("voice-feedback").innerText = "Listening... Pronounce the French word.";
         };
 
         recognition.onend = () => {
@@ -395,9 +434,7 @@
 
         recognition.onresult = (event) => {
             const resultString = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-            const activeWord = filteredPool[currentIndex];
-            const targetWord = activeWord.french || activeWord.French || activeWord.word || activeWord.Word || activeWord.fr || activeWord.Fr;
-            const targetString = targetWord.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+            const targetString = (filteredPool[currentIndex].word || "").toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             
             const feedbackElement = document.getElementById("voice-feedback");
 
@@ -413,7 +450,7 @@
 
     function toggleVoiceCapture() {
         if (!recognition) {
-            alert("Secure runtime browser verification mismatch: Voice capture layer expects modern browsers over HTTPS.");
+            alert("Voice verification API requires modern browser layouts over secure connections.");
             return;
         }
         if (filteredPool.length === 0) return;
