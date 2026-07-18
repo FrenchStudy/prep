@@ -266,6 +266,11 @@
     window.addEventListener('DOMContentLoaded', () => {
         initSpeechRecognition();
         
+        // Warm up speech synthesis engine without breaking the main thread
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+        
         fetch('./data/vocab_master.json')
             .then(response => {
                 if (!response.ok) throw new Error("Database file missing or unreachable.");
@@ -282,17 +287,17 @@
             });
     });
 
-    // Filtering Normalization Mapping specifically built for your JSON architecture
+    // Filtering Normalization Mapping
     function applyFilters() {
         const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
         const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
         filteredPool = allWords.filter(word => {
-            // Safe extraction pointing precisely to your JSON keys
+            // Target precise fallback properties
             const targetLevel = (word.level || "").toString().toLowerCase().trim();
-            const targetType = (word.pos || "").toString().toLowerCase().trim();
+            const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
 
-            // Match Level strings like "a1-a2 (essential)" or "b1 (intermediate)"
+            // Match Level strings safely
             const matchesLevel = (selectedLevel === "all") || targetLevel.includes(selectedLevel);
 
             // Match Part of Speech variations flexibly
@@ -344,25 +349,25 @@
         const activeWord = filteredPool[currentIndex];
         
         wordDisplay.innerText = activeWord.word || "Missing Word";
-        typeDisplay.innerText = (activeWord.pos || "UNKNOWN").toUpperCase();
+        typeDisplay.innerText = (activeWord.pos || activeWord.type || "UNKNOWN").toUpperCase();
         rankDisplay.innerText = `RANK #${activeWord.rank || "----"}`;
         
-        // Clean up display strings for the badge layout
-        const displayLevel = activeWord.level ? activeWord.level.split(" ")[0] : "A1";
+        // Clean up display strings for the badge layout safely
+        const displayLevel = activeWord.level ? activeWord.level.toString().split(" ")[0] : "A1";
         levelBadge.innerText = displayLevel.toUpperCase();
     }
 
-    // Enhanced Translation Revealer using your complete example parameters
+    // Enhanced Translation Revealer
     function revealTranslation() {
         if (filteredPool.length === 0) return;
         
         const activeWord = filteredPool[currentIndex];
         const transBox = document.getElementById("translation-display");
         
-        document.getElementById("meaning-display").innerText = activeWord.english || "No definition found.";
+        document.getElementById("meaning-display").innerText = activeWord.english || activeWord.translation || "No definition found.";
         
-        const frSentence = activeWord.sentence_fr || "";
-        const enSentence = activeWord.sentence_en || "";
+        const frSentence = activeWord.sentence_fr || activeWord.example_fr || "";
+        const enSentence = activeWord.sentence_en || activeWord.example_en || "";
         const sentenceBox = document.getElementById("sentence-box");
 
         if (frSentence || enSentence) {
@@ -382,7 +387,7 @@
         updateCardUI();
     }
 
-    // Audio Output Playback Module
+    // Audio Output Playback Module with Asynchronous Speech Fix
     function playAudio() {
         if (filteredPool.length === 0) return;
         if ('speechSynthesis' in window) {
@@ -392,9 +397,12 @@
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'fr-FR';
 
+            // Safe lookup for voices loaded down the line
             const voices = window.speechSynthesis.getVoices();
-            const nativeFrenchVoice = voices.find(v => v.lang.startsWith('fr'));
-            if (nativeFrenchVoice) utterance.voice = nativeFrenchVoice;
+            if (voices && voices.length > 0) {
+                const nativeFrenchVoice = voices.find(v => v.lang.startsWith('fr'));
+                if (nativeFrenchVoice) utterance.voice = nativeFrenchVoice;
+            }
 
             window.speechSynthesis.speak(utterance);
         } else {
@@ -462,6 +470,5 @@
         }
     }
 </script>
-
 </body>
 </html>
