@@ -342,7 +342,6 @@
         </div>
     </div>
 </div>
-
 <script>
     let allWords = []; 
     let filteredPool = [];
@@ -360,11 +359,14 @@
                 return response.json();
             })
             .then(data => {
-                allWords = data; 
+                // Ensure data is parsed as an array
+                allWords = Array.isArray(data) ? data : (data.words || Object.values(data)); 
                 applyFilters();
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error("Critical Fetch Error: ", err);
                 document.getElementById("word-display").innerText = "Database Error";
+                document.getElementById("type-display").innerText = "CHECK PATH: ./data/vocab_master.json";
             });
     });
 
@@ -373,20 +375,36 @@
         const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
         filteredPool = allWords.filter(word => {
-            const targetLevel = (word.level || "").toString().toLowerCase().trim();
-            const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
+            if (!word) return false;
 
+            // Extract values and convert everything to string string-matching safety
+            const targetLevel = (word.level || word.cefr || word.tier || "").toString().toLowerCase().trim();
+            const targetType = (word.pos || word.type || word.category || "").toString().toLowerCase().trim();
+            const fullRawString = JSON.stringify(word).toLowerCase();
+
+            // Match combined level ranges seamlessly
             let matchesLevel = false;
-            if (selectedLevel === "all") { matchesLevel = true; } 
-            else if (selectedLevel === "a1-a2") { matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2"); } 
-            else if (selectedLevel === "c1-c2") { matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2"); } 
-            else { matchesLevel = targetLevel.includes(selectedLevel); }
+            if (selectedLevel === "all") { 
+                matchesLevel = true; 
+            } else if (selectedLevel === "a1-a2") { 
+                matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2") || fullRawString.includes('"a1"') || fullRawString.includes('"a2"'); 
+            } else if (selectedLevel === "c1-c2") { 
+                matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2") || fullRawString.includes('"c1"') || fullRawString.includes('"c2"'); 
+            } else { 
+                matchesLevel = targetLevel.includes(selectedLevel) || fullRawString.includes(`"${selectedLevel}"`); 
+            }
 
+            // Match Part of Speech variations smoothly
             let matchesType = false;
-            if (selectedType === "all") { matchesType = true; } 
-            else if (selectedType === "verb") { matchesType = targetType.includes("verb"); } 
-            else if (selectedType === "noun") { matchesType = targetType.includes("noun") || targetType.includes("nom"); } 
-            else if (selectedType === "adjective") { matchesType = targetType.includes("adj"); }
+            if (selectedType === "all") { 
+                matchesType = true; 
+            } else if (selectedType === "verb") { 
+                matchesType = targetType.includes("verb") || targetType.includes("v") || fullRawString.includes('"v"'); 
+            } else if (selectedType === "noun") { 
+                matchesType = targetType.includes("noun") || targetType.includes("nom") || targetType.includes("n") || fullRawString.includes('"n"'); 
+            } else if (selectedType === "adjective") { 
+                matchesType = targetType.includes("adj") || fullRawString.includes('"adj"'); 
+            }
             
             return matchesLevel && matchesType;
         });
@@ -395,39 +413,46 @@
         updateCardUI();
     }
 
-    // High-Accuracy Dual-Fallback Image Pipeline
+    // High-Probability Wikipedia Image Extractor
     function fetchWordImage(wordObj) {
         const imgElement = document.getElementById("word-image");
-        if (!wordObj || !wordObj.word) {
+        if (!wordObj) {
             imgElement.classList.add("hidden");
             return;
         }
 
-        // Strategy 1: Clean French lookup string
-        const cleanFr = wordObj.word.split('(')[0].replace(/^(se|s'|le|la|les|un|une|d')\s+/, "").trim().toLowerCase();
-        
-        // Strategy 2: Clean English fallback string if French page missing summary visuals
-        const cleanEn = (wordObj.english || wordObj.translation || "").split(',')[0].split(';')[0].replace(/^(to|a|an|the)\s+/, "").trim().toLowerCase();
+        const rawWord = wordObj.word || "";
+        if (!rawWord || rawWord.includes("Empty Pool")) {
+            imgElement.classList.add("hidden");
+            return;
+        }
 
-        // Execution step A: Query French Wikipedia API
+        // Clean out brackets, slashes, reflexive pronouns, and articles
+        let cleanFr = rawWord.split('(')[0].split('/')[0].trim().toLowerCase();
+        cleanFr = cleanFr.replace(/^(se|s'|le|la|les|un|une|d'|l')\s+/, "").trim();
+        
+        // English string cleanup
+        const rawEn = wordObj.english || wordObj.translation || wordObj.meaning || "";
+        let cleanEn = rawEn.split(',')[0].split(';')[0].split('(')[0].trim().toLowerCase();
+        cleanEn = cleanEn.replace(/^(to|a|an|the)\s+/, "").trim();
+
+        // Step 1: Query French Wikipedia Rest API
         fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanFr)}`)
-            .then(res => res.json())
+            .then(res => res.ok ? res.json() : Promise.reject())
             .then(data => {
-                if (data.thumbnail && data.thumbnail.source) {
+                if (data.thumbnail && data.thumbnail.source && !data.thumbnail.source.includes("Mimetype")) {
                     imgElement.src = data.thumbnail.source;
                     imgElement.classList.remove("hidden");
-                } else if (cleanEn) {
-                    // Execution step B: Fallback to English Wikipedia API
-                    throw new Error("Try English fallback");
                 } else {
-                    imgElement.classList.add("hidden");
+                    throw new Error();
                 }
             })
             .catch(() => {
+                // Step 2: Fallback to English Wikipedia if French media fails
                 if (!cleanEn) { imgElement.classList.add("hidden"); return; }
                 
                 fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanEn)}`)
-                    .then(res => res.json())
+                    .then(res => res.ok ? res.json() : Promise.reject())
                     .then(data => {
                         if (data.thumbnail && data.thumbnail.source) {
                             imgElement.src = data.thumbnail.source;
@@ -454,13 +479,16 @@
 
         if (filteredPool.length === 0) {
             wordDisplay.innerText = "Empty Pool";
+            typeDisplay.innerText = "NO MATCH";
+            rankDisplay.innerText = "RANK #----";
+            levelBadge.innerText = "--";
             document.getElementById("word-image").classList.add("hidden");
             return;
         }
 
         const activeWord = filteredPool[currentIndex];
         
-        // Process smart imagery retrieval
+        // Load clean image assets
         fetchWordImage(activeWord);
 
         wordDisplay.innerText = activeWord.word || "Missing Word";
@@ -475,10 +503,10 @@
         if (filteredPool.length === 0) return;
         const activeWord = filteredPool[currentIndex];
         
-        document.getElementById("meaning-display").innerText = activeWord.english || activeWord.translation || "No definition found.";
+        document.getElementById("meaning-display").innerText = activeWord.english || activeWord.translation || activeWord.meaning || "No definition found.";
         
-        const frSentence = activeWord.sentence_fr || activeWord.example_fr || "";
-        const enSentence = activeWord.sentence_en || activeWord.example_en || "";
+        const frSentence = activeWord.sentence_fr || activeWord.example_fr || activeWord.context_fr || "";
+        const enSentence = activeWord.sentence_en || activeWord.example_en || activeWord.context_en || "";
         const sentenceBox = document.getElementById("sentence-box");
 
         if (frSentence || enSentence) {
