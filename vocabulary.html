@@ -32,12 +32,11 @@
             flex-direction: column; 
             align-items: center; 
             height: 100vh;
-            overflow: hidden; /* Prevents screen scrolling */
+            overflow: hidden;
         }
 
         .container { max-width: 1000px; width: 100%; height: 100%; display: flex; flex-direction: column; }
 
-        /* Compact Header */
         .header { 
             position: relative;
             background: #FFFFFF;
@@ -67,16 +66,14 @@
         }
         .return-btn:hover { background: #E2E8F0; }
 
-        /* Workspace Grid - Fits everything in view */
         .workspace {
             display: grid;
             grid-template-columns: 260px 1fr;
             gap: 15px;
             flex-grow: 1;
-            min-height: 0; /* Important for inner scrolling fields */
+            min-height: 0;
         }
 
-        /* Compact Sidebar */
         .settings-card {
             background: var(--card-bg);
             padding: 18px;
@@ -116,7 +113,6 @@
         .pool-counter p { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         .pool-counter .count { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
 
-        /* The Screen-Fitting Flashcard Canvas */
         .flashcard-wrapper {
             background: var(--card-bg);
             border-radius: 16px;
@@ -153,7 +149,6 @@
             min-height: 0;
         }
 
-        /* Fixed-size Image frame to prevent UI shifting */
         .word-card-img {
             max-width: 220px;
             height: 130px;
@@ -164,7 +159,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* Typography scaled to fit nicely */
         .target-word { 
             font-size: 2.4rem; 
             font-weight: 800; 
@@ -184,7 +178,6 @@
             margin-bottom: 12px; 
         }
         
-        /* Reveal Translation Area */
         .translation-box { 
             width: 100%; 
             display: flex;
@@ -242,13 +235,13 @@
         .voice-feedback { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); min-height: 16px; margin-bottom: 4px; }
         .voice-success { color: var(--success) !important; }
 
-        /* Action Buttons */
-        .card-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* Multi-Button Layout Controller */
+        .card-bottom { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; }
         .btn { 
-            padding: 12px 20px; 
+            padding: 12px 14px; 
             border-radius: 10px; 
             font-weight: 700; 
-            font-size: 0.95rem; 
+            font-size: 0.9rem; 
             cursor: pointer; 
             border: none; 
             transition: all 0.15s; 
@@ -256,7 +249,8 @@
         }
         .btn-dark { background: #64748B; color: white; }
         .btn-dark:hover { background: #475569; }
-        
+        .btn-secondary { background: #CBD5E1; color: #1E293B; }
+        .btn-secondary:hover { background: #94A3B8; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: #1D4ED8; }
     </style>
@@ -273,7 +267,6 @@
     </div>
 
     <div class="workspace">
-        <!-- Sidebar Filter Component -->
         <div class="settings-card">
             <div>
                 <h2>Target Filter Settings</h2>
@@ -305,7 +298,6 @@
             </div>
         </div>
 
-        <!-- Main Workspace Component -->
         <div class="flashcard-wrapper">
             <div class="card-top">
                 <div id="rank-display" class="rank-badge">RANK #0000</div>
@@ -313,7 +305,6 @@
             </div>
 
             <div class="card-middle">
-                <!-- Two-Stage Image Container -->
                 <img id="word-image" class="word-card-img hidden" src="" alt="Vocabulary Context Visual">
 
                 <div id="word-display" class="target-word">Loading Base...</div>
@@ -325,7 +316,6 @@
                 </div>
                 <div id="voice-feedback" class="voice-feedback"></div>
 
-                <!-- Custom Translation & Context Box -->
                 <div id="translation-display" class="translation-box hidden">
                     <div id="meaning-display" class="meaning-text">Translation</div>
                     <div id="sentence-box" class="example-sentence">
@@ -336,12 +326,14 @@
             </div>
 
             <div class="card-bottom">
-                <button class="btn btn-dark" onclick="revealTranslation()">Reveal Translation</button>
-                <button class="btn btn-primary" onclick="nextWord()">Next Word →</button>
+                <button class="btn btn-dark" onclick="revealTranslation()">Reveal Meaning</button>
+                <button class="btn btn-secondary" onclick="prevWord()">← Previous</button>
+                <button class="btn btn-primary" onclick="nextWord()">Next →</button>
             </div>
         </div>
     </div>
 </div>
+
 <script>
     let allWords = []; 
     let filteredPool = [];
@@ -359,102 +351,68 @@
                 return response.json();
             })
             .then(data => {
-                // Ensure data is parsed as an array
-                allWords = Array.isArray(data) ? data : (data.words || Object.values(data)); 
+                allWords = data; 
                 applyFilters();
             })
-            .catch((err) => {
-                console.error("Critical Fetch Error: ", err);
+            .catch(() => {
                 document.getElementById("word-display").innerText = "Database Error";
-                document.getElementById("type-display").innerText = "CHECK PATH: ./data/vocab_master.json";
             });
     });
 
     function applyFilters() {
-    const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
-    const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
+        const selectedLevel = document.getElementById("level-filter").value.toLowerCase().trim();
+        const selectedType = document.getElementById("type-filter").value.toLowerCase().trim();
 
-    filteredPool = allWords.filter(word => {
-        if (!word) return false;
+        filteredPool = allWords.filter(word => {
+            if (!word) return false;
+            const targetLevel = (word.level || word.cefr || "").toString().toLowerCase().trim();
+            const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
 
-        // Extract values cleanly
-        const targetLevel = (word.level || word.cefr || "").toString().toLowerCase().trim();
-        const targetType = (word.pos || word.type || "").toString().toLowerCase().trim();
-        const fullRawString = JSON.stringify(word).toLowerCase();
+            let matchesLevel = false;
+            if (selectedLevel === "all") { matchesLevel = true; } 
+            else if (selectedLevel === "a1-a2") { matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2"); } 
+            else if (selectedLevel === "c1-c2") { matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2"); } 
+            else { matchesLevel = targetLevel.includes(selectedLevel); }
 
-        // 1. Level Filter Logic (A1/A2 and C1/C2 grouping)
-        let matchesLevel = false;
-        if (selectedLevel === "all") { 
-            matchesLevel = true; 
-        } else if (selectedLevel === "a1-a2") { 
-            matchesLevel = targetLevel.includes("a1") || targetLevel.includes("a2"); 
-        } else if (selectedLevel === "c1-c2") { 
-            matchesLevel = targetLevel.includes("c1") || targetLevel.includes("c2"); 
-        } else { 
-            matchesLevel = targetLevel.includes(selectedLevel); 
-        }
+            let matchesType = false;
+            if (selectedType === "all") { matchesType = true; } 
+            else if (selectedType === "verb") { matchesType = targetType.includes("verb") || targetType === "v"; } 
+            else if (selectedType === "noun") { matchesType = targetType.includes("noun") || targetType.includes("nom") || targetType === "n"; } 
+            else if (selectedType === "adjective") { matchesType = targetType.includes("adj"); }
+            
+            return matchesLevel && matchesType;
+        });
 
-        // 2. Strict Part of Speech Filter Logic
-        let matchesType = false;
-        if (selectedType === "all") { 
-            matchesType = true; 
-        } else if (selectedType === "verb") { 
-            // Matches "verbs", "verb", or an isolated exact "v" property value
-            matchesType = targetType.includes("verb") || targetType === "v"; 
-        } else if (selectedType === "noun") { 
-            // Matches "nouns", "noun", "nom", or exact "n"
-            matchesType = targetType.includes("noun") || targetType.includes("nom") || targetType === "n"; 
-        } else if (selectedType === "adjective") { 
-            // Matches "adjectives", "adjective", or "adj"
-            matchesType = targetType.includes("adj"); 
-        }
-        
-        return matchesLevel && matchesType;
-    });
+        currentIndex = 0;
+        updateCardUI();
+    }
 
-    currentIndex = 0;
-    updateCardUI();
-}
-    // High-Probability Wikipedia Image Extractor
     function fetchWordImage(wordObj) {
         const imgElement = document.getElementById("word-image");
-        if (!wordObj) {
+        if (!wordObj || !wordObj.word) {
             imgElement.classList.add("hidden");
             return;
         }
 
-        const rawWord = wordObj.word || "";
-        if (!rawWord || rawWord.includes("Empty Pool")) {
-            imgElement.classList.add("hidden");
-            return;
-        }
+        const cleanFr = wordObj.word.split('(')[0].replace(/^(se|s'|le|la|les|un|une|d'|l')\s+/, "").trim().toLowerCase();
+        const cleanEn = (wordObj.english || wordObj.translation || "").split(',')[0].split(';')[0].replace(/^(to|a|an|the)\s+/, "").trim().toLowerCase();
 
-        // Clean out brackets, slashes, reflexive pronouns, and articles
-        let cleanFr = rawWord.split('(')[0].split('/')[0].trim().toLowerCase();
-        cleanFr = cleanFr.replace(/^(se|s'|le|la|les|un|une|d'|l')\s+/, "").trim();
-        
-        // English string cleanup
-        const rawEn = wordObj.english || wordObj.translation || wordObj.meaning || "";
-        let cleanEn = rawEn.split(',')[0].split(';')[0].split('(')[0].trim().toLowerCase();
-        cleanEn = cleanEn.replace(/^(to|a|an|the)\s+/, "").trim();
-
-        // Step 1: Query French Wikipedia Rest API
         fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanFr)}`)
-            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(res => res.json())
             .then(data => {
-                if (data.thumbnail && data.thumbnail.source && !data.thumbnail.source.includes("Mimetype")) {
+                if (data.thumbnail && data.thumbnail.source) {
                     imgElement.src = data.thumbnail.source;
                     imgElement.classList.remove("hidden");
-                } else {
+                } else if (cleanEn) {
                     throw new Error();
+                } else {
+                    imgElement.classList.add("hidden");
                 }
             })
             .catch(() => {
-                // Step 2: Fallback to English Wikipedia if French media fails
                 if (!cleanEn) { imgElement.classList.add("hidden"); return; }
-                
                 fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanEn)}`)
-                    .then(res => res.ok ? res.json() : Promise.reject())
+                    .then(res => res.json())
                     .then(data => {
                         if (data.thumbnail && data.thumbnail.source) {
                             imgElement.src = data.thumbnail.source;
@@ -481,16 +439,11 @@
 
         if (filteredPool.length === 0) {
             wordDisplay.innerText = "Empty Pool";
-            typeDisplay.innerText = "NO MATCH";
-            rankDisplay.innerText = "RANK #----";
-            levelBadge.innerText = "--";
             document.getElementById("word-image").classList.add("hidden");
             return;
         }
 
         const activeWord = filteredPool[currentIndex];
-        
-        // Load clean image assets
         fetchWordImage(activeWord);
 
         wordDisplay.innerText = activeWord.word || "Missing Word";
@@ -505,10 +458,10 @@
         if (filteredPool.length === 0) return;
         const activeWord = filteredPool[currentIndex];
         
-        document.getElementById("meaning-display").innerText = activeWord.english || activeWord.translation || activeWord.meaning || "No definition found.";
+        document.getElementById("meaning-display").innerText = activeWord.english || activeWord.translation || "No definition found.";
         
-        const frSentence = activeWord.sentence_fr || activeWord.example_fr || activeWord.context_fr || "";
-        const enSentence = activeWord.sentence_en || activeWord.example_en || activeWord.context_en || "";
+        const frSentence = activeWord.sentence_fr || activeWord.example_fr || "";
+        const enSentence = activeWord.sentence_en || activeWord.example_en || "";
         const sentenceBox = document.getElementById("sentence-box");
 
         if (frSentence || enSentence) {
@@ -524,6 +477,12 @@
     function nextWord() {
         if (filteredPool.length <= 1) return;
         currentIndex = (currentIndex + 1) % filteredPool.length;
+        updateCardUI();
+    }
+
+    function prevWord() {
+        if (filteredPool.length <= 1) return;
+        currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length;
         updateCardUI();
     }
 
@@ -561,9 +520,15 @@
             const heard = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             const target = (filteredPool[currentIndex].word || "").toLowerCase().trim().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             const fb = document.getElementById("voice-feedback");
+            
             if (heard === target) {
-                fb.innerText = "Excellent!";
+                fb.innerText = "Excellent! Moving to next card...";
                 fb.classList.add("voice-success");
+                
+                // Success trigger auto-revert loop
+                setTimeout(() => {
+                    nextWord();
+                }, 1000);
             } else {
                 fb.innerText = `Heard: "${heard}"`;
                 fb.classList.remove("voice-success");
