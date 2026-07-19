@@ -5,12 +5,13 @@
     <title>TCF 5,000 Frequency Suite</title>
     <style>
         :root { --primary: #2563EB; --success: #059669; --bg-main: #F1F5F9; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
-        body { background-color: var(--bg-main); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; width: 100%; max-width: 900px; }
+        body { background-color: var(--bg-main); padding: 20px; font-family: sans-serif; }
+        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; max-width: 900px; margin: auto; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; }
         .word-img { max-width: 200px; border-radius: 10px; margin-bottom: 10px; }
-        .btn { padding: 10px 15px; border-radius: 8px; cursor: pointer; border: none; margin: 5px; }
+        .btn { padding: 10px 15px; border-radius: 8px; cursor: pointer; border: none; margin: 5px; font-weight: bold; }
         .btn-primary { background: var(--primary); color: white; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -22,85 +23,107 @@
             <option value="all">All Levels</option>
             <option value="a1">A1/A2</option>
             <option value="b1">B1</option>
+            <option value="b2">B2</option>
+            <option value="c1">C1/C2</option>
         </select>
         <select id="type-filter" onchange="applyFilters()">
-            <option value="all">All Types</option>
+            <option value="all">All Categories</option>
             <option value="verb">Verbs</option>
             <option value="noun">Nouns</option>
         </select>
-        <div id="pool-count">0</div>
+        <p>Active Pool: <span id="pool-count">0</span></p>
     </div>
 
     <div class="card">
-        <img id="word-image" class="word-img" src="" alt="">
+        <img id="word-image" class="word-img hidden" src="" alt="Context">
         <h1 id="word-display">Loading...</h1>
-        <div id="extra-info" style="font-weight:bold; color:var(--primary);"></div>
+        <div id="extra-info" style="font-weight:bold; color:var(--primary); margin-bottom:10px;"></div>
         
-        <div id="controls">
-            <button onclick="playAudio()">🔊</button>
-            <button onclick="toggleVoiceCapture()">🎙️</button>
-        </div>
+        <button onclick="playAudio()">🔊 Listen</button>
+        <button onclick="toggleVoiceCapture()">🎙️ Speak</button>
+        <p id="voice-feedback"></p>
 
-        <div id="translation-box" class="hidden">
+        <div id="translation-display" class="hidden" style="margin-top:20px;">
             <h2 id="meaning-display"></h2>
-            <p id="sentence-fr-display"></p>
+            <p id="sentence-fr-display" style="font-weight:bold;"></p>
+            <p id="sentence-en-display" style="color:gray; font-style:italic;"></p>
         </div>
 
-        <button class="btn" onclick="prevWord()">← Prev</button>
-        <button class="btn btn-primary" onclick="revealTranslation()">Reveal</button>
-        <button class="btn" onclick="nextWord()">Next →</button>
+        <div style="margin-top:20px;">
+            <button class="btn" onclick="prevWord()">← Prev</button>
+            <button class="btn btn-primary" onclick="revealTranslation()">Reveal</button>
+            <button class="btn" onclick="nextWord()">Next →</button>
+        </div>
     </div>
 </div>
+
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
     fetch('./data/vocab_master.json')
         .then(res => res.json())
         .then(data => { allWords = data; applyFilters(); })
-        .catch(err => console.error("Load Error:", err));
+        .catch(err => console.error("Data Load Error:", err));
 
     function applyFilters() {
-        const type = document.getElementById("type-filter")?.value.toLowerCase() || "all";
-        filteredPool = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+        const level = document.getElementById("level-filter").value.toLowerCase();
+        const type = document.getElementById("type-filter").value.toLowerCase();
+
+        filteredPool = allWords.filter(w => {
+            const lMatch = (level === "all" || (w.Level || "").toLowerCase().includes(level));
+            const tMatch = (type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+            return lMatch && tMatch;
+        });
         currentIndex = 0;
         updateCardUI();
     }
 
     function updateCardUI() {
-        // Safe check for elements
-        const poolDisplay = document.getElementById("pool-count");
-        if (poolDisplay) poolDisplay.innerText = filteredPool.length;
-
-        if (filteredPool.length === 0) return;
-        
+        document.getElementById("pool-count").innerText = filteredPool.length;
+        if (filteredPool.length === 0) {
+            document.getElementById("word-display").innerText = "No matches found.";
+            return;
+        }
         const w = filteredPool[currentIndex];
-        
-        // Use optional chaining (?.) to prevent "null" errors
-        document.getElementById("rank-display")?.innerText = `RANK #${w.Rank || "---"}`;
-        document.getElementById("word-display")?.innerText = w.French || "---";
-        document.getElementById("type-display")?.innerText = (w["Part of Speech"] || "---").toUpperCase();
-        
-        const transDisplay = document.getElementById("translation-display");
-        if (transDisplay) transDisplay.classList.add("hidden");
+        document.getElementById("word-display").innerText = w.French || "---";
+        document.getElementById("extra-info").innerText = (w["Noun Gender"] || w["Verb Type"] || "");
+        document.getElementById("translation-display").classList.add("hidden");
+        fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(w.French)}`)
+            .then(res => res.json())
+            .then(data => {
+                const img = document.getElementById("word-image");
+                if (data.thumbnail) { img.src = data.thumbnail.source; img.classList.remove("hidden"); }
+                else img.classList.add("hidden");
+            });
     }
 
     function revealTranslation() {
         const w = filteredPool[currentIndex];
-        if (!w) return; // Prevent "undefined" error
-        
-        const meaning = document.getElementById("meaning-display");
-        if (meaning) meaning.innerText = w.English || "No definition found.";
-        
-        const transDisplay = document.getElementById("translation-display");
-        if (transDisplay) transDisplay.classList.remove("hidden");
+        document.getElementById("meaning-display").innerText = w.English || "---";
+        document.getElementById("sentence-fr-display").innerText = w.SentenceFR || "";
+        document.getElementById("sentence-en-display").innerText = w.SentenceEN || "";
+        document.getElementById("translation-display").classList.remove("hidden");
     }
 
-    function nextWord() {
-        if (filteredPool.length === 0) return;
-        currentIndex = (currentIndex + 1) % filteredPool.length;
-        updateCardUI();
+    function playAudio() {
+        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
+        msg.lang = 'fr-FR';
+        window.speechSynthesis.speak(msg);
     }
+
+    function toggleVoiceCapture() {
+        recognition.lang = 'fr-FR';
+        recognition.start();
+        recognition.onresult = (e) => {
+            const heard = e.results[0][0].transcript.toLowerCase().trim();
+            const target = filteredPool[currentIndex].French.toLowerCase().trim();
+            document.getElementById("voice-feedback").innerText = heard === target ? "✅ Correct!" : "❌ Try again";
+        };
+    }
+
+    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
+    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
 </script>
-
 </body>
 </html>
