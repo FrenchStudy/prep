@@ -6,74 +6,97 @@
     <style>
         :root { --primary: #2563EB; --bg-main: #F1F5F9; }
         body { font-family: sans-serif; background: var(--bg-main); padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-        .tile { background: white; padding: 20px; border-radius: 12px; border: 1px solid #ddd; cursor: pointer; text-align: center; }
-        .tile:hover { border-color: var(--primary); }
-        /* Modal for Grammar */
-        #grammar-modal { display: none; position: fixed; top: 10%; left: 25%; width: 50%; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .controls { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .tile { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; text-align: center; }
+        .modal { display: none; position: fixed; top: 10%; left: 20%; width: 60%; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div id="controls">
-    <select id="type-filter" onchange="filterAndRender()">
-        <option value="all">All Categories</option>
-        <option value="verb">Verbs</option>
-        <option value="noun">Nouns</option>
+<div class="controls">
+    <select id="level-filter" onchange="applyFilters()">
+        <option value="all">All Levels</option>
+        <option value="a1">A1</option>
+        <option value="b1">B1</option>
+        <option value="c1">C1</option>
     </select>
-    <button onclick="recognition.start()">🎙️ Practice Pronunciation</button>
+    <select id="type-filter" onchange="applyFilters()">
+        <option value="all">All Types</option>
+        <option value="verb">Verb</option>
+        <option value="noun">Noun</option>
+    </select>
+    <div id="pool-count">Loading...</div>
 </div>
 
 <div class="grid" id="word-grid"></div>
 
-<!-- Grammar View -->
-<div id="grammar-modal">
-    <h2 id="modal-word"></h2>
-    <div id="grammar-content"></div>
-    <button onclick="document.getElementById('grammar-modal').style.display='none'">Close</button>
+<div id="modal" class="modal">
+    <h1 id="modal-french"></h1>
+    <div id="modal-details"></div>
+    <br>
+    <button onclick="playAudio()">🔊 Pronounce</button>
+    <button onclick="document.getElementById('modal').style.display='none'">Close</button>
 </div>
 
 <script>
     let allWords = [];
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
+    // Path set to your specific requirement
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => { allWords = data; filterAndRender(); });
+        .then(data => { 
+            allWords = data; 
+            console.log("Data loaded. Sample word:", allWords[0]);
+            applyFilters(); 
+        })
+        .catch(e => console.error("Fetch Error:", e));
 
-    function filterAndRender() {
-        const type = document.getElementById("type-filter").value;
-        const filtered = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+    function applyFilters() {
+        const lVal = document.getElementById("level-filter").value.toLowerCase();
+        const tVal = document.getElementById("type-filter").value.toLowerCase();
+
+        const filtered = allWords.filter(w => {
+            // Flexible matching: check multiple keys if needed
+            const levelVal = (w.Level || w.level || w.CEFR || "").toString().toLowerCase();
+            const typeVal = (w["Part of Speech"] || w.type || "").toString().toLowerCase();
+            
+            const levelMatch = lVal === "all" || levelVal.includes(lVal);
+            const typeMatch = tVal === "all" || typeVal.includes(tVal);
+            return levelMatch && typeMatch;
+        });
+
+        document.getElementById("pool-count").innerText = "Count: " + filtered.length;
+        renderGrid(filtered);
+    }
+
+    function renderGrid(list) {
         const grid = document.getElementById("word-grid");
         grid.innerHTML = "";
-        
-        // Show first 20 words as tiles
-        filtered.slice(0, 20).forEach(w => {
+        list.slice(0, 100).forEach(w => {
             const div = document.createElement("div");
             div.className = "tile";
             div.innerHTML = `<h3>${w.French}</h3><p>${w.English}</p>`;
-            div.onclick = () => showGrammar(w);
+            div.onclick = () => showModal(w);
             grid.appendChild(div);
         });
     }
 
-    function showGrammar(w) {
-        document.getElementById("modal-word").innerText = w.French;
-        // Dynamically inject your grammar info here
-        document.getElementById("grammar-content").innerHTML = `
-            <p><strong>Part of Speech:</strong> ${w["Part of Speech"]}</p>
-            <p><strong>Gender/Type:</strong> ${w["Noun Gender"] || w["Verb Type"] || "N/A"}</p>
-            <p><strong>Sentence:</strong> ${w.SentenceFR || "No example"}</p>
+    function showModal(w) {
+        document.getElementById("modal-french").innerText = w.French;
+        document.getElementById("modal-details").innerHTML = `
+            <p><strong>POS:</strong> ${w["Part of Speech"]}</p>
+            <p><strong>Example:</strong> ${w.SentenceFR || "N/A"}</p>
+            <p><strong>English:</strong> ${w.SentenceEN || "N/A"}</p>
         `;
-        document.getElementById("grammar-modal").style.display = "block";
+        document.getElementById("modal").style.display = "block";
     }
 
-    // Fixed Speech Logic
-    recognition.onresult = (e) => {
-        const target = "parler"; // Replace with logic to grab from clicked tile
-        const heard = e.results[0][0].transcript.toLowerCase();
-        alert(heard === target ? "✅ Perfect!" : `❌ You said: ${heard}`);
-    };
+    function playAudio() {
+        const msg = new SpeechSynthesisUtterance(document.getElementById("modal-french").innerText);
+        msg.lang = 'fr-FR';
+        window.speechSynthesis.speak(msg);
+    }
 </script>
 </body>
 </html>
