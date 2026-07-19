@@ -53,78 +53,54 @@
 </div>
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-    // Correct path as requested
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => { allWords = data; applyFilters(); });
+        .then(data => { allWords = data; applyFilters(); })
+        .catch(err => console.error("Load Error:", err));
 
     function applyFilters() {
-        const level = document.getElementById("level-filter").value.toLowerCase();
-        const type = document.getElementById("type-filter").value.toLowerCase();
-
-        filteredPool = allWords.filter(w => {
-            const targetLevel = (w.Level || "").toLowerCase();
-            const targetType = (w["Part of Speech"] || "").toLowerCase();
-            
-            const matchLevel = (level === "all" || targetLevel.includes(level));
-            const matchType = (type === "all" || targetType.includes(type));
-            return matchLevel && matchType;
-        });
-
+        const type = document.getElementById("type-filter")?.value.toLowerCase() || "all";
+        filteredPool = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
         currentIndex = 0;
         updateCardUI();
     }
 
     function updateCardUI() {
-        document.getElementById("pool-count").innerText = filteredPool.length;
-        if (filteredPool.length === 0) {
-            document.getElementById("word-display").innerText = "No matches";
-            return;
-        }
+        // Safe check for elements
+        const poolDisplay = document.getElementById("pool-count");
+        if (poolDisplay) poolDisplay.innerText = filteredPool.length;
+
+        if (filteredPool.length === 0) return;
         
         const w = filteredPool[currentIndex];
-        document.getElementById("rank-display").innerText = `RANK #${w.Rank || "---"}`;
-        document.getElementById("word-display").innerText = w.French || "---";
-        document.getElementById("type-display").innerText = (w["Part of Speech"] || "---").toUpperCase();
         
-        // Show gender/verb info if it exists
-        const info = w["Noun Gender"] ? `Gender: ${w["Noun Gender"]}` : (w["Verb Type"] ? `Type: ${w["Verb Type"]}` : "");
-        document.getElementById("extra-info").innerText = info;
+        // Use optional chaining (?.) to prevent "null" errors
+        document.getElementById("rank-display")?.innerText = `RANK #${w.Rank || "---"}`;
+        document.getElementById("word-display")?.innerText = w.French || "---";
+        document.getElementById("type-display")?.innerText = (w["Part of Speech"] || "---").toUpperCase();
         
-        document.getElementById("translation-display").classList.add("hidden");
+        const transDisplay = document.getElementById("translation-display");
+        if (transDisplay) transDisplay.classList.add("hidden");
     }
-
-    recognition.onresult = (event) => {
-        const heard = event.results[0][0].transcript.toLowerCase().trim();
-        const target = filteredPool[currentIndex].French.toLowerCase().trim();
-        
-        const feedback = document.getElementById("voice-feedback");
-        if (heard === target) {
-            feedback.innerText = "Excellent! Moving to next...";
-            feedback.style.color = "var(--success)";
-            setTimeout(nextWord, 1500);
-        } else {
-            feedback.innerText = `Heard: "${heard}". Try again!`;
-            feedback.style.color = "red";
-        }
-    };
-
-    function toggleVoiceCapture() { recognition.start(); }
 
     function revealTranslation() {
         const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English || "---";
-        document.getElementById("sentence-fr-display").innerText = w.SentenceFR || "No example";
-        document.getElementById("sentence-en-display").innerText = w.SentenceEN || "";
-        document.getElementById("translation-display").classList.remove("hidden");
+        if (!w) return; // Prevent "undefined" error
+        
+        const meaning = document.getElementById("meaning-display");
+        if (meaning) meaning.innerText = w.English || "No definition found.";
+        
+        const transDisplay = document.getElementById("translation-display");
+        if (transDisplay) transDisplay.classList.remove("hidden");
     }
 
-    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
-    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
+    function nextWord() {
+        if (filteredPool.length === 0) return;
+        currentIndex = (currentIndex + 1) % filteredPool.length;
+        updateCardUI();
+    }
 </script>
-
 
 </body>
 </html>
