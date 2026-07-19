@@ -10,6 +10,7 @@
         .card { background: white; padding: 25px; border-radius: 16px; border: 1px solid #E2E8F0; text-align: center; }
         .hidden { display: none !important; }
         .btn { padding: 10px; cursor: pointer; margin: 5px; }
+        #word-display { cursor: pointer; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -32,7 +33,10 @@
     </div>
 
     <div class="card">
+        <!-- Clicking word shows grammar details -->
         <h1 id="word-display">Loading...</h1>
+        <div id="feedback-area" style="height:30px; font-weight:bold; margin: 10px 0;"></div>
+        
         <button class="btn" onclick="playAudio()">🔊 Listen</button>
         <button class="btn" onclick="startVoice()">🎙️ Practice</button>
         
@@ -50,17 +54,11 @@
 
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
-    
-    // Initialize SpeechRecognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => { 
-            allWords = data; 
-            applyFilters(); 
-        });
+        .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
         const lVal = document.getElementById("level-filter").value.toLowerCase();
@@ -86,6 +84,38 @@
             wordEl.innerText = "No matches found.";
         }
         document.getElementById("reveal-area").classList.add("hidden");
+        document.getElementById("feedback-area").innerText = "";
+    }
+
+    // Grammar Detail Click
+    document.getElementById("word-display").onclick = () => {
+        if(filteredPool.length === 0) return;
+        const w = filteredPool[currentIndex];
+        alert(`Grammar Details:\nPOS: ${w["Part of Speech"] || "N/A"}\nLevel: ${w.Level || "N/A"}\nExample: ${w.SentenceFR || "None"}`);
+    };
+
+    function startVoice() {
+        if (filteredPool.length === 0) return;
+        const feedback = document.getElementById("feedback-area");
+        feedback.innerText = "Listening...";
+        feedback.style.color = "blue";
+        
+        recognition.lang = 'fr-FR';
+        recognition.start();
+        
+        recognition.onresult = (e) => {
+            const heard = e.results[0][0].transcript.toLowerCase().trim();
+            const target = filteredPool[currentIndex].French.toLowerCase().trim();
+            
+            if (heard === target) {
+                feedback.innerText = "✅ Correct!";
+                feedback.style.color = "green";
+                setTimeout(nextWord, 1000); // Auto-advance after success
+            } else {
+                feedback.innerText = "❌ You said: " + heard;
+                feedback.style.color = "red";
+            }
+        };
     }
 
     function reveal() {
@@ -103,7 +133,6 @@
 
     function prevWord() {
         if (filteredPool.length === 0) return;
-        // The formula below ensures we wrap around correctly from 0 to the last index
         currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length;
         updateCardUI();
     }
@@ -114,24 +143,6 @@
             msg.lang = 'fr-FR';
             window.speechSynthesis.speak(msg);
         }
-    }
-
-    function startVoice() {
-        if (!recognition || filteredPool.length === 0) return;
-        
-        recognition.lang = 'fr-FR';
-        recognition.start();
-        
-        recognition.onresult = (e) => {
-            const heard = e.results[0][0].transcript.toLowerCase().trim();
-            const target = filteredPool[currentIndex].French.toLowerCase().trim();
-            
-            if (heard === target) {
-                alert("✅ Correct!");
-            } else {
-                alert("❌ You said: " + heard + ". Try again.");
-            }
-        };
     }
 </script>
 </body>
