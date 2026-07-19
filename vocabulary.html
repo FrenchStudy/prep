@@ -89,11 +89,36 @@
     }
 
     function reveal() {
-        if (!filteredPool[currentIndex]) return;
-        const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English || "---";
-        document.getElementById("reveal-area").classList.remove("hidden");
+        function reveal() {
+    if (filteredPool.length === 0) return;
+    const w = filteredPool[currentIndex];
+    
+    // 1. Show English Meaning
+    let htmlContent = `<h2>${w.English || "---"}</h2>`;
+    
+    // 2. Add Grammar Box if it's a verb
+    const pos = (w["Part of Speech"] || w.pos || "").toLowerCase();
+    if (pos.includes("verb")) {
+        htmlContent += generateConjugationRules(w.French || w.word);
     }
+    
+    document.getElementById("meaning-display").innerHTML = htmlContent;
+    document.getElementById("reveal-area").classList.remove("hidden");
+}
+
+function generateConjugationRules(verb) {
+    // Simple rule-based generator for -ER verbs (most common)
+    const stem = verb.slice(0, -2);
+    return `
+        <div id="grammar-box" style="margin-top:15px; text-align:left; font-size: 0.9em;">
+            <strong>Present Tense Conjugation (ER):</strong>
+            <table style="width:100%; border-collapse: collapse;">
+                <tr><td>je ${stem}e</td><td>nous ${stem}ons</td></tr>
+                <tr><td>tu ${stem}es</td><td>vous ${stem}ez</td></tr>
+                <tr><td>il ${stem}e</td><td>ils ${stem}ent</td></tr>
+            </table>
+        </div>`;
+}
 
     function nextWord() {
         if (filteredPool.length === 0) return;
