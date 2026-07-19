@@ -2,15 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>TCF 5,000 Frequency Suite</title>
+    <title>TCF Frequency Suite</title>
     <style>
-        :root { --primary: #2563EB; --bg-main: #F1F5F9; }
-        body { font-family: sans-serif; background: var(--bg-main); padding: 20px; }
-        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; max-width: 900px; margin: auto; }
+        body { font-family: sans-serif; background: #F1F5F9; padding: 20px; }
+        .workspace { display: grid; grid-template-columns: 280px 1fr; gap: 20px; max-width: 900px; margin: auto; }
         .card { background: white; padding: 25px; border-radius: 16px; border: 1px solid #E2E8F0; text-align: center; }
+        .btn { padding: 10px 15px; cursor: pointer; margin: 5px; border-radius: 8px; border: 1px solid #ccc; background: white; }
+        #word-display { font-size: 3em; margin: 20px 0; color: #2563EB; }
         .hidden { display: none !important; }
-        .btn { padding: 10px; cursor: pointer; margin: 5px; }
-        #word-display { cursor: pointer; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -18,32 +17,32 @@
 <div class="workspace">
     <div class="card">
         <h2>Filters</h2>
+        <label>Difficulty (via Frequency)</label>
         <select id="level-filter" onchange="applyFilters()">
             <option value="all">All Levels</option>
-            <option value="a1">A1</option>
-            <option value="b1">B1</option>
-            <option value="c1">C1</option>
+            <option value="basic">Basic (High Freq)</option>
+            <option value="advanced">Advanced (Low Freq)</option>
         </select>
+        
+        <label style="display:block; margin-top:15px;">Part of Speech</label>
         <select id="type-filter" onchange="applyFilters()">
-            <option value="all">All Categories</option>
+            <option value="all">All Types</option>
             <option value="verb">Verb</option>
             <option value="noun">Noun</option>
         </select>
-        <div id="pool-count" style="margin-top:10px; font-weight:bold;">Count: 0</div>
+        <div id="pool-count" style="margin-top:15px; font-weight:bold;">Count: 0</div>
     </div>
 
     <div class="card">
-        <!-- Clicking word shows grammar details -->
         <h1 id="word-display">Loading...</h1>
-        <div id="feedback-area" style="height:30px; font-weight:bold; margin: 10px 0;"></div>
-        
+        <div id="feedback-area" style="height:30px; font-weight:bold;"></div>
         <button class="btn" onclick="playAudio()">🔊 Listen</button>
         <button class="btn" onclick="startVoice()">🎙️ Practice</button>
         
         <div id="reveal-area" class="hidden" style="margin-top:20px;">
             <h2 id="meaning-display"></h2>
         </div>
-
+        
         <div style="margin-top:20px;">
             <button class="btn" onclick="prevWord()">← Prev</button>
             <button class="btn" onclick="reveal()">Reveal</button>
@@ -61,13 +60,21 @@
         .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
-        const lVal = document.getElementById("level-filter").value.toLowerCase();
+        const lVal = document.getElementById("level-filter").value;
         const tVal = document.getElementById("type-filter").value.toLowerCase();
 
         filteredPool = allWords.filter(w => {
-            const str = JSON.stringify(w).toLowerCase();
-            return (lVal === "all" || str.includes(lVal)) && 
-                   (tVal === "all" || str.includes(tVal));
+            // Filter by POS (Part of Speech field)
+            const pos = (w["Part of Speech"] || w.pos || "").toLowerCase();
+            const matchesType = (tVal === "all" || pos.includes(tVal));
+
+            // Filter by Frequency (Basic = High Freq, Advanced = Low Freq)
+            const freq = w.Freq || 0;
+            let matchesFreq = true;
+            if (lVal === "basic") matchesFreq = freq > 10000;
+            if (lVal === "advanced") matchesFreq = freq > 0 && freq < 1000;
+            
+            return matchesType && matchesFreq;
         });
 
         currentIndex = 0;
@@ -76,53 +83,16 @@
 
     function updateCardUI() {
         document.getElementById("pool-count").innerText = "Count: " + filteredPool.length;
-        const wordEl = document.getElementById("word-display");
-        
-        if (filteredPool.length > 0) {
-            wordEl.innerText = filteredPool[currentIndex].French || "---";
-        } else {
-            wordEl.innerText = "No matches found.";
-        }
-        document.getElementById("reveal-area").classList.add("hidden");
-        document.getElementById("feedback-area").innerText = "";
-    }
-
-    // Grammar Detail Click
-    document.getElementById("word-display").onclick = () => {
-        if(filteredPool.length === 0) return;
         const w = filteredPool[currentIndex];
-        alert(`Grammar Details:\nPOS: ${w["Part of Speech"] || "N/A"}\nLevel: ${w.Level || "N/A"}\nExample: ${w.SentenceFR || "None"}`);
-    };
-
-    function startVoice() {
-        if (filteredPool.length === 0) return;
-        const feedback = document.getElementById("feedback-area");
-        feedback.innerText = "Listening...";
-        feedback.style.color = "blue";
-        
-        recognition.lang = 'fr-FR';
-        recognition.start();
-        
-        recognition.onresult = (e) => {
-            const heard = e.results[0][0].transcript.toLowerCase().trim();
-            const target = filteredPool[currentIndex].French.toLowerCase().trim();
-            
-            if (heard === target) {
-                feedback.innerText = "✅ Correct!";
-                feedback.style.color = "green";
-                setTimeout(nextWord, 1000); // Auto-advance after success
-            } else {
-                feedback.innerText = "❌ You said: " + heard;
-                feedback.style.color = "red";
-            }
-        };
+        document.getElementById("word-display").innerText = w ? (w.French || w.word) : "No results";
+        document.getElementById("reveal-area").classList.add("hidden");
     }
 
     function reveal() {
-        if (filteredPool.length > 0) {
-            document.getElementById("meaning-display").innerText = filteredPool[currentIndex].English || "No definition.";
-            document.getElementById("reveal-area").classList.remove("hidden");
-        }
+        if (!filteredPool[currentIndex]) return;
+        const w = filteredPool[currentIndex];
+        document.getElementById("meaning-display").innerText = w.English || "---";
+        document.getElementById("reveal-area").classList.remove("hidden");
     }
 
     function nextWord() {
@@ -138,11 +108,21 @@
     }
 
     function playAudio() {
-        if (filteredPool.length > 0) {
-            const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
-            msg.lang = 'fr-FR';
-            window.speechSynthesis.speak(msg);
-        }
+        if (!filteredPool[currentIndex]) return;
+        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French || filteredPool[currentIndex].word);
+        msg.lang = 'fr-FR';
+        window.speechSynthesis.speak(msg);
+    }
+
+    function startVoice() {
+        if (!filteredPool[currentIndex]) return;
+        recognition.lang = 'fr-FR';
+        recognition.start();
+        recognition.onresult = (e) => {
+            const heard = e.results[0][0].transcript.toLowerCase().trim();
+            const target = (filteredPool[currentIndex].French || filteredPool[currentIndex].word).toLowerCase().trim();
+            document.getElementById("feedback-area").innerText = (heard === target) ? "✅ Correct!" : "❌ You said: " + heard;
+        };
     }
 </script>
 </body>
