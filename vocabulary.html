@@ -15,7 +15,6 @@
 <body>
 
 <div class="workspace">
-    <!-- Filter Section -->
     <div class="card">
         <h2>Filters</h2>
         <select id="level-filter" onchange="applyFilters()">
@@ -32,7 +31,6 @@
         <div id="pool-count" style="margin-top:10px; font-weight:bold;">Count: 0</div>
     </div>
 
-    <!-- Flashcard Section -->
     <div class="card">
         <h1 id="word-display">Loading...</h1>
         <button class="btn" onclick="playAudio()">🔊 Listen</button>
@@ -43,6 +41,7 @@
         </div>
 
         <div style="margin-top:20px;">
+            <button class="btn" onclick="prevWord()">← Prev</button>
             <button class="btn" onclick="reveal()">Reveal</button>
             <button class="btn" onclick="nextWord()">Next →</button>
         </div>
@@ -51,8 +50,11 @@
 
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
+    
+    // Initialize SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-    // Load data
     fetch('./data/vocab_master.json')
         .then(res => res.json())
         .then(data => { 
@@ -65,7 +67,6 @@
         const tVal = document.getElementById("type-filter").value.toLowerCase();
 
         filteredPool = allWords.filter(w => {
-            // Using string conversion to safely search through all properties in the word object
             const str = JSON.stringify(w).toLowerCase();
             return (lVal === "all" || str.includes(lVal)) && 
                    (tVal === "all" || str.includes(tVal));
@@ -100,6 +101,13 @@
         updateCardUI();
     }
 
+    function prevWord() {
+        if (filteredPool.length === 0) return;
+        // The formula below ensures we wrap around correctly from 0 to the last index
+        currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length;
+        updateCardUI();
+    }
+
     function playAudio() {
         if (filteredPool.length > 0) {
             const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
@@ -109,14 +117,20 @@
     }
 
     function startVoice() {
-        if (filteredPool.length === 0) return;
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'fr-FR';
-        rec.start();
-        rec.onresult = (e) => {
-            const heard = e.results[0][0].transcript.toLowerCase();
-            const target = filteredPool[currentIndex].French.toLowerCase();
-            alert(heard.includes(target) ? "✅ Correct!" : "❌ You said: " + heard);
+        if (!recognition || filteredPool.length === 0) return;
+        
+        recognition.lang = 'fr-FR';
+        recognition.start();
+        
+        recognition.onresult = (e) => {
+            const heard = e.results[0][0].transcript.toLowerCase().trim();
+            const target = filteredPool[currentIndex].French.toLowerCase().trim();
+            
+            if (heard === target) {
+                alert("✅ Correct!");
+            } else {
+                alert("❌ You said: " + heard + ". Try again.");
+            }
         };
     }
 </script>
