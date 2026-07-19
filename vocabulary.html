@@ -71,7 +71,8 @@
             // Filter by Frequency (Basic = High Freq, Advanced = Low Freq)
             const freq = w.Freq || 0;
             let matchesFreq = true;
-            if (lVal === "basic") matchesFreq = freq > 10000;
+            if (lVal === "basic") matchesFreq = freq >= 10000;
+             if (lVal === "Medium") matchesFreq = freq >= 1000 && freq < 10000;
             if (lVal === "advanced") matchesFreq = freq > 0 && freq < 1000;
             
             return matchesType && matchesFreq;
