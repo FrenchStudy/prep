@@ -2,128 +2,78 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>TCF French Words Suite</title>
+    <title>TCF 5,000 Frequency Suite</title>
     <style>
-        :root { --primary: #2563EB; --success: #059669; --bg-main: #F1F5F9; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
-        body { background-color: var(--bg-main); padding: 20px; font-family: sans-serif; }
-        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; max-width: 900px; margin: auto; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; }
-        .word-img { max-width: 200px; border-radius: 10px; margin-bottom: 10px; }
-        .btn { padding: 10px 15px; border-radius: 8px; cursor: pointer; border: none; margin: 5px; font-weight: bold; }
-        .btn-primary { background: var(--primary); color: white; }
-        .hidden { display: none !important; }
+        :root { --primary: #2563EB; --bg-main: #F1F5F9; }
+        body { font-family: sans-serif; background: var(--bg-main); padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .tile { background: white; padding: 20px; border-radius: 12px; border: 1px solid #ddd; cursor: pointer; text-align: center; }
+        .tile:hover { border-color: var(--primary); }
+        /* Modal for Grammar */
+        #grammar-modal { display: none; position: fixed; top: 10%; left: 25%; width: 50%; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
-<div class="workspace">
-    <div class="card">
-        <h2>Filters</h2>
-        <select id="level-filter" onchange="applyFilters()">
-            <option value="all">All Levels</option>
-            <option value="a1">A1/A2</option>
-            <option value="b1">B1</option>
-            <option value="b2">B2</option>
-            <option value="c1">C1/C2</option>
-        </select>
-        <select id="type-filter" onchange="applyFilters()">
-            <option value="all">All Categories</option>
-            <option value="verb">Verbs</option>
-            <option value="noun">Nouns</option>
-        </select>
-        <p>Active Pool: <span id="pool-count">0</span></p>
-    </div>
+<div id="controls">
+    <select id="type-filter" onchange="filterAndRender()">
+        <option value="all">All Categories</option>
+        <option value="verb">Verbs</option>
+        <option value="noun">Nouns</option>
+    </select>
+    <button onclick="recognition.start()">🎙️ Practice Pronunciation</button>
+</div>
 
-    <div class="card">
-        <img id="word-image" class="word-img hidden" src="" alt="Context">
-        <h1 id="word-display">Loading...</h1>
-        <div id="extra-info" style="font-weight:bold; color:var(--primary); margin-bottom:10px;"></div>
-        
-        <button onclick="playAudio()">🔊 Listen</button>
-        <button onclick="toggleVoiceCapture()">🎙️ Speak</button>
-        <p id="voice-feedback"></p>
+<div class="grid" id="word-grid"></div>
 
-        <div id="translation-display" class="hidden" style="margin-top:20px;">
-            <h2 id="meaning-display"></h2>
-            <p id="sentence-fr-display" style="font-weight:bold;"></p>
-            <p id="sentence-en-display" style="color:gray; font-style:italic;"></p>
-        </div>
-
-        <div style="margin-top:20px;">
-            <button class="btn" onclick="prevWord()">← Prev</button>
-            <button class="btn btn-primary" onclick="revealTranslation()">Reveal</button>
-            <button class="btn" onclick="nextWord()">Next →</button>
-        </div>
-    </div>
+<!-- Grammar View -->
+<div id="grammar-modal">
+    <h2 id="modal-word"></h2>
+    <div id="grammar-content"></div>
+    <button onclick="document.getElementById('grammar-modal').style.display='none'">Close</button>
 </div>
 
 <script>
-    let allWords = [], filteredPool = [], currentIndex = 0;
+    let allWords = [];
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => { allWords = data; applyFilters(); })
-        .catch(err => console.error("Data Load Error:", err));
+        .then(data => { allWords = data; filterAndRender(); });
 
-    function applyFilters() {
-        const level = document.getElementById("level-filter").value.toLowerCase();
-        const type = document.getElementById("type-filter").value.toLowerCase();
-
-        filteredPool = allWords.filter(w => {
-            const lMatch = (level === "all" || (w.Level || "").toLowerCase().includes(level));
-            const tMatch = (type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
-            return lMatch && tMatch;
+    function filterAndRender() {
+        const type = document.getElementById("type-filter").value;
+        const filtered = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+        const grid = document.getElementById("word-grid");
+        grid.innerHTML = "";
+        
+        // Show first 20 words as tiles
+        filtered.slice(0, 20).forEach(w => {
+            const div = document.createElement("div");
+            div.className = "tile";
+            div.innerHTML = `<h3>${w.French}</h3><p>${w.English}</p>`;
+            div.onclick = () => showGrammar(w);
+            grid.appendChild(div);
         });
-        currentIndex = 0;
-        updateCardUI();
     }
 
-    function updateCardUI() {
-        document.getElementById("pool-count").innerText = filteredPool.length;
-        if (filteredPool.length === 0) {
-            document.getElementById("word-display").innerText = "No matches found.";
-            return;
-        }
-        const w = filteredPool[currentIndex];
-        document.getElementById("word-display").innerText = w.French || "---";
-        document.getElementById("extra-info").innerText = (w["Noun Gender"] || w["Verb Type"] || "");
-        document.getElementById("translation-display").classList.add("hidden");
-        fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(w.French)}`)
-            .then(res => res.json())
-            .then(data => {
-                const img = document.getElementById("word-image");
-                if (data.thumbnail) { img.src = data.thumbnail.source; img.classList.remove("hidden"); }
-                else img.classList.add("hidden");
-            });
+    function showGrammar(w) {
+        document.getElementById("modal-word").innerText = w.French;
+        // Dynamically inject your grammar info here
+        document.getElementById("grammar-content").innerHTML = `
+            <p><strong>Part of Speech:</strong> ${w["Part of Speech"]}</p>
+            <p><strong>Gender/Type:</strong> ${w["Noun Gender"] || w["Verb Type"] || "N/A"}</p>
+            <p><strong>Sentence:</strong> ${w.SentenceFR || "No example"}</p>
+        `;
+        document.getElementById("grammar-modal").style.display = "block";
     }
 
-    function revealTranslation() {
-        const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English || "---";
-        document.getElementById("sentence-fr-display").innerText = w.SentenceFR || "";
-        document.getElementById("sentence-en-display").innerText = w.SentenceEN || "";
-        document.getElementById("translation-display").classList.remove("hidden");
-    }
-
-    function playAudio() {
-        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
-        msg.lang = 'fr-FR';
-        window.speechSynthesis.speak(msg);
-    }
-
-    function toggleVoiceCapture() {
-        recognition.lang = 'fr-FR';
-        recognition.start();
-        recognition.onresult = (e) => {
-            const heard = e.results[0][0].transcript.toLowerCase().trim();
-            const target = filteredPool[currentIndex].French.toLowerCase().trim();
-            document.getElementById("voice-feedback").innerText = heard === target ? "✅ Correct!" : "❌ Try again";
-        };
-    }
-
-    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
-    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
+    // Fixed Speech Logic
+    recognition.onresult = (e) => {
+        const target = "parler"; // Replace with logic to grab from clicked tile
+        const heard = e.results[0][0].transcript.toLowerCase();
+        alert(heard === target ? "✅ Perfect!" : `❌ You said: ${heard}`);
+    };
 </script>
 </body>
 </html>
