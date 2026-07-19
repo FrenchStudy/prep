@@ -2,121 +2,123 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCF 5,000 Frequency Suite</title>
     <style>
-        :root { --primary: #2563EB; --success: #059669; --bg-main: #F1F5F9; --card-bg: #FFFFFF; --text-main: #1E293B; --text-muted: #64748B; --border-color: #E2E8F0; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding: 15px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
-        .container { max-width: 1000px; width: 100%; height: 100%; display: flex; flex-direction: column; }
-        .header { background: #FFFFFF; border: 1px solid var(--border-color); padding: 15px 25px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .header-text h1 { font-size: 1.5rem; font-weight: 800; color: #0F172A; }
-        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 15px; flex-grow: 1; min-height: 0; }
-        .settings-card, .flashcard-wrapper { background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); }
-        .filter-group { margin-bottom: 15px; }
-        .filter-group select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .pool-counter { background: #EFF6FF; padding: 12px; border-radius: 10px; text-align: center; }
-        .count { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
-        .target-word { font-size: 2.4rem; font-weight: 800; color: #0F172A; margin: 20px 0; }
-        .btn { padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; }
+        :root { --primary: #2563EB; --success: #059669; --bg-main: #F1F5F9; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
+        body { background-color: var(--bg-main); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; width: 100%; max-width: 900px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; }
+        .word-img { max-width: 200px; border-radius: 10px; margin-bottom: 10px; }
+        .btn { padding: 10px 15px; border-radius: 8px; cursor: pointer; border: none; margin: 5px; }
         .btn-primary { background: var(--primary); color: white; }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="header-text"><h1>TCF 5,000 Frequency Suite</h1></div>
+<div class="workspace">
+    <div class="card">
+        <h2>Filters</h2>
+        <select id="level-filter" onchange="applyFilters()">
+            <option value="all">All Levels</option>
+            <option value="a1">A1/A2</option>
+            <option value="b1">B1</option>
+        </select>
+        <select id="type-filter" onchange="applyFilters()">
+            <option value="all">All Types</option>
+            <option value="verb">Verbs</option>
+            <option value="noun">Nouns</option>
+        </select>
+        <div id="pool-count">0</div>
     </div>
-    <div class="workspace">
-        <div class="settings-card">
-            <h2>Filters</h2>
-            <div class="filter-group">
-                <label>Part of Speech</label>
-                <select id="type-filter" onchange="applyFilters()">
-                    <option value="all">All Categories</option>
-                    <option value="verb">Verbs</option>
-                    <option value="noun">Nouns</option>
-                </select>
-            </div>
-            <div class="pool-counter">
-                <p>Active Pool</p>
-                <div id="pool-count" class="count">0</div>
-            </div>
+
+    <div class="card">
+        <img id="word-image" class="word-img" src="" alt="">
+        <h1 id="word-display">Loading...</h1>
+        <div id="extra-info" style="font-weight:bold; color:var(--primary);"></div>
+        
+        <div id="controls">
+            <button onclick="playAudio()">🔊</button>
+            <button onclick="toggleVoiceCapture()">🎙️</button>
         </div>
 
-        <div class="flashcard-wrapper">
-            <div id="rank-display" class="rank-badge">RANK #0000</div>
-            <div id="word-display" class="target-word">Loading...</div>
-            <div id="type-display" style="color:var(--primary); font-weight:bold;">---</div>
-            
-            <div id="translation-display" class="hidden" style="margin-top:20px;">
-                <div id="meaning-display" style="font-size: 1.3rem; color: var(--success); font-weight: 700;"></div>
-                <div id="sentence-box" style="margin-top:10px; padding:10px; background:#F8FAFC; border-left:4px solid var(--primary);">
-                    <div id="sentence-fr-display"></div>
-                    <div id="sentence-en-display" style="color:var(--text-muted); font-style:italic;"></div>
-                </div>
-            </div>
-
-            <div style="margin-top:auto; display:flex; gap:10px;">
-                <button class="btn btn-primary" onclick="revealTranslation()">Reveal</button>
-                <button class="btn" onclick="nextWord()">Next →</button>
-            </div>
+        <div id="translation-box" class="hidden">
+            <h2 id="meaning-display"></h2>
+            <p id="sentence-fr-display"></p>
         </div>
+
+        <button class="btn" onclick="prevWord()">← Prev</button>
+        <button class="btn btn-primary" onclick="revealTranslation()">Reveal</button>
+        <button class="btn" onclick="nextWord()">Next →</button>
     </div>
 </div>
 
 <script>
-    let allWords = []; 
-    let filteredPool = [];
-    let currentIndex = 0;
+    let allWords = [], filteredPool = [], currentIndex = 0;
 
-    // IMPORTANT: Make sure the file name below matches your JSON file exactly
-    fetch('./data/vocab_master.json')
-        .then(response => response.json())
-        .then(data => {
-            allWords = data;
-            applyFilters();
-        })
-        .catch(err => {
-            document.getElementById("word-display").innerText = "Error Loading JSON";
-            console.error(err);
-        });
+    // Use the correct path to your JSON
+    fetch('vocab_master.json')
+        .then(res => res.json())
+        .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
         const type = document.getElementById("type-filter").value;
-        filteredPool = allWords.filter(w => {
-            if (type === "all") return true;
-            return (w["Part of Speech"] || "").toLowerCase().includes(type);
-        });
+        filteredPool = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
         currentIndex = 0;
         updateCardUI();
     }
 
     function updateCardUI() {
-        document.getElementById("pool-count").innerText = filteredPool.length;
-        if (filteredPool.length === 0) return;
-        
         const w = filteredPool[currentIndex];
-        document.getElementById("rank-display").innerText = `RANK #${w.Rank || "---"}`;
-        document.getElementById("word-display").innerText = w.French || "---";
-        document.getElementById("type-display").innerText = (w["Part of Speech"] || "---").toUpperCase();
-        document.getElementById("translation-display").classList.add("hidden");
+        if (!w) return;
+        document.getElementById("word-display").innerText = w.French;
+        document.getElementById("pool-count").innerText = filteredPool.length;
+        
+        // Show Noun/Verb specific data
+        let extra = "";
+        if (w["Noun Gender"]) extra += `Gender: ${w["Noun Gender"]} `;
+        if (w["Verb Type"]) extra += `| Type: ${w["Verb Type"]}`;
+        document.getElementById("extra-info").innerText = extra;
+        
+        document.getElementById("translation-box").classList.add("hidden");
+        fetchImage(w.French);
+    }
+
+    function fetchImage(word) {
+        fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`)
+            .then(res => res.json())
+            .then(data => {
+                const img = document.getElementById("word-image");
+                if (data.thumbnail) { img.src = data.thumbnail.source; img.classList.remove("hidden"); }
+                else img.classList.add("hidden");
+            });
     }
 
     function revealTranslation() {
         const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English || "---";
-        document.getElementById("sentence-fr-display").innerText = w.SentenceFR || "No example";
-        document.getElementById("sentence-en-display").innerText = w.SentenceEN || "";
-        document.getElementById("translation-display").classList.remove("hidden");
+        document.getElementById("meaning-display").innerText = w.English;
+        document.getElementById("sentence-fr-display").innerText = w.SentenceFR;
+        document.getElementById("translation-box").classList.remove("hidden");
     }
 
-    function nextWord() {
-        if (filteredPool.length === 0) return;
-        currentIndex = (currentIndex + 1) % filteredPool.length;
-        updateCardUI();
+    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
+    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
+
+    function playAudio() {
+        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
+        msg.lang = 'fr-FR';
+        window.speechSynthesis.speak(msg);
+    }
+
+    function toggleVoiceCapture() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.start();
+        recognition.onresult = (e) => {
+            if(e.results[0][0].transcript.toLowerCase() === filteredPool[currentIndex].French.toLowerCase()) {
+                alert("Correct!");
+            }
+        };
     }
 </script>
 </body>
