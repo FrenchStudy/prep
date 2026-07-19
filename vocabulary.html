@@ -2,113 +2,65 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>TCF 5,000 Frequency Suite</title>
+    <title>TCF Frequency Suite - Diagnostic Mode</title>
     <style>
-        /* Your original layout styles */
-        :root { --primary: #2563EB; --bg-main: #F1F5F9; }
-        body { font-family: sans-serif; background: var(--bg-main); padding: 20px; }
-        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; max-width: 900px; margin: auto; }
-        .card { background: white; padding: 25px; border-radius: 16px; border: 1px solid #E2E8F0; text-align: center; }
         .hidden { display: none !important; }
-        .btn { padding: 10px; cursor: pointer; }
+        .card { border: 1px solid #ccc; padding: 20px; margin: 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="workspace">
     <div class="card">
-        <h2>Filters</h2>
         <select id="level-filter" onchange="applyFilters()">
             <option value="all">All Levels</option>
             <option value="a1">A1</option>
             <option value="b1">B1</option>
         </select>
-        <select id="type-filter" onchange="applyFilters()">
-            <option value="all">All Categories</option>
-            <option value="verb">Verb</option>
-            <option value="noun">Noun</option>
-        </select>
-        <div id="pool-count">0</div>
+        <div id="pool-count">Count: 0</div>
     </div>
 
     <div class="card">
-        <img id="word-image" style="max-width:200px;" src="" alt="">
-        <h1 id="word-display">Loading...</h1>
-        <button onclick="playAudio()">🔊 Listen</button>
-        <button onclick="startVoice()">🎙️ Practice</button>
-        
-        <div id="translation-display" class="hidden">
-            <h2 id="meaning-display"></h2>
-            <p id="sentence-fr-display"></p>
+        <h1 id="word-display">Waiting for Data...</h1>
+        <button onclick="reveal()">Reveal</button>
+        <div id="reveal-area" class="hidden">
+            <p id="meaning"></p>
         </div>
-
-        <button class="btn" onclick="revealTranslation()">Reveal</button>
-        <button class="btn" onclick="nextWord()">Next →</button>
     </div>
-</div>
 
 <script>
-    let allWords = [], filteredPool = [], currentIndex = 0;
-
+    let allWords = [];
+    
+    // 1. Data Loading with diagnostic
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => { allWords = data; applyFilters(); });
+        .then(data => {
+            allWords = data;
+            // DIAGNOSTIC: This prints the structure to your F12 Console
+            console.log("JSON Keys found:", Object.keys(allWords[0]));
+            applyFilters();
+        });
 
     function applyFilters() {
         const lVal = document.getElementById("level-filter").value.toLowerCase();
-        const tVal = document.getElementById("type-filter").value.toLowerCase();
-
+        
+        // 2. Flexible Filter: Look at the console keys, then update these keys
         filteredPool = allWords.filter(w => {
-            // DEBUG LOG: Open console (F12) to see why it matches 0
-            const levelRaw = (w.Level || "").toLowerCase();
-            const typeRaw = (w["Part of Speech"] || "").toLowerCase();
-            
-            const lMatch = (lVal === "all" || levelRaw.includes(lVal));
-            const tMatch = (tVal === "all" || typeRaw.includes(tVal));
-            return lMatch && tMatch;
+            // Change these keys to match exactly what your console prints
+            const levelField = w.Level || w.level || w.CEFR || ""; 
+            return lVal === "all" || levelField.toLowerCase().includes(lVal);
         });
 
-        currentIndex = 0;
-        updateCardUI();
+        document.getElementById("pool-count").innerText = "Count: " + filteredPool.length;
+        render(filteredPool[0]);
     }
 
-    function updateCardUI() {
-        document.getElementById("pool-count").innerText = filteredPool.length;
-        if (filteredPool.length === 0) return;
-        const w = filteredPool[currentIndex];
+    function render(w) {
+        if(!w) return;
         document.getElementById("word-display").innerText = w.French;
-        document.getElementById("translation-display").classList.add("hidden");
-        
-        // Restore Image Fetching
-        fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(w.French)}`)
-            .then(res => res.json())
-            .then(data => { if(data.thumbnail) document.getElementById("word-image").src = data.thumbnail.source; });
+        document.getElementById("meaning").innerText = w.English;
     }
 
-    function revealTranslation() {
-        const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English;
-        document.getElementById("sentence-fr-display").innerText = w.SentenceFR;
-        document.getElementById("translation-display").classList.remove("hidden");
-    }
-
-    function startVoice() {
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'fr-FR';
-        rec.start();
-        rec.onresult = (e) => {
-            const heard = e.results[0][0].transcript.toLowerCase();
-            const target = filteredPool[currentIndex].French.toLowerCase();
-            alert(heard.includes(target) ? "Correct!" : "You said: " + heard);
-        };
-    }
-
-    function playAudio() {
-        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
-        msg.lang = 'fr-FR';
-        window.speechSynthesis.speak(msg);
-    }
-    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
+    function reveal() { document.getElementById("reveal-area").classList.remove("hidden"); }
 </script>
 </body>
 </html>
