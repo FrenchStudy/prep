@@ -28,39 +28,55 @@
     </div>
 
 <script>
-    let allWords = [];
-    
-    // 1. Data Loading with diagnostic
+    let allWords = [], filteredPool = [], currentIndex = 0;
+
     fetch('./data/vocab_master.json')
         .then(res => res.json())
-        .then(data => {
-            allWords = data;
-            // DIAGNOSTIC: This prints the structure to your F12 Console
-            console.log("JSON Keys found:", Object.keys(allWords[0]));
-            applyFilters();
+        .then(data => { 
+            allWords = data; 
+            // CRITICAL DEBUG: This shows you the ACTUAL keys in your JSON
+            console.log("Sample Entry:", allWords[0]);
+            applyFilters(); 
         });
 
     function applyFilters() {
         const lVal = document.getElementById("level-filter").value.toLowerCase();
-        
-        // 2. Flexible Filter: Look at the console keys, then update these keys
+        const tVal = document.getElementById("type-filter").value.toLowerCase();
+
         filteredPool = allWords.filter(w => {
-            // Change these keys to match exactly what your console prints
-            const levelField = w.Level || w.level || w.CEFR || ""; 
-            return lVal === "all" || levelField.toLowerCase().includes(lVal);
+            // We search for keys dynamically. 
+            // If the key is 'Rank' or 'French', look for them here!
+            const levelStr = JSON.stringify(w).toLowerCase();
+            return (lVal === "all" || levelStr.includes(lVal)) && 
+                   (tVal === "all" || levelStr.includes(tVal));
         });
 
-        document.getElementById("pool-count").innerText = "Count: " + filteredPool.length;
-        render(filteredPool[0]);
+        currentIndex = 0;
+        updateCardUI();
     }
 
-    function render(w) {
-        if(!w) return;
-        document.getElementById("word-display").innerText = w.French;
-        document.getElementById("meaning").innerText = w.English;
+    function updateCardUI() {
+        document.getElementById("pool-count").innerText = filteredPool.length;
+        
+        // SAFETY: Only update if we have words
+        if (filteredPool.length === 0) {
+            document.getElementById("word-display").innerText = "No matches found";
+            return;
+        }
+
+        const w = filteredPool[currentIndex];
+        document.getElementById("word-display").innerText = w.French || "N/A";
     }
 
-    function reveal() { document.getElementById("reveal-area").classList.remove("hidden"); }
+    function playAudio() {
+        if (!filteredPool[currentIndex]) {
+            alert("No word selected!");
+            return;
+        }
+        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
+        msg.lang = 'fr-FR';
+        window.speechSynthesis.speak(msg);
+    }
 </script>
 </body>
 </html>
