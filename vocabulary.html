@@ -17,11 +17,12 @@
 <div class="workspace">
     <div class="card">
         <h2>Filters</h2>
-        <label>Difficulty (via Frequency)</label>
+        <label>Difficulty</label>
         <select id="level-filter" onchange="applyFilters()">
             <option value="all">All Levels</option>
-            <option value="basic">Basic (High Freq)</option>
-            <option value="advanced">Advanced (Low Freq)</option>
+            <option value="basic">Basic</option>
+            <option value="medium">Medium</option>
+            <option value="advanced">Advanced</option>
         </select>
         
         <label style="display:block; margin-top:15px;">Part of Speech</label>
@@ -40,7 +41,7 @@
         <button class="btn" onclick="startVoice()">🎙️ Practice</button>
         
         <div id="reveal-area" class="hidden" style="margin-top:20px;">
-            <h2 id="meaning-display"></h2>
+            <div id="meaning-display"></div>
         </div>
         
         <div style="margin-top:20px;">
@@ -60,20 +61,18 @@
         .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
-        const lVal = document.getElementById("level-filter").value;
+        const lVal = document.getElementById("level-filter").value.toLowerCase();
         const tVal = document.getElementById("type-filter").value.toLowerCase();
 
         filteredPool = allWords.filter(w => {
-            // Filter by POS (Part of Speech field)
             const pos = (w["Part of Speech"] || w.pos || "").toLowerCase();
             const matchesType = (tVal === "all" || pos.includes(tVal));
 
-            // Filter by Frequency (Basic = High Freq, Advanced = Low Freq)
             const freq = w.Freq || 0;
             let matchesFreq = true;
             if (lVal === "basic") matchesFreq = freq >= 10000;
-             if (lVal === "Medium") matchesFreq = freq >= 1000 && freq < 10000;
-            if (lVal === "advanced") matchesFreq = freq > 0 && freq < 1000;
+            else if (lVal === "medium") matchesFreq = freq >= 1000 && freq < 10000;
+            else if (lVal === "advanced") matchesFreq = freq > 0 && freq < 1000;
             
             return matchesType && matchesFreq;
         });
@@ -90,36 +89,32 @@
     }
 
     function reveal() {
-        function reveal() {
-    if (filteredPool.length === 0) return;
-    const w = filteredPool[currentIndex];
-    
-    // 1. Show English Meaning
-    let htmlContent = `<h2>${w.English || "---"}</h2>`;
-    
-    // 2. Add Grammar Box if it's a verb
-    const pos = (w["Part of Speech"] || w.pos || "").toLowerCase();
-    if (pos.includes("verb")) {
-        htmlContent += generateConjugationRules(w.French || w.word);
+        if (filteredPool.length === 0) return;
+        const w = filteredPool[currentIndex];
+        
+        let htmlContent = `<h2>${w.English || "---"}</h2>`;
+        const pos = (w["Part of Speech"] || w.pos || "").toLowerCase();
+        
+        if (pos.includes("verb")) {
+            htmlContent += generateConjugationRules(w.French || w.word);
+        }
+        
+        document.getElementById("meaning-display").innerHTML = htmlContent;
+        document.getElementById("reveal-area").classList.remove("hidden");
     }
-    
-    document.getElementById("meaning-display").innerHTML = htmlContent;
-    document.getElementById("reveal-area").classList.remove("hidden");
-}
 
-function generateConjugationRules(verb) {
-    // Simple rule-based generator for -ER verbs (most common)
-    const stem = verb.slice(0, -2);
-    return `
-        <div id="grammar-box" style="margin-top:15px; text-align:left; font-size: 0.9em;">
-            <strong>Present Tense Conjugation (ER):</strong>
-            <table style="width:100%; border-collapse: collapse;">
-                <tr><td>je ${stem}e</td><td>nous ${stem}ons</td></tr>
-                <tr><td>tu ${stem}es</td><td>vous ${stem}ez</td></tr>
-                <tr><td>il ${stem}e</td><td>ils ${stem}ent</td></tr>
-            </table>
-        </div>`;
-}
+    function generateConjugationRules(verb) {
+        const stem = verb.slice(0, -2);
+        return `
+            <div style="margin-top:15px; text-align:left; font-size: 0.9em;">
+                <strong>Present Tense Conjugation (ER):</strong>
+                <table style="width:100%; border-collapse: collapse;">
+                    <tr><td>je ${stem}e</td><td>nous ${stem}ons</td></tr>
+                    <tr><td>tu ${stem}es</td><td>vous ${stem}ez</td></tr>
+                    <tr><td>il ${stem}e</td><td>ils ${stem}ent</td></tr>
+                </table>
+            </div>`;
+    }
 
     function nextWord() {
         if (filteredPool.length === 0) return;
