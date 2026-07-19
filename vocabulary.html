@@ -56,7 +56,7 @@
     let allWords = [], filteredPool = [], currentIndex = 0;
 
     // Use the correct path to your JSON
-    fetch('vocab_master.json')
+    fetch('./data/vocab_master.json')
         .then(res => res.json())
         .then(data => { allWords = data; applyFilters(); });
 
