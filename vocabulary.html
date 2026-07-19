@@ -51,74 +51,67 @@
         <button class="btn" onclick="nextWord()">Next →</button>
     </div>
 </div>
-
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-    // Use the correct path to your JSON
-    fetch('./data/vocab_master.json')
+    fetch('vocab_master.json')
         .then(res => res.json())
         .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
+        const level = document.getElementById("level-filter").value; // Ensure this ID exists in HTML
         const type = document.getElementById("type-filter").value;
-        filteredPool = allWords.filter(w => type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+
+        filteredPool = allWords.filter(w => {
+            const matchLevel = (level === "all" || (w.Level || "").toLowerCase().includes(level));
+            const matchType = (type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+            return matchLevel && matchType;
+        });
+
         currentIndex = 0;
         updateCardUI();
     }
 
     function updateCardUI() {
-        const w = filteredPool[currentIndex];
-        if (!w) return;
-        document.getElementById("word-display").innerText = w.French;
         document.getElementById("pool-count").innerText = filteredPool.length;
-        
-        // Show Noun/Verb specific data
-        let extra = "";
-        if (w["Noun Gender"]) extra += `Gender: ${w["Noun Gender"]} `;
-        if (w["Verb Type"]) extra += `| Type: ${w["Verb Type"]}`;
-        document.getElementById("extra-info").innerText = extra;
-        
-        document.getElementById("translation-box").classList.add("hidden");
-        fetchImage(w.French);
+        if (filteredPool.length === 0) {
+            document.getElementById("word-display").innerText = "No matches";
+            return;
+        }
+        const w = filteredPool[currentIndex];
+        document.getElementById("rank-display").innerText = `RANK #${w.Rank || "---"}`;
+        document.getElementById("word-display").innerText = w.French || "---";
+        document.getElementById("type-display").innerText = (w["Part of Speech"] || "---").toUpperCase();
+        document.getElementById("translation-display").classList.add("hidden");
     }
 
-    function fetchImage(word) {
-        fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`)
-            .then(res => res.json())
-            .then(data => {
-                const img = document.getElementById("word-image");
-                if (data.thumbnail) { img.src = data.thumbnail.source; img.classList.remove("hidden"); }
-                else img.classList.add("hidden");
-            });
-    }
+    // Speech Recognition Logic
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase().trim();
+        const correctWord = filteredPool[currentIndex].French.toLowerCase().trim();
+        
+        if (transcript === correctWord) {
+            alert("Correct!");
+            nextWord();
+        } else {
+            alert(`Incorrect. You said: ${transcript}`);
+        }
+    };
+
+    function toggleVoiceCapture() { recognition.start(); }
 
     function revealTranslation() {
         const w = filteredPool[currentIndex];
-        document.getElementById("meaning-display").innerText = w.English;
-        document.getElementById("sentence-fr-display").innerText = w.SentenceFR;
-        document.getElementById("translation-box").classList.remove("hidden");
+        document.getElementById("meaning-display").innerText = w.English || "---";
+        document.getElementById("sentence-fr-display").innerText = w.SentenceFR || "No example";
+        document.getElementById("sentence-en-display").innerText = w.SentenceEN || "";
+        document.getElementById("translation-display").classList.remove("hidden");
     }
 
-    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
-    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
-
-    function playAudio() {
-        const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
-        msg.lang = 'fr-FR';
-        window.speechSynthesis.speak(msg);
-    }
-
-    function toggleVoiceCapture() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'fr-FR';
-        recognition.start();
-        recognition.onresult = (e) => {
-            if(e.results[0][0].transcript.toLowerCase() === filteredPool[currentIndex].French.toLowerCase()) {
-                alert("Correct!");
-            }
-        };
+    function nextWord() {
+        currentIndex = (currentIndex + 1) % filteredPool.length;
+        updateCardUI();
     }
 </script>
 </body>
