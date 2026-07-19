@@ -1,25 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>TCF 5,000 Frequency Suite</title>
+    <style>
+        :root { --primary: #2563EB; --bg-main: #F1F5F9; }
+        body { font-family: sans-serif; background: var(--bg-main); padding: 20px; }
+        .workspace { display: grid; grid-template-columns: 260px 1fr; gap: 20px; max-width: 900px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 16px; border: 1px solid #E2E8F0; text-align: center; }
+        .hidden { display: none !important; }
+        .btn { padding: 10px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="workspace">
+    <!-- Filter Section -->
+    <div class="card">
+        <h2>Filters</h2>
+        <select id="level-filter" onchange="applyFilters()">
+            <option value="all">All Levels</option>
+            <option value="a1">A1</option>
+            <option value="b1">B1</option>
+            <option value="c1">C1</option>
+        </select>
+        <select id="type-filter" onchange="applyFilters()">
+            <option value="all">All Categories</option>
+            <option value="verb">Verb</option>
+            <option value="noun">Noun</option>
+        </select>
+        <div id="pool-count" style="margin-top:10px; font-weight:bold;">Count: 0</div>
+    </div>
+
+    <!-- Flashcard Section -->
+    <div class="card">
+        <h1 id="word-display">Loading...</h1>
+        <button class="btn" onclick="playAudio()">🔊 Listen</button>
+        <button class="btn" onclick="startVoice()">🎙️ Practice</button>
+        
+        <div id="reveal-area" class="hidden" style="margin-top:20px;">
+            <h2 id="meaning-display"></h2>
+        </div>
+
+        <div style="margin-top:20px;">
+            <button class="btn" onclick="reveal()">Reveal</button>
+            <button class="btn" onclick="nextWord()">Next →</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
 
+    // Load data
     fetch('./data/vocab_master.json')
         .then(res => res.json())
         .then(data => { 
             allWords = data; 
-            console.log("Data loaded successfully.");
-            // Only apply filters AFTER data is loaded
             applyFilters(); 
         });
 
     function applyFilters() {
-        // Safe check: if elements don't exist, default to 'all'
-        const levelEl = document.getElementById("level-filter");
-        const typeEl = document.getElementById("type-filter");
-        
-        const lVal = levelEl ? levelEl.value.toLowerCase() : "all";
-        const tVal = typeEl ? typeEl.value.toLowerCase() : "all";
+        const lVal = document.getElementById("level-filter").value.toLowerCase();
+        const tVal = document.getElementById("type-filter").value.toLowerCase();
 
         filteredPool = allWords.filter(w => {
-            // Converts object to string to find any match
+            // Using string conversion to safely search through all properties in the word object
             const str = JSON.stringify(w).toLowerCase();
             return (lVal === "all" || str.includes(lVal)) && 
                    (tVal === "all" || str.includes(tVal));
@@ -30,20 +76,49 @@
     }
 
     function updateCardUI() {
-        const countEl = document.getElementById("pool-count");
-        if(countEl) countEl.innerText = "Count: " + filteredPool.length;
-        
+        document.getElementById("pool-count").innerText = "Count: " + filteredPool.length;
         const wordEl = document.getElementById("word-display");
-        if(filteredPool.length > 0 && wordEl) {
-            wordEl.innerText = filteredPool[currentIndex].French;
-        } else if (wordEl) {
+        
+        if (filteredPool.length > 0) {
+            wordEl.innerText = filteredPool[currentIndex].French || "---";
+        } else {
             wordEl.innerText = "No matches found.";
+        }
+        document.getElementById("reveal-area").classList.add("hidden");
+    }
+
+    function reveal() {
+        if (filteredPool.length > 0) {
+            document.getElementById("meaning-display").innerText = filteredPool[currentIndex].English || "No definition.";
+            document.getElementById("reveal-area").classList.remove("hidden");
         }
     }
 
-    // This fixes your "reveal is not defined" error
-    function reveal() {
-        const revealArea = document.getElementById("reveal-area");
-        if(revealArea) revealArea.classList.remove("hidden");
+    function nextWord() {
+        if (filteredPool.length === 0) return;
+        currentIndex = (currentIndex + 1) % filteredPool.length;
+        updateCardUI();
+    }
+
+    function playAudio() {
+        if (filteredPool.length > 0) {
+            const msg = new SpeechSynthesisUtterance(filteredPool[currentIndex].French);
+            msg.lang = 'fr-FR';
+            window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function startVoice() {
+        if (filteredPool.length === 0) return;
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'fr-FR';
+        rec.start();
+        rec.onresult = (e) => {
+            const heard = e.results[0][0].transcript.toLowerCase();
+            const target = filteredPool[currentIndex].French.toLowerCase();
+            alert(heard.includes(target) ? "✅ Correct!" : "❌ You said: " + heard);
+        };
     }
 </script>
+</body>
+</html>
