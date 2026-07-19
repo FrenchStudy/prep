@@ -53,19 +53,23 @@
 </div>
 <script>
     let allWords = [], filteredPool = [], currentIndex = 0;
-    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-    fetch('vocab_master.json')
+    // Correct path as requested
+    fetch('./data/vocab_master.json')
         .then(res => res.json())
         .then(data => { allWords = data; applyFilters(); });
 
     function applyFilters() {
-        const level = document.getElementById("level-filter").value; // Ensure this ID exists in HTML
-        const type = document.getElementById("type-filter").value;
+        const level = document.getElementById("level-filter").value.toLowerCase();
+        const type = document.getElementById("type-filter").value.toLowerCase();
 
         filteredPool = allWords.filter(w => {
-            const matchLevel = (level === "all" || (w.Level || "").toLowerCase().includes(level));
-            const matchType = (type === "all" || (w["Part of Speech"] || "").toLowerCase().includes(type));
+            const targetLevel = (w.Level || "").toLowerCase();
+            const targetType = (w["Part of Speech"] || "").toLowerCase();
+            
+            const matchLevel = (level === "all" || targetLevel.includes(level));
+            const matchType = (type === "all" || targetType.includes(type));
             return matchLevel && matchType;
         });
 
@@ -79,23 +83,31 @@
             document.getElementById("word-display").innerText = "No matches";
             return;
         }
+        
         const w = filteredPool[currentIndex];
         document.getElementById("rank-display").innerText = `RANK #${w.Rank || "---"}`;
         document.getElementById("word-display").innerText = w.French || "---";
         document.getElementById("type-display").innerText = (w["Part of Speech"] || "---").toUpperCase();
+        
+        // Show gender/verb info if it exists
+        const info = w["Noun Gender"] ? `Gender: ${w["Noun Gender"]}` : (w["Verb Type"] ? `Type: ${w["Verb Type"]}` : "");
+        document.getElementById("extra-info").innerText = info;
+        
         document.getElementById("translation-display").classList.add("hidden");
     }
 
-    // Speech Recognition Logic
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase().trim();
-        const correctWord = filteredPool[currentIndex].French.toLowerCase().trim();
+        const heard = event.results[0][0].transcript.toLowerCase().trim();
+        const target = filteredPool[currentIndex].French.toLowerCase().trim();
         
-        if (transcript === correctWord) {
-            alert("Correct!");
-            nextWord();
+        const feedback = document.getElementById("voice-feedback");
+        if (heard === target) {
+            feedback.innerText = "Excellent! Moving to next...";
+            feedback.style.color = "var(--success)";
+            setTimeout(nextWord, 1500);
         } else {
-            alert(`Incorrect. You said: ${transcript}`);
+            feedback.innerText = `Heard: "${heard}". Try again!`;
+            feedback.style.color = "red";
         }
     };
 
@@ -109,10 +121,10 @@
         document.getElementById("translation-display").classList.remove("hidden");
     }
 
-    function nextWord() {
-        currentIndex = (currentIndex + 1) % filteredPool.length;
-        updateCardUI();
-    }
+    function nextWord() { currentIndex = (currentIndex + 1) % filteredPool.length; updateCardUI(); }
+    function prevWord() { currentIndex = (currentIndex - 1 + filteredPool.length) % filteredPool.length; updateCardUI(); }
 </script>
+
+
 </body>
 </html>
