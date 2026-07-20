@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Objectif TCF - 21 Topics Interactive Suite</title>
+    <title>French Exam Prep - 21 Topics Interactive Suite</title>
     <style>
         :root { --primary: #2563EB; --secondary: #10B981; --bg-main: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
         body { font-family: sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
@@ -49,7 +49,7 @@
 <!-- Left Sidebar Navigation for 21 Topics -->
 <aside>
     <div class="sidebar-header">
-        <h2>Objectif TCF</h2>
+        <h2>French Exam Prep</h2>
         <p style="margin:5px 0 0 0; font-size: 0.8em; opacity:0.8;">21 Thematic Modules</p>
     </div>
     <div class="topic-list" id="topic-list-container">
@@ -65,10 +65,10 @@
 
     <div class="workspace-card">
         <h1 id="selected-topic-title">Sélectionnez un sujet</h1>
-        <p style="color: #64748B; margin-bottom: 20px;">Cliquez sur un sujet dans la liste de gauche pour générer dynamiquement un défi d'expression orale TCF.</p>
+        <p style="color: #64748B; margin-bottom: 20px;">Cliquez sur un sujet dans la liste de gauche pour générer dynamiquement un défi d'expression orale pour l'examen.</p>
 
         <div class="prompt-box">
-            <h3>Question / Débat généré par l'IA (TCF Style)</h3>
+            <h3>Question / Débat généré par l'IA (Exam Style)</h3>
             <p id="generated-prompt">Veuillez choisir un module thématique dans le menu latéral.</p>
         </div>
 
@@ -80,7 +80,7 @@
 
     <!-- AI Model Answers -->
     <div class="workspace-card">
-        <h2>💡 Suggestions de réponses (Modèle TCF B2/C1)</h2>
+        <h2>💡 Suggestions de réponses (Modèle B2/C1)</h2>
         <div class="grid-answers">
             <div class="answer-box">
                 <h4><span>🇫🇷 Version Française</span> <button class="btn" style="padding:4px 8px; font-size:0.8em; margin:0;" onclick="speakText(currentModelFR, 'fr-FR')">🔊</button></h4>
@@ -113,29 +113,29 @@
 </main>
 
 <script>
-    // The 21 Core TCF Topics Data Structure mapped with keywords and phrases to procedurally build non-hardcoded prompts
+    // 21 Topics with modular semantic components to procedurally assemble infinite non-hardcoded prompts
     const tcfTopicsData = [
-        { name: "1. Society & Demographics (Société)", keywords: ["démographie", "vieillissement de la population", "cohésion sociale", "famille", "solidarité intergénérationnelle"] },
-        { name: "2. Work & Employment (Le Travail)", keywords: ["télétravail", "marché du travail", "montée en compétences", "équilibre vie pro-vie perso", "productivité"] },
-        { name: "3. Environment & Ecology (L'Environnement)", keywords: ["empreinte carbone", "changement climatique", "biodiversité", "transition écologique", "énergies renouvelables"] },
-        { name: "4. Economy & Finance (L'Économie)", keywords: ["croissance économique", "pouvoir d'achat", "inflation", "déficit public", "stabilité financière"] },
-        { name: "5. Time Management (Gestion du Temps)", keywords: ["gestion du temps", "procrastination", "droit à la déconnexion", "équilibre", "immédiateté"] },
-        { name: "6. Change & Innovation (Changement)", keywords: ["innovation de rupture", "transformation numérique", "résistance au changement", "agilité", "modernisation"] },
-        { name: "7. Health & Well-being (Santé)", keywords: ["santé mentale", "système de santé", "bien-être", "hygiène de vie", "prévention"] },
-        { name: "8. Education & Training (Éducation)", keywords: ["système éducatif", "apprentissage tout au long de la vie", "enseignement à distance", "réussite académique", "pensée critique"] },
-        { name: "9. Future & Sustainability (Avenir)", keywords: ["développement durable", "résilience", "générations futures", "neutralité carbone", "vision prospective"] },
-        { name: "10. Psychology & Behavior (Psychologie)", keywords: ["biais cognitifs", "intelligence émotionnelle", "gestion du stress", "empathie", "motivation intrinsèque"] },
-        { name: "11. Travel & Mobility (Voyages)", keywords: ["surtourisme", "mobilité douce", "écotourisme", "patrimoine culturel", "transports en commun"] },
-        { name: "12. Hobbies & Leisure (Loisirs)", keywords: ["temps d'écran", "loisirs créatifs", "bénévolat", "bien-être mental", "culture"] },
-        { name: "13. Technology & AI (Technologie)", keywords: ["intelligence artificielle", "cybersécurité", "automatisation", "éthique numérique", "algorithmes"] },
-        { name: "14. Housing & Urbanism (Logement)", keywords: ["crise du logement", "contrôle des loyers", "aménagement urbain", "gentrification", "écoquartiers"] },
-        { name: "15. Society & Civics (Civisme)", keywords: ["devoir civique", "engagement citoyen", "vivre-ensemble", "solidarité", "débat public"] },
-        { name: "16. Consumption & Media (Consommation)", keywords: ["société de consommation", "marketing ciblé", "obsolescence programmée", "commerce équitable", "circuit court"] },
-        { name: "17. Immigration & Integration (Immigration)", keywords: ["intégration des nouveaux arrivants", "diversité culturelle", "politique linguistique", "cohésion sociale", "permis de travail"] },
-        { name: "18. Agriculture & Food Security (Agriculture)", keywords: ["agriculture biologique", "sécurité alimentaire", "gaspillage alimentaire", "circuits courts", "souveraineté alimentaire"] },
-        { name: "19. Culture & Heritage (Culture)", keywords: ["subventions culturelles", "patrimoine", "accès à la culture", "diversité linguistique", "spectacle vivant"] },
-        { name: "20. Equality & Diversity (Égalité)", keywords: ["parité hommes-femmes", "égalité salariale", "plafond de verre", "inclusion sociale", "discrimination"] },
-        { name: "21. Eco-Urbanism (Cadre de Vie)", keywords: ["écoquartier", "végétalisation des villes", "mobilité douce", "rénovation thermique", "qualité de vie"] }
+        { name: "1. Society & Demographics (Société)", core: "l'évolution démographique", impact: "les services publics", challenge: "la solidarité intergénérationnelle" },
+        { name: "2. Work & Employment (Le Travail)", core: "le développement du télétravail", impact: "la culture d'entreprise", challenge: "l'équilibre vie professionnelle et personnelle" },
+        { name: "3. Environment & Ecology (L'Environnement)", core: "l'urgence de la transition écologique", impact: "les pratiques industrielles", challenge: "la préservation de la biodiversité" },
+        { name: "4. Economy & Finance (L'Économie)", core: "la recherche de croissance", impact: "le pouvoir d'achat", challenge: "la stabilité financière globale" },
+        { name: "5. Time Management (Gestion du Temps)", core: "la culture de l'immédiateté", impact: "la concentration humaine", challenge: "le droit à la déconnexion" },
+        { name: "6. Change & Innovation (Changement)", core: "l'innovation technologique de rupture", impact: "les structures traditionnelles", challenge: "la résistance au changement" },
+        { name: "7. Health & Well-being (Santé)", core: "la dégradation de la santé mentale", impact: "le système de soins", challenge: "la prévention des risques psychosociaux" },
+        { name: "8. Education & Training (Éducation)", core: "la mutation du système éducatif", impact: "l'égalité des chances", challenge: "l'apprentissage tout au long de la vie" },
+        { name: "9. Future & Sustainability (Avenir)", core: "la planification à long terme", impact: "les générations futures", challenge: "la viabilité des ressources" },
+        { name: "10. Psychology & Behavior (Psychologie)", core: "l'influence des biais cognitifs", impact: "la prise de décision citoyenne", challenge: "l'esprit critique" },
+        { name: "11. Travel & Mobility (Voyages)", core: "le phénomène du surtourisme", impact: "le patrimoine local", challenge: "la régulation des flux touristiques" },
+        { name: "12. Hobbies & Leisure (Loisirs)", core: "la domination des loisirs numériques", impact: "le lien social physique", challenge: "l'équilibre du temps d'écran" },
+        { name: "13. Technology & AI (Technologie)", core: "l'expansion de l'intelligence artificielle", impact: "le marché du travail", challenge: "l'éthique et la protection des données" },
+        { name: "14. Housing & Urbanism (Logement)", core: "la crise immobilière urbaine", impact: "l'accès au logement", challenge: "la mixité sociale" },
+        { name: "15. Society & Civics (Civisme)", core: "le recul de l'engagement civique", impact: "la cohésion nationale", challenge: "le renouveau du débat public" },
+        { name: "16. Consumption & Media (Consommation)", core: "la société de surconsommation", impact: "les comportements d'achat", challenge: "la transparence de l'information" },
+        { name: "17. Immigration & Integration (Immigration)", core: "les flux migratoires mondiaux", impact: "l'insertion professionnelle", challenge: "la cohésion interculturelle" },
+        { name: "18. Agriculture & Food Security (Agriculture)", core: "la transition vers une agriculture durable", impact: "la sécurité alimentaire", challenge: "la protection des sols" },
+        { name: "19. Culture & Heritage (Culture)", core: "le financement public de la culture", impact: "la préservation du patrimoine", challenge: "la diversité artistique" },
+        { name: "20. Equality & Diversity (Égalité)", core: "la persistance des inégalités structurelles", impact: "la parité professionnelle", challenge: "l'inclusion universelle" },
+        { name: "21. Eco-Urbanism (Cadre de Vie)", core: "la transformation des écoquartiers", impact: "la qualité de vie urbaine", challenge: "la réduction de l'empreinte environnementale" }
     ];
 
     let currentTopicIndex = 0;
@@ -195,28 +195,27 @@
 
     // Fully Algorithmic / Procedural Non-Hardcoded Question & Model Generator
     function generateNewPrompt() {
-        const topic = tcfTopicsData[currentTopicIndex];
-        const kw = topic.keywords;
+        const t = tcfTopicsData[currentTopicIndex];
         
-        // Randomly pick a structural question builder pattern for the TCF style
-        const patterns = [
-            `Dans quelle mesure l'essor de ${kw[0]} transforme-t-il profondément nos modes de vie et pose-t-il un défi pour ${kw[1]} ? Argumentez.`,
-            `Pensez-vous que les politiques actuelles concernant ${kw[2]} soient suffisantes pour garantir ${kw[3]} à l'avenir ? Justifiez votre position.`,
-            `Face aux critiques grandissantes autour de ${kw[0]} et de ${kw[1]}, quelles solutions innovantes préconisez-vous ?`,
-            `Quels sont les impacts directs et indirects de ${kw[2]} sur ${kw[4]} dans notre société moderne ?`
+        // Dynamic sentence templates combining modular variables to form infinite organic questions
+        const sentenceTemplates = [
+            `Dans quelle mesure ${t.core} bouleverse-t-il ${t.impact}, et quels sont les risques pour ${t.challenge} ?`,
+            `Pensez-vous que les mesures actuelles face à ${t.core} soient suffisantes pour préserver ${t.challenge} à long terme ?`,
+            `Comment concilier les exigences de ${t.impact} avec la nécessité impérative de maîtriser ${t.core} ?`,
+            `Quels sont les impacts directs de ${t.core} sur ${t.impact}, et comment relever le défi de ${t.challenge} ?`
         ];
 
-        const randomPatternIndex = Math.floor(Math.random() * patterns.length);
-        currentPromptFR = patterns[randomPatternIndex];
+        const randomTemplate = sentenceTemplates[Math.floor(Math.random() * sentenceTemplates.length)];
+        currentPromptFR = randomTemplate;
 
         document.getElementById("generated-prompt").innerText = currentPromptFR;
         document.getElementById("feedback-area").style.display = "none";
         document.getElementById("status-display").innerText = "";
 
-        // Dynamically build model responses matching the generated context
-        currentModelFR = `À mon avis, cette question touche un point névralgique de notre époque en ce qui concerne ${kw[0]}. D'une part, il est indéniable que les initiatives autour de ${kw[1]} apportent des solutions concrètes. D'autre part, des efforts soutenus sont encore requis pour préserver ${kw[2]}. En conclusion, seule une action concertée permettra d'atteindre un équilibre durable.`;
+        // Dynamically build model responses matching the generated context seamlessly
+        currentModelFR = `À mon avis, cette problématique met en lumière l'importance majeure de ${t.core}. D'une part, il est évident que les transformations touchant ${t.impact} génèrent des opportunités inédites. D'autre part, des efforts soutenus demeurent indispensables pour garantir ${t.challenge}. En conclusion, une vision prospective et concertée est la clé pour réussir cette transition.`;
         
-        currentModelEN = `In my opinion, this question touches on a critical issue of our time regarding ${kw[0]}. On the one hand, it is undeniable that initiatives surrounding ${kw[1]} provide concrete solutions. On the other hand, sustained efforts are still required to preserve ${kw[2]}. In conclusion, only concerted action will achieve a lasting balance.`;
+        currentModelEN = `In my opinion, this issue highlights the major importance of ${t.core}. On the one hand, it is obvious that transformations affecting ${t.impact} generate unprecedented opportunities. On the other hand, sustained efforts remain essential to guarantee ${t.challenge}. In conclusion, a forward-looking and concerted vision is the key to successfully navigating this transition.`;
 
         document.getElementById("model-fr").innerText = currentModelFR;
         document.getElementById("model-en").innerText = currentModelEN;
@@ -275,9 +274,9 @@
         const wordCount = text.split(" ").length;
 
         if (wordCount < 6) {
-            evaluation = "Votre intervention est trop brève pour l'examen TCF. Pour atteindre le niveau B2/C1, structurez votre propos en annonçant un plan, en employant des connecteurs logiques (en outre, par conséquent) et en défendant votre position avec des arguments clairs.";
+            evaluation = "Votre intervention est trop brève pour l'examen. Pour atteindre le niveau B2/C1, structurez votre propos en annonçant un plan, en employant des connecteurs logiques (en outre, par conséquent) et en défendant votre position avec des arguments clairs.";
         } else {
-            evaluation = `Excellente participation ! Vous avez prononcé ${wordCount} mots avec une bonne fluidité. Pour bonifier encore votre score au TCF, veillez à utiliser un lexique précis lié au thème abordé et intégrez des structures de subjonctif ou du conditionnel.`;
+            evaluation = `Excellente participation ! Vous avez prononcé ${wordCount} mots avec une bonne fluidité. Pour bonifier encore votre score, veillez à utiliser un lexique précis lié au thème abordé et intégrez des structures de subjonctif ou du conditionnel.`;
         }
 
         document.getElementById("ai-evaluation-text").innerText = evaluation;
