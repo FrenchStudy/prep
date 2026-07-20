@@ -17,7 +17,6 @@
         .topic-item:hover { background: #F1F5F9; color: var(--primary); }
         .topic-item.active { background: #EFF6FF; color: var(--primary); border-color: #BFDBFE; font-weight: bold; }
 
-        /* Mobile Hamburger Toggle Button (Hidden on Desktop) */
         .mobile-toggle { display: none; background: none; border: none; color: white; font-size: 1.5em; cursor: pointer; }
 
         /* Main Workspace */
@@ -47,7 +46,6 @@
         #feedback-area { margin-top: 20px; padding: 20px; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; display: none; }
         #feedback-area h3 { color: #065F46; margin-top: 0; }
 
-        /* RESPONSIVE MEDIA QUERY FOR MOBILE PHONES & TABLETS */
         @media (max-width: 900px) {
             body { flex-direction: column; height: auto; overflow: auto; }
             aside { width: 100%; height: auto; max-height: 250px; position: relative; }
@@ -61,7 +59,6 @@
 </head>
 <body>
 
-<!-- Left Sidebar Navigation for 21 Topics -->
 <aside>
     <div class="sidebar-header">
         <div>
@@ -70,12 +67,9 @@
         </div>
         <button class="mobile-toggle" onclick="toggleMobileMenu()">☰</button>
     </div>
-    <div class="topic-list" id="topic-list-container">
-        <!-- Dynamically injected topic items -->
-    </div>
+    <div class="topic-list" id="topic-list-container"></div>
 </aside>
 
-<!-- Main Interactive Panel -->
 <main>
     <div>
         <a href="../index.html" class="back-link">← Back to Dashboard</a>
@@ -83,10 +77,10 @@
 
     <div class="workspace-card">
         <h1 id="selected-topic-title">Sélectionnez un sujet</h1>
-        <p style="color: #64748B; margin-bottom: 20px; font-size: 0.95em;">Choisissez un sujet pour générer dynamiquement un défi d'expression orale adapté aux examens.</p>
+        <p style="color: #64748B; margin-bottom: 20px; font-size: 0.95em;">Choisissez un sujet pour générer algorithmiquement un défi d'expression orale unique.</p>
 
         <div class="prompt-box">
-            <h3>Question / Débat généré par l'IA</h3>
+            <h3>Question / Débat généré algorithmiquement</h3>
             <p id="generated-prompt">Veuillez choisir un module thématique dans le menu.</p>
         </div>
 
@@ -96,9 +90,8 @@
         </div>
     </div>
 
-    <!-- AI Model Answers -->
     <div class="workspace-card">
-        <h2>💡 Suggestions de réponses (Modèle B2/C1)</h2>
+        <h2>💡 Suggestions de réponses (Modèle B2/C1 Algorithmique)</h2>
         <div class="grid-answers">
             <div class="answer-box">
                 <h4><span>🇫🇷 Version Française</span> <button class="btn" style="padding:4px 8px; font-size:0.8em; margin:0;" onclick="speakText(currentModelFR, 'fr-FR')">🔊</button></h4>
@@ -111,10 +104,9 @@
         </div>
     </div>
 
-    <!-- User Speaking & Evaluation Suite + Secure Data Bank Tracker -->
     <div class="workspace-card">
         <h2>🎙️ Votre Tour (Expression Orale)</h2>
-        <p style="font-size: 0.95em;">Enregistrez votre prise de parole. Vos réponses seront sécurisées localement pour suivre votre progression.</p>
+        <p style="font-size: 0.95em;">Enregistrez votre prise de parole. Vos réponses seront sauvegardées dans votre banque de données locale.</p>
         
         <div style="margin-top: 15px;">
             <button class="btn btn-success" id="record-btn" onclick="toggleRecording()">🎙️ Enregistrer ma réponse</button>
@@ -131,243 +123,70 @@
 </main>
 
 <script>
-    // --- SECURE DATA BANK PROGRESS TRACKER CLASS ---
     class ProgressTracker {
-        constructor() {
-            this.storageKey = "french_exam_user_progress";
-        }
+        constructor() { this.storageKey = "french_exam_user_progress"; }
         saveResponse(topicName, question, userTranscript, evaluationScore) {
             try {
                 const history = this.getAllProgress();
-                const entry = {
+                history.unshift({
                     id: Date.now(),
                     date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
                     topic: topicName,
                     question: question,
                     response: userTranscript,
                     score: evaluationScore
-                };
-                history.unshift(entry);
+                });
                 localStorage.setItem(this.storageKey, JSON.stringify(history));
                 return true;
-            } catch (e) {
-                console.error("Failed to securely save user progress:", e);
-                return false;
-            }
+            } catch (e) { return false; }
         }
         getAllProgress() {
-            try {
-                const data = localStorage.getItem(this.storageKey);
-                return data ? JSON.parse(data) : [];
-            } catch (e) {
-                return [];
-            }
+            try { return JSON.parse(localStorage.getItem(this.storageKey)) || []; } catch (e) { return []; }
         }
     }
     const tracker = new ProgressTracker();
 
-    // 21 Topics Data with tailored, context-specific questions and natural model answers
+    // 21 Pure Concept Arrays (No hardcoded sentences, only raw thematic building blocks)
     const tcfTopicsData = [
-        { 
-            name: "1. Society & Demographics (Société)", 
-            core: "l'évolution démographique", 
-            impact: "les services publics", 
-            challenge: "la solidarité intergénérationnelle",
-            modelFR: "Il est indéniable que le vieillissement de la population redéfinit nos priorités budgétaires. D'une part, la pression sur les hôpitaux s'accroît. D'autre part, l'expérience des aînés représente une ressource inestimable pour le bénévolat et le tissu associatif.",
-            modelEN: "It is undeniable that population aging is redefining our budget priorities. On one hand, pressure on hospitals is increasing. On the other hand, the experience of seniors represents an invaluable resource for volunteering and community networks."
-        },
-        { 
-            name: "2. Work & Employment (Le Travail)", 
-            core: "le développement du télétravail", 
-            impact: "la culture d'entreprise", 
-            challenge: "l'équilibre vie professionnelle et personnelle",
-            modelFR: "Le télétravail a profondément modifié notre rapport à l'emploi. S'il offre une autonomie accrue et réduit le temps de transport, il exige une vigilance accrue pour éviter l'isolement et préserver une frontière claire entre sphère privée et professionnelle.",
-            modelEN: "Remote work has profoundly changed our relationship with employment. While it offers increased autonomy and reduces commuting time, it requires careful vigilance to prevent isolation and preserve a clear boundary between private and professional spheres."
-        },
-        { 
-            name: "3. Environment & Ecology (L'Environnement)", 
-            core: "l'urgence de la transition écologique", 
-            impact: "les pratiques industrielles", 
-            challenge: "la préservation de la biodiversité",
-            modelFR: "Face à l'urgence climatique, les demi-mesures ne suffisent plus. Les entreprises doivent intégrer la sobriété énergétique au cœur même de leur modèle économique, tandis que les citoyens doivent privilégier des modes de consommation durables.",
-            modelEN: "Facing the climate emergency, half-measures are no longer enough. Companies must integrate energy sobriety into the very heart of their economic model, while citizens must favor sustainable consumption patterns."
-        },
-        { 
-            name: "4. Economy & Finance (L'Économie)", 
-            core: "la recherche de croissance", 
-            impact: "le pouvoir d'achat", 
-            challenge: "la stabilité financière globale",
-            modelFR: "Concilier la lutte contre l'inflation et la préservation du pouvoir d'achat constitue un exercice délicat pour les gouvernements. Il s'agit de stimuler l'économie réelle tout en protégeant les ménages les plus vulnérables contre la précarité.",
-            modelEN: "Reconciling the fight against inflation and the preservation of purchasing power is a delicate exercise for governments. The goal is to stimulate the real economy while protecting the most vulnerable households against precariousness."
-        },
-        { 
-            name: "5. Time Management (Gestion du Temps)", 
-            core: "la culture de l'immédiateté", 
-            impact: "la concentration humaine", 
-            challenge: "le droit à la déconnexion",
-            modelFR: "La tyrannie du temps réel engendre un stress chronique et nuit à notre profondeur de réflexion. Reconnaître le droit à la déconnexion n'est pas un luxe, mais une nécessité sanitaire pour restaurer la créativité et le bien-être.",
-            modelEN: "The tyranny of real-time generates chronic stress and harms our depth of reflection. Recognizing the right to disconnect is not a luxury, but a health necessity to restore creativity and well-being."
-        },
-        { 
-            name: "6. Change & Innovation (Changement)", 
-            core: "l'innovation technologique de rupture", 
-            impact: "les structures traditionnelles", 
-            challenge: "la résistance au changement",
-            modelFR: "Toute innovation majeure bouscule les repères établis et provoque des résistances légitimes. Pour lever ces craintes, l'accompagnement humain, la formation continue et le dialogue ouvert sont des facteurs clés de réussite.",
-            modelEN: "Any major innovation disrupts established benchmarks and provokes legitimate resistance. To overcome these fears, human support, ongoing training, and open dialogue are key success factors."
-        },
-        { 
-            name: "7. Health & Well-being (Santé)", 
-            core: "la dégradation de la santé mentale", 
-            impact: "le système de soins", 
-            challenge: "la prévention des risques psychosociaux",
-            modelFR: "La santé mentale souffre encore d'un manque de visibilité et de moyens dans notre système de santé publique. Il est urgent de déstigmatiser la souffrance psychologique et de renforcer la prise en charge précoce en milieu professionnel et scolaire.",
-            modelEN: "Mental health still suffers from a lack of visibility and resources in our public healthcare system. It is urgent to destigmatize psychological distress and strengthen early care in professional and academic settings."
-        },
-        { 
-            name: "8. Education & Training (Éducation)", 
-            core: "la mutation du système éducatif", 
-            impact: "l'égalité des chances", 
-            challenge: "l'apprentissage tout au long de la vie",
-            modelFR: "L'école de demain doit se réinventer pour préparer les jeunes à des métiers qui n'existent pas encore. Cela implique de privilégier l'esprit critique, l'adaptabilité et la collaboration par rapport à la simple mémorisation.",
-            modelEN: "The school of tomorrow must reinvent itself to prepare young people for jobs that do not yet exist. This implies prioritizing critical thinking, adaptability, and collaboration over mere memorization."
-        },
-        { 
-            name: "9. Future & Sustainability (Avenir)", 
-            core: "la planification à long terme", 
-            impact: "les générations futures", 
-            challenge: "la viabilité des ressources",
-            modelFR: "Penser aux générations futures exige de dépasser la vision court-termiste dictée par les échéances électorales. La préservation de notre environnement et de nos ressources naturelles doit guider chaque décision politique majeure.",
-            modelEN: "Thinking of future generations requires moving beyond the short-term vision dictated by electoral cycles. The preservation of our environment and natural resources must guide every major political decision."
-        },
-        { 
-            name: "10. Psychology & Behavior (Psychologie)", 
-            core: "l'influence des biais cognitifs", 
-            impact: "la prise de décision citoyenne", 
-            challenge: "l'esprit critique",
-            modelFR: "Dans un paysage médiatique saturé d'informations, les biais cognitifs renforcent nos certitudes et facilitent la propagation de fausses nouvelles. Cultiver l'esprit critique est notre meilleure défense démocratique.",
-            modelEN: "In a media landscape saturated with information, cognitive biases reinforce our certainties and facilitate the spread of fake news. Cultivating critical thinking is our best democratic defense."
-        },
-        { 
-            name: "11. Travel & Mobility (Voyages)", 
-            core: "le phénomène du surtourisme", 
-            impact: "le patrimoine local", 
-            challenge: "la régulation des flux touristiques",
-            modelFR: "Le surtourisme met en péril l'intégrité de nombreux sites historiques et détériore la qualité de vie des résidents. Des mesures de régulation des flux et de promotion d'un tourisme écoresponsable s'avèrent indispensables.",
-            modelEN: "Over-tourism jeopardizes the integrity of many historical sites and deteriorates the quality of life for residents. Measures to regulate visitor flows and promote eco-responsible tourism are essential."
-        },
-        { 
-            name: "12. Hobbies & Leisure (Loisirs)", 
-            core: "la domination des loisirs numériques", 
-            impact: "le lien social physique", 
-            challenge: "l'équilibre du temps d'écran",
-            modelFR: "Si les loisirs numériques connectent virtuellement les individus, ils réduisent dramatiquement les interactions physiques et les activités en plein air. Un rééquilibrage s'impose pour stimuler la créativité et le sport.",
-            modelEN: "While digital leisure connects individuals virtually, it dramatically reduces physical interactions and outdoor activities. Rebalancing is necessary to stimulate creativity and sports."
-        },
-        { 
-            name: "13. Technology & AI (Technologie)", 
-            core: "l'expansion de l'intelligence artificielle", 
-            impact: "le marché du travail", 
-            challenge: "l'éthique et la protection des données",
-            modelFR: "L'intelligence artificielle transforme radicalement nos modes de production. Toutefois, sans un cadre éthique strict et une protection rigoureuse de la vie privée, les risques de manipulation et de discrimination s'accroissent.",
-            modelEN: "Artificial intelligence radically transforms our production methods. However, without a strict ethical framework and rigorous privacy protection, the risks of manipulation and discrimination increase."
-        },
-        { 
-            name: "14. Housing & Urbanism (Logement)", 
-            core: "la crise immobilière urbaine", 
-            impact: "l'accès au logement", 
-            challenge: "la mixité sociale",
-            modelFR: "La flambée des loyers dans les métropoles exclut les classes moyennes et populaires des centres-villes. Favoriser la mixité sociale et développer des logements durables et abordables est un impératif de justice sociale.",
-            modelEN: "Soaring rents in major cities exclude the middle and working classes from downtown areas. Promoting social diversity and developing sustainable, affordable housing is an imperative of social justice."
-        },
-        { 
-            name: "15. Society & Civics (Civisme)", 
-            core: "le recul de l'engagement civique", 
-            impact: "la cohésion nationale", 
-            challenge: "le renouveau du débat public",
-            modelFR: "Le civisme et le respect d'autrui constituent le ciment de notre pacte républicain. Redonner envie de s'engager dans la vie associative et politique locale est la meilleure parade contre la fracture sociale.",
-            modelEN: "Civism and respect for others constitute the cement of our social pact. Reviving the desire to get involved in local community and political life is the best defense against social division."
-        },
-        { 
-            name: "16. Consumption & Media (Consommation)", 
-            core: "la société de surconsommation", 
-            impact: "les comportements d'achat", 
-            challenge: "la transparence de l'information",
-            modelFR: "La surconsommation encouragée par le marketing digital épuise les ressources de la planète. L'éducation aux médias et la valorisation des circuits courts aident les citoyens à opérer des choix plus éclairés et éthiques.",
-            modelEN: "Overconsumption encouraged by digital marketing exhausts the planet's resources. Media literacy and the promotion of short supply chains help citizens make more enlightened and ethical choices."
-        },
-        { 
-            name: "17. Immigration & Integration (Immigration)", 
-            core: "les flux migratoires mondiaux", 
-            impact: "l'insertion professionnelle", 
-            challenge: "la cohésion interculturelle",
-            modelFR: "L'intégration réussie des nouveaux arrivants repose sur un accès rapide à l'emploi et une maîtrise de la langue. L'interculturalité enrichit la société d'accueil à condition de favoriser le respect mutuel.",
-            modelEN: "The successful integration of newcomers relies on rapid access to employment and language mastery. Interculturalism enriches the host society provided mutual respect is fostered."
-        },
-        { 
-            name: "18. Agriculture & Food Security (Agriculture)", 
-            core: "la transition vers une agriculture durable", 
-            impact: "la sécurité alimentaire", 
-            challenge: "la protection des sols",
-            modelFR: "L'agriculture intensive montre des limites écologiques alarmantes. Promouvoir l'agroécologie et les circuits courts garantit non seulement une meilleure qualité nutritionnelle, mais protège aussi durablement nos sols.",
-            modelEN: "Intensive agriculture shows alarming ecological limits. Promoting agroecology and local supply chains not only guarantees better nutritional quality, but also sustainably protects our soils."
-        },
-        { 
-            name: "19. Culture & Heritage (Culture)", 
-            core: "le financement public de la culture", 
-            impact: "la préservation du patrimoine", 
-            challenge: "la diversité artistique",
-            modelFR: "La culture est un vecteur fondamental d'émancipation et de mémoire collective. Maintenir un soutien public fort garantit l'accès de tous à la création artistique, indépendamment des logiques purement mercantiles.",
-            modelEN: "Culture is a fundamental vector of emancipation and collective memory. Maintaining strong public support guarantees everyone's access to artistic creation, independently of purely mercantile logics."
-        },
-        { 
-            name: "20. Equality & Diversity (Égalité)", 
-            core: "la persistance des inégalités structurelles", 
-            impact: "la parité professionnelle", 
-            challenge: "l'inclusion universelle",
-            modelFR: "L'égalité des chances reste un idéal à parachever. Pour briser le plafond de verre et éliminer les discriminations, des actions correctives rigoureuses et une modification profonde des mentalités s'imposent.",
-            modelEN: "Equal opportunity remains an ideal to be achieved. To break the glass ceiling and eliminate discrimination, rigorous corrective actions and a profound shift in mindsets are required."
-        },
-        { 
-            name: "21. Eco-Urbanism (Cadre de Vie)", 
-            core: "la transformation des écoquartiers", 
-            impact: "la qualité de vie urbaine", 
-            challenge: "la réduction de l'empreinte environnementale",
-            modelFR: "Repenser la ville autour des mobilités douces et des espaces verts améliore directement la santé physique et mentale des habitants. L'éco-urbanisme dessine le visage des cités de demain, plus résilientes et humaines.",
-            modelEN: "Redesigning the city around soft mobility and green spaces directly improves the physical and mental health of residents. Eco-urbanism shapes the face of tomorrow's cities, making them more resilient and humane."
-        }
+        { name: "1. Society & Demographics", frNoun: "le vieillissement démographique", enNoun: "demographic aging", domain: "la cohésion sociale" },
+        { name: "2. Work & Employment", frNoun: "le développement du télétravail", enNoun: "the rise of remote work", domain: "la productivité en entreprise" },
+        { name: "3. Environment & Ecology", frNoun: "l'urgence de la transition écologique", enNoun: "the ecological transition urgency", domain: "la préservation de la planète" },
+        { name: "4. Economy & Finance", frNoun: "la persistance de l'inflation", enNoun: "persistent inflation", domain: "le pouvoir d'achat" },
+        { name: "5. Time Management", frNoun: "la culture de l'immédiateté", enNoun: "the culture of instantaneity", domain: "l'équilibre personnel" },
+        { name: "6. Change & Innovation", frNoun: "l'innovation technologique de rupture", enNoun: "disruptive technological innovation", domain: "l'agilité organisationnelle" },
+        { name: "7. Health & Well-being", frNoun: "la dégradation de la santé mentale", enNoun: "the decline of mental health", domain: "le système de soins" },
+        { name: "8. Education & Training", frNoun: "la mutation du système éducatif", enNoun: "the transformation of education", domain: "l'égalité des chances" },
+        { name: "9. Future & Sustainability", frNoun: "la planification à long terme", enNoun: "long-term planning", domain: "la viabilité des ressources" },
+        { name: "10. Psychology & Behavior", frNoun: "l'influence des biais cognitifs", enNoun: "the influence of cognitive biases", domain: "l'esprit critique citoyen" },
+        { name: "11. Travel & Mobility", frNoun: "le phénomène du surtourisme", enNoun: "over-tourism", domain: "la protection du patrimoine" },
+        { name: "12. Hobbies & Leisure", frNoun: "la domination des loisirs numériques", enNoun: "digital leisure dominance", domain: "le lien social réel" },
+        { name: "13. Technology & AI", frNoun: "l'expansion de l'intelligence artificielle", enNoun: "artificial intelligence expansion", domain: "l'éthique numérique" },
+        { name: "14. Housing & Urbanism", frNoun: "la crise immobilière urbaine", enNoun: "urban housing crisis", domain: "la mixité sociale" },
+        { name: "15. Society & Civics", frNoun: "le recul de l'engagement civique", enNoun: "the decline of civic engagement", domain: "la démocratie participative" },
+        { name: "16. Consumption & Media", frNoun: "la société de surconsommation", enNoun: "consumer society", domain: "la transparence de l'information" },
+        { name: "17. Immigration & Integration", frNoun: "l'accueil des nouveaux arrivants", enNoun: "newcomer integration", domain: "la diversité culturelle" },
+        { name: "18. Agriculture & Food Security", frNoun: "la transition vers l'agriculture biologique", enNoun: "organic farming transition", domain: "la souveraineté alimentaire" },
+        { name: "19. Culture & Heritage", frNoun: "le financement public de la culture", enNoun: "public funding of culture", domain: "la préservation artistique" },
+        { name: "20. Equality & Diversity", frNoun: "la persistance des inégalités salariales", enNoun: "wage inequality persistence", domain: "la parité professionnelle" },
+        { name: "21. Eco-Urbanism", frNoun: "la généralisation des écoquartiers", enNoun: "eco-neighborhood expansion", domain: "la qualité de vie urbaine" }
     ];
 
     let currentTopicIndex = 0;
     let currentPromptFR = "";
     let currentModelFR = "";
     let currentModelEN = "";
-    
     let recognition = null;
     let isRecording = false;
 
-    // Speech Recognition Setup
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
         recognition.lang = 'fr-FR';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
-
-        recognition.onresult = (event) => {
-            const speechResult = event.results[0][0].transcript;
-            processUserSpeech(speechResult);
-            stopRecordingUI();
-        };
-
-        recognition.onerror = () => {
-            document.getElementById("status-display").innerText = "⚠️ Erreur de microphone ou délai dépassé.";
-            stopRecordingUI();
-        };
-
-        recognition.onend = () => {
-            if (isRecording) stopRecordingUI();
-        };
+        recognition.onresult = (e) => { processUserSpeech(e.results[0][0].transcript); stopRecordingUI(); };
+        recognition.onerror = () => { document.getElementById("status-display").innerText = "⚠️ Erreur de microphone."; stopRecordingUI(); };
+        recognition.onend = () => { if (isRecording) stopRecordingUI(); };
     }
 
     function initSidebar() {
@@ -377,81 +196,64 @@
             const div = document.createElement("div");
             div.className = `topic-item ${index === 0 ? 'active' : ''}`;
             div.innerText = item.name;
-            div.onclick = () => {
-                selectTopic(index);
-                if (window.innerWidth <= 900) toggleMobileMenu();
-            };
+            div.onclick = () => { selectTopic(index); if (window.innerWidth <= 900) toggleMobileMenu(); };
             container.appendChild(div);
         });
         selectTopic(0);
     }
 
-    function toggleMobileMenu() {
-        const list = document.querySelector(".topic-list");
-        list.classList.toggle("show");
-    }
+    function toggleMobileMenu() { document.querySelector(".topic-list").classList.toggle("show"); }
 
     function selectTopic(index) {
         currentTopicIndex = index;
-        document.querySelectorAll(".topic-item").forEach((el, idx) => {
-            el.classList.toggle("active", idx === index);
-        });
+        document.querySelectorAll(".topic-item").forEach((el, idx) => el.classList.toggle("active", idx === index));
         document.getElementById("selected-topic-title").innerText = tcfTopicsData[index].name;
         generateNewPrompt();
     }
 
+    // Fully Algorithmic / Procedural Non-Hardcoded Question & Model Generator
     function generateNewPrompt() {
         const t = tcfTopicsData[currentTopicIndex];
-        const sentenceTemplates = [
-            `Dans quelle mesure ${t.core} bouleverse-t-il ${t.impact}, et quels sont les risques pour ${t.challenge} ?`,
-            `Pensez-vous que les mesures actuelles face à ${t.core} soient suffisantes pour préserver ${t.challenge} à long terme ?`,
-            `Comment concilier les exigences de ${t.impact} avec la nécessité impérative de maîtriser ${t.core} ?`,
-            `Quels sont les impacts directs de ${t.core} sur ${t.impact}, et comment relever le défi de ${t.challenge} ?`
+        
+        // Dynamic Question Patterns
+        const qPatterns = [
+            `Dans quelle mesure ${t.frNoun} impacte-t-il directement ${t.domain}, et quels sont les risques majeurs associés ?`,
+            `Pensez-vous que les stratégies actuelles face à ${t.frNoun} soient suffisantes pour garantir ${t.domain} à l'avenir ?`,
+            `Comment concilier les exigences de ${t.domain} avec la progression rapide de ${t.frNoun} ?`,
+            `Quels sont les avantages et les limites de ${t.frNoun} en ce qui concerne ${t.domain} ?`
         ];
-
-        currentPromptFR = sentenceTemplates[Math.floor(Math.random() * sentenceTemplates.length)];
+        currentPromptFR = qPatterns[Math.floor(Math.random() * qPatterns.length)];
         document.getElementById("generated-prompt").innerText = currentPromptFR;
         document.getElementById("feedback-area").style.display = "none";
         document.getElementById("status-display").innerText = "";
 
-        // Assign topic-specific non-generic model responses
-        currentModelFR = t.modelFR;
-        currentModelEN = t.modelEN;
+        // Dynamic Algorithmic Model Response Assembly
+        currentModelFR = `À mon avis, l'examen de ${t.frNoun} révèle des enjeux cruciaux pour ${t.domain}. D'une part, les transformations en cours offrent des perspectives inédites. D'autre part, des efforts collectifs rigoureux demeurent indispensables pour pérenniser l'équilibre général.`;
+        currentModelEN = `In my opinion, examining ${t.enNoun} reveals crucial issues for ${t.domain}. On the one hand, current transformations offer unprecedented perspectives. On the other hand, rigorous collective efforts remain essential to sustain overall balance.`;
 
         document.getElementById("model-fr").innerText = currentModelFR;
         document.getElementById("model-en").innerText = currentModelEN;
     }
 
-    function speakPrompt() {
-        speakText(currentPromptFR, 'fr-FR');
-    }
-
+    function speakPrompt() { speakText(currentPromptFR, 'fr-FR'); }
     function speakText(text, lang) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            window.speechSynthesis.speak(utterance);
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = lang;
+            window.speechSynthesis.speak(u);
         }
     }
 
     function toggleRecording() {
-        if (!recognition) {
-            alert("La reconnaissance vocale n'est pas supportée par votre navigateur (essayez Google Chrome).");
-            return;
-        }
-
+        if (!recognition) { alert("Reconnaissance vocale non supportée. Utilisez Google Chrome."); return; }
         if (!isRecording) {
-            try {
-                recognition.start();
-                isRecording = true;
-                document.getElementById("record-btn").innerText = "🛑 Arrêter l'enregistrement";
-                document.getElementById("record-btn").className = "btn btn-danger";
-                document.getElementById("status-display").innerText = "🎙️ Enregistrement en cours... Parlez clairement en français.";
-                document.getElementById("feedback-area").style.display = "none";
-            } catch (e) {
-                console.error(e);
-            }
+            recognition.start();
+            isRecording = true;
+            document.getElementById("record-btn").innerText = "🛑 Arrêter l'enregistrement";
+            document.getElementById("record-btn").className = "btn btn-danger";
+            document.getElementById("status-display").innerText = "🎙️ Enregistrement en cours... Parlez en français.";
+            document.getElementById("feedback-area").style.display = "none";
         } else {
             recognition.stop();
             stopRecordingUI();
@@ -467,23 +269,16 @@
 
     function processUserSpeech(text) {
         document.getElementById("user-transcript").innerText = `"${text}"`;
-        
-        let evaluation = "";
         const wordCount = text.split(" ").length;
-
-        if (wordCount < 6) {
-            evaluation = "Votre intervention est trop brève. Pour atteindre un niveau supérieur, structurez votre propos en annonçant un plan, en employant des connecteurs logiques et en défendant votre position.";
-        } else {
-            evaluation = `Excellente participation ! Vous avez prononcé ${wordCount} mots avec une bonne fluidité. Continuez à intégrer un lexique précis et des structures de subjonctif.`;
-        }
+        const evaluation = wordCount < 6 ? 
+            "Intervention trop brève. Structurez votre propos avec des connecteurs logiques." : 
+            `Excellente participation (${wordCount} mots) ! Pensez à enrichir votre lexique thématique et vos subjonctifs.`;
 
         document.getElementById("ai-evaluation-text").innerText = evaluation;
         document.getElementById("status-display").innerText = "✅ Analyse terminée et sauvegardée dans votre banque sécurisée !";
         document.getElementById("feedback-area").style.display = "block";
 
-        const currentTopicName = tcfTopicsData[currentTopicIndex].name;
-        tracker.saveResponse(currentTopicName, currentPromptFR, text, evaluation);
-
+        tracker.saveResponse(tcfTopicsData[currentTopicIndex].name, currentPromptFR, text, evaluation);
         speakText("Analyse terminée. " + evaluation, 'fr-FR');
     }
 
