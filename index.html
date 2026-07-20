@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Objectif TCF - Preparation Dashboard</title>
+    <title>French Exam Prep - Preparation Dashboard</title>
     <style>
         :root { --primary: #2563EB; --bg-main: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
         body { font-family: sans-serif; background: var(--bg-main); color: var(--text-main); padding: 40px 20px; margin: 0; text-align: center; }
@@ -10,7 +10,6 @@
         .header h1 { font-size: 2.5em; color: #1E3A8A; margin-bottom: 5px; }
         .header p { color: #64748B; font-size: 1.1em; margin-bottom: 40px; }
 
-        /* Dashboard Grid Layout (Now 4 Columns) */
         .dashboard-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
@@ -57,45 +56,45 @@
 <body>
 
 <div class="header">
-    <h1>Objectif TCF</h1>
+    <h1>French Exam Prep</h1>
     <p>Your interactive preparation dashboard</p>
 </div>
 
 <div class="dashboard-grid">
-    <!-- Card 1 -->
-    <div class="card">
+    <!-- Card 1: Words & Grammar -->
+    <div class="card" style="border-top: 4px solid #2563EB;">
         <div>
-            <h3>5000 Words Masterlist</h3>
+            <h3>Words Masterlist</h3>
             <p>Dive into the comprehensive high-frequency vocabulary list. Ideal for daily flashcard reviews and building a massive baseline vocabulary.</p>
         </div>
         <a href="vocabulary.html" class="btn">Start Memorizing</a>
     </div>
 
-    <!-- Card 2 -->
-    <div class="card">
-        <div>
-            <h3>Thematic Vocabulary</h3>
-            <p>Explore specialized words organized by official TCF exam themes (e.g., Environment, Work, Technology, Media, and Culture).</p>
-        </div>
-        <a href="#thematic" class="btn">Browse Topics</a>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="card">
+    <!-- Card 2: Words & Grammar -->
+    <div class="card" style="border-top: 4px solid #2563EB;">
         <div>
             <h3>Grammar & Structure</h3>
-            <p>Master the essential syntax rules, verb conjugations, and sentence structures required to clear the TCF syntax and structures module.</p>
+            <p>Master the essential syntax rules, verb conjugations, and sentence structures required to clear the grammar and structures module.</p>
         </div>
-        <a href="#grammar" class="btn">Study Grammar</a>
+        <a href="vocabulary.html" class="btn">Study Grammar</a>
     </div>
 
-    <!-- Card 4: NEW AI Speaking Coach Tab -->
+    <!-- Card 3: Vocab & AI -->
+    <div class="card" style="border-top: 4px solid #10B981;">
+        <div>
+            <h3 style="color: #047857;">Thematic Vocabulary</h3>
+            <p>Explore specialized words organized by official exam themes (Environment, Work, Technology, Media, and Culture) integrated with AI tools.</p>
+        </div>
+        <a href="ai/topic_trainer.html" class="btn" style="background: #10B981;">Explore Themes</a>
+    </div>
+
+    <!-- Card 4: Vocab & AI -->
     <div class="card" style="border-top: 4px solid #10B981;">
         <div>
             <h3 style="color: #047857;">AI Speaking Coach</h3>
-            <p>Practice spontaneous expression with environmental prompts. Record your voice responses and receive instant spoken AI evaluations and structural tips.</p>
+            <p>Practice spontaneous expression with dynamic prompts. Record your voice responses and receive instant spoken AI evaluations and structural tips.</p>
         </div>
-        <a href="ai/speaking_coach.html" class="btn" style="background: #10B981;">Practice Speaking</a>
+        <a href="ai/topic_trainer.html" class="btn" style="background: #10B981;">Practice Speaking</a>
     </div>
 </div>
 
