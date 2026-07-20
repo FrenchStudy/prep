@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Speaking Coach - Objectif TCF</title>
+    <style>
+        :root { --primary: #10B981; --bg-main: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
+        body { font-family: sans-serif; background: var(--bg-main); color: var(--text-main); padding: 40px 20px; margin: 0; text-align: center; }
+        
+        .container { max-width: 700px; margin: auto; }
+        .card { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-top: 20px; text-align: left; }
+        
+        h1 { color: #065F46; margin-bottom: 5px; }
+        p.subtitle { color: #64748B; margin-bottom: 30px; }
+
+        .topic-box { background: #ECFDF5; border-left: 5px solid var(--primary); padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+        .topic-box h3 { margin: 0 0 5px 0; color: #047857; font-size: 1.1em; }
+        .topic-box p { margin: 0; font-size: 1.2em; color: #1E293B; font-weight: bold; }
+
+        .btn { padding: 12px 20px; cursor: pointer; font-weight: bold; border-radius: 8px; border: none; background: var(--primary); color: white; margin-right: 10px; transition: background 0.2s; }
+        .btn:hover { background: #059669; }
+        .btn-secondary { background: #64748B; }
+        .btn-secondary:hover { background: #475569; }
+
+        #feedback-area { margin-top: 20px; padding: 15px; background: #F1F5F9; border-radius: 8px; font-size: 1em; line-height: 1.5; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #2563EB; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="text-align: left;">
+        <a href="../index.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <h1>🌍 AI Speaking Coach</h1>
+    <p class="subtitle">Practice spontaneous expression for the TCF environmental themes.</p>
+
+    <div class="card">
+        <div class="topic-box">
+            <h3>Sujet Actuel / Current Topic</h3>
+            <p id="current-topic">Chargement du sujet...</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <button class="btn" onclick="nextTopic()">🎲 Nouveau Sujet</button>
+            <button class="btn btn-secondary" id="record-btn" onclick="toggleRecording()">🎙️ Enregistrer ma réponse</button>
+        </div>
+
+        <div id="status-display" style="font-weight: bold; color: #2563EB; margin-bottom: 10px;"></div>
+
+        <div id="feedback-area">
+            <strong>🗣️ Ce que vous avez dit :</strong>
+            <p id="user-transcript" style="font-style: italic; color: #475569; margin: 5px 0 15px 0;"></p>
+            
+            <strong>💡 Évaluation et Suggestions de l'IA :</strong>
+            <p id="ai-critique" style="color: #047857; margin-top: 5px;"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const envTopics = [
+        "Le changement climatique et ses impacts mondiaux",
+        "La transition vers les énergies renouvelables (solaire, éolienne)",
+        "La protection de la biodiversité et la lutte contre la déforestation",
+        "La pollution plastique et l'adoption d'un mode de vie zéro déchet",
+        "L'agriculture durable, biologique et la sécurité alimentaire",
+        "La gestion durable, la préservation et la pénurie d'eau potable",
+        "La qualité de l'air dans les grandes agglomérations urbaines",
+        "L'urbanisme écologique et le développement des villes intelligentes",
+        "L'économie circulaire : réparer, réutiliser et recycler",
+        "Le tourisme vert et l'éthique de la conservation de la nature"
+    ];
+
+    let recognition = null;
+    let isRecording = false;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            processUserSpeech(speechResult);
+            stopRecordingUI();
+        };
+
+        recognition.onerror = () => {
+            document.getElementById("status-display").innerText = "⚠️ Erreur de microphone ou temps dépassé.";
+            stopRecordingUI();
+        };
+
+        recognition.onend = () => {
+            if (isRecording) {
+                stopRecordingUI();
+            }
+        };
+    } else {
+        alert("La reconnaissance vocale n'est pas supportée par votre navigateur. Utilisez Google Chrome.");
+    }
+
+    function nextTopic() {
+        const randomIndex = Math.floor(Math.random() * envTopics.length);
+        document.getElementById("current-topic").innerText = envTopics[randomIndex];
+        document.getElementById("feedback-area").style.display = "none";
+        document.getElementById("status-display").innerText = "";
+    }
+
+    function toggleRecording() {
+        if (!recognition) return;
+
+        if (!isRecording) {
+            try {
+                recognition.start();
+                isRecording = true;
+                document.getElementById("record-btn").innerText = "🛑 Arrêter l'enregistrement";
+                document.getElementById("record-btn").style.background = "#DC2626";
+                document.getElementById("status-display").innerText = "🎙️ Enregistrement en cours... Exprimez-vous en français.";
+                document.getElementById("feedback-area").style.display = "none";
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            recognition.stop();
+            stopRecordingUI();
+        }
+    }
+
+    function stopRecordingUI() {
+        isRecording = false;
+        const btn = document.getElementById("record-btn");
+        btn.innerText = "🎙️ Enregistrer ma réponse";
+        btn.style.background = "#64748B";
+    }
+
+    function processUserSpeech(text) {
+        document.getElementById("user-transcript").innerText = `"${text}"`;
+        
+        let critiqueText = "";
+        const wordCount = text.split(" ").length;
+
+        if (wordCount < 5) {
+            critiqueText = "Votre réponse est un peu trop courte pour l'examen TCF. Essayez de développer vos arguments en utilisant des connecteurs logiques comme 'premièrement', 'en outre' ou 'par conséquent'.";
+        } else {
+            critiqueText = `Bonne fluidité avec ${wordCount} mots prononcés ! Pour obtenir un niveau supérieur au TCF, essayez d'intégrer des structures de subjonctif (ex: 'Il est important que nous agissions') et un vocabulaire environnemental plus précis.`;
+        }
+
+        document.getElementById("ai-critique").innerText = critiqueText;
+        document.getElementById("status-display").innerText = "✅ Analyse terminée.";
+        document.getElementById("feedback-area").style.display = "block";
+
+        const utterance = new SpeechSynthesisUtterance("Analyse terminée. " + critiqueText);
+        utterance.lang = 'fr-FR';
+        window.speechSynthesis.speak(utterance);
+    }
+
+    window.onload = () => {
+        nextTopic();
+    };
+</script>
+
+</body>
+</html>
