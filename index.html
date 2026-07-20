@@ -2,154 +2,102 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCF Prep Portal</title>
+    <title>Objectif TCF - Preparation Dashboard</title>
     <style>
-        :root {
-            --primary: #2B6CB0;
-            --primary-hover: #1A5276;
-            --bg: #F7FAFC;
-            --card-bg: #FFFFFF;
-            --text: #2D3748;
-            --text-muted: #718096;
-        }
+        :root { --primary: #2563EB; --bg-main: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1E293B; --border-color: #E2E8F0; }
+        body { font-family: sans-serif; background: var(--bg-main); color: var(--text-main); padding: 40px 20px; margin: 0; text-align: center; }
+        
+        .header h1 { font-size: 2.5em; color: #1E3A8A; margin-bottom: 5px; }
+        .header p { color: #64748B; font-size: 1.1em; margin-bottom: 40px; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
+        /* Dashboard Grid Layout (Now 4 Columns) */
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px 20px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border-color); 
+            text-align: left; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        header {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid #E2E8F0;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        header h1 {
-            margin: 0;
-            color: var(--primary);
-            font-size: 2.5rem;
-        }
-
-        header p {
-            margin: 0.5rem 0 0;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        main {
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 1.5rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h2 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.5rem;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            line-height: 1.5;
-            flex: 1;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn {
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        
+        .card h3 { color: #1E3A8A; font-size: 1.3em; margin-top: 0; margin-bottom: 15px; }
+        .card p { color: #475569; font-size: 0.95em; line-height: 1.5; margin-bottom: 25px; }
+        
+        .btn { 
             display: inline-block;
-            background-color: var(--primary);
-            color: white;
+            width: 100%;
+            padding: 12px; 
             text-align: center;
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            border: none; 
+            background: var(--primary); 
+            color: white; 
             text-decoration: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: background-color 0.2s;
+            box-sizing: border-box;
+            transition: background 0.2s;
         }
-
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid #E2E8F0;
-            background-color: var(--card-bg);
-        }
+        .btn:hover { background: #1D4ED8; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Objectif TCF</h1>
-        <p>Your interactive preparation dashboard</p>
-    </header>
+<div class="header">
+    <h1>Objectif TCF</h1>
+    <p>Your interactive preparation dashboard</p>
+</div>
 
-    <main>
-        <div class="grid">
-            <!-- Card 1: Core Vocabulary -->
-            <div class="card">
-                <h2>5000 Words Masterlist</h2>
-                <p>Dive into the comprehensive high-frequency vocabulary list. Ideal for daily flashcard reviews and building a massive baseline vocabulary.</p>
-                <!-- Fixed path to point directly to your root file -->
-                <a href="vocabulary.html" class="btn">Start Memorizing</a>
-            </div>
-
-            <!-- Card 2: Subject-Wise Vocabulary -->
-            <div class="card">
-                <h2>Thematic Vocabulary</h2>
-                <p>Explore specialized words organized by official TCF exam themes (e.g., Environment, Work, Technology, Media, and Culture).</p>
-                <!-- Optimized directory routing -->
-                <a href="themes/" class="btn">Browse Topics</a>
-            </div>
-
-            <!-- Card 3: Grammar Essentials -->
-            <div class="card">
-                <h2>Grammar & Structure</h2>
-                <p>Master the essential syntax rules, verb conjugations, and sentence structures required to clear the TCF syntax and structures module.</p>
-                <a href="grammar/" class="btn">Study Grammar</a>
-            </div>
+<div class="dashboard-grid">
+    <!-- Card 1 -->
+    <div class="card">
+        <div>
+            <h3>5000 Words Masterlist</h3>
+            <p>Dive into the comprehensive high-frequency vocabulary list. Ideal for daily flashcard reviews and building a massive baseline vocabulary.</p>
         </div>
-    </main>
+        <a href="vocabulary.html" class="btn">Start Memorizing</a>
+    </div>
 
-    <footer>
-        <p>Bonne chance ! Practice makes perfect.</p>
-    </footer>
+    <!-- Card 2 -->
+    <div class="card">
+        <div>
+            <h3>Thematic Vocabulary</h3>
+            <p>Explore specialized words organized by official TCF exam themes (e.g., Environment, Work, Technology, Media, and Culture).</p>
+        </div>
+        <a href="#thematic" class="btn">Browse Topics</a>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card">
+        <div>
+            <h3>Grammar & Structure</h3>
+            <p>Master the essential syntax rules, verb conjugations, and sentence structures required to clear the TCF syntax and structures module.</p>
+        </div>
+        <a href="#grammar" class="btn">Study Grammar</a>
+    </div>
+
+    <!-- Card 4: NEW AI Speaking Coach Tab -->
+    <div class="card" style="border-top: 4px solid #10B981;">
+        <div>
+            <h3 style="color: #047857;">AI Speaking Coach</h3>
+            <p>Practice spontaneous expression with environmental prompts. Record your voice responses and receive instant spoken AI evaluations and structural tips.</p>
+        </div>
+        <a href="speaking_coach.html" class="btn" style="background: #10B981;">Practice Speaking</a>
+    </div>
+</div>
 
 </body>
 </html>
