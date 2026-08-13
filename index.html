@@ -99,8 +99,6 @@
       <div id="topicsList" class="p-3 space-y-3"></div>
     </aside>
 
-    <button id="mobileTopicsBtn" class="md:hidden fixed bottom-24 right-4 z-30 bg-indigo-600 text-white rounded-full w-12 h-12 shadow-lg flex items-center justify-center text-xl">📚</button>
-
     <!-- Main Workspace -->
     <main class="flex-1 flex flex-col min-w-0 min-h-0 bg-slate-50/50 overflow-y-auto">
       <div class="flex-1 flex flex-col p-4 sm:p-6 max-w-4xl mx-auto w-full">
@@ -243,35 +241,31 @@
             </div>
           </div>
 
-          <!-- Pane 5: Writing Workshop (Enhanced with TCF/TEF Prompt & Google Translator Style Assistance) -->
+          <!-- Pane 5: Writing Workshop -->
           <div id="paneWriting" class="hidden space-y-3">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="font-bold text-sm text-indigo-950">✍️ Atelier d'écriture TCF / TEF</h3>
-                  <p id="writingThemeBadge" class="text-xs text-indigo-600 font-semibold mt-0.5">Thème : Expression libre (ou sélectionne un thème à gauche)</p>
+                  <p id="writingThemeBadge" class="text-xs text-indigo-600 font-semibold mt-0.5">Thème : Expression libre</p>
                 </div>
                 <button id="writingNewPromptBtn" class="text-xs font-semibold text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100 transition">🔄 Nouveau sujet TCF</button>
               </div>
 
-              <!-- TCF Prompt Box -->
               <div id="writingPromptBox" class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4 space-y-2">
                 <span class="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Sujet d'examen (TCF B1/B2)</span>
-                <p id="writingPromptText" class="text-xs font-medium text-slate-800 leading-relaxed">Rédigez un courriel à votre responsable pour demander une modification de vos horaires de travail en raison de contraintes personnelles.</p>
+                <p id="writingPromptText" class="text-xs font-medium text-slate-800 leading-relaxed">Rédigez un courriel à votre responsable pour demander une modification de vos horaires.</p>
               </div>
 
-              <!-- Live Google Translate Style Help Assistant -->
               <div class="relative">
-                <textarea id="writingInput" rows="5" placeholder="Écris ton texte ici... (observe les indices d'aide en temps réel ci-dessous)" class="w-full border border-slate-200 bg-slate-50 rounded-xl p-3.5 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-400 transition"></textarea>
-                <!-- Floating live translation / hint box -->
+                <textarea id="writingInput" rows="5" placeholder="Écris ton texte ici..." class="w-full border border-slate-200 bg-slate-50 rounded-xl p-3.5 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-400 transition"></textarea>
                 <div id="writingLiveHelper" class="hidden absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-xs text-white text-[11px] px-3 py-1.5 rounded-lg shadow-md flex items-center gap-2">
-                  <span id="writingHelperText">💡 Astuce : Pense à utiliser le conditionnel de politesse ("Je souhaiterais...").</span>
+                  <span id="writingHelperText">💡 Astuce</span>
                 </div>
               </div>
 
               <button id="writingSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-2xs">Soumettre pour Correction Détaillée &amp; Exemple</button>
               
-              <!-- Feedback & Sample Answer Box -->
               <div id="writingFeedback" class="hidden space-y-3 pt-2">
                 <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-xs text-indigo-950 leading-relaxed" id="writingCorrectionContent"></div>
                 <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-950 space-y-1.5">
@@ -283,18 +277,17 @@
             </div>
           </div>
 
-          <!-- Pane 6: Drag & Drop Game (Integrated with Left Pane / Complete Pronoun Pool) -->
+          <!-- Pane 6: Drag & Drop Game -->
           <div id="paneGame" class="hidden space-y-3">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="font-bold text-sm text-indigo-950">🧩 Atelier de Construction de Phrases</h3>
-                  <p id="gameThemeLabel" class="text-xs text-indigo-600 font-semibold mt-0.5">Thème actif : Général / Essentiel (sélectionne un module à gauche)</p>
+                  <p id="gameThemeLabel" class="text-xs text-indigo-600 font-semibold mt-0.5">Thème actif : Général</p>
                 </div>
                 <button id="gameResetBtn" class="text-xs font-semibold text-indigo-600 hover:bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 transition">🔄 Réinitialiser</button>
               </div>
 
-              <!-- Dynamic Drop Slots -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">1. Sujet (Pronoms)</span><div id="dropPronoun" class="drop-zone rounded-xl flex items-center justify-center p-2 text-xs font-bold text-slate-400 bg-slate-50">Dépose ici</div></div>
                 <div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">2. Verbe</span><div id="dropVerb" class="drop-zone rounded-xl flex items-center justify-center p-2 text-xs font-bold text-slate-400 bg-slate-50">Dépose ici</div></div>
@@ -302,7 +295,6 @@
                 <div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">4. Adjectif / Attribut</span><div id="dropAdj" class="drop-zone rounded-xl flex items-center justify-center p-2 text-xs font-bold text-slate-400 bg-slate-50">Dépose ici</div></div>
               </div>
 
-              <!-- Drag Pool populated dynamically based on theme/left pane -->
               <div class="space-y-3 pt-2" id="gameBlockPool"></div>
               <button id="gameSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-2xs">Envoyer cette phrase à Plume 🚀</button>
             </div>
@@ -348,10 +340,6 @@
   </div>
 
 <script>
-/* ============================================================
-   French Study Buddy — Dynamic Expression Tutor Engine
-   ============================================================ */
-
 const CFG_KEYS = { baseUrl:'fsb_base_url', apiKey:'fsb_api_key', model:'fsb_model' };
 const PRESETS = {
   groq:   { baseUrl:'https://api.groq.com/openai/v1/chat/completions', model:'llama-3.3-70b-versatile', key:'' },
@@ -433,7 +421,6 @@ document.getElementById('testConnBtn').onclick = async ()=>{
   }
 };
 
-/* Animated Face & Voice */
 let frenchVoice = null;
 function pickFrenchVoice(){
   if(!window.speechSynthesis) return;
@@ -512,7 +499,6 @@ function speakPlume(text, positive){
   });
 }
 
-/* LLM Engine */
 const SYSTEM_PROMPT = `Tu es Plume, une tutrice de français patiente, chaleureuse mais franche, qui aide un(e) étudiant(e) à préparer le TCF/DELF.
 
 Réponds TOUJOURS en utilisant EXACTEMENT ces trois lignes, dans cet ordre :
@@ -562,7 +548,6 @@ function parseReply(raw){
 
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* Modules Stream */
 const lessonStream = document.getElementById('lessonStream');
 let lessonHistory = [];          
 let lastExpectedPhrase = null;   
@@ -690,7 +675,6 @@ document.getElementById('lessonMicBtn').onclick = ()=>{
   rec.start();
 };
 
-/* Sidebar Syllabus with integrated Writing & Game triggers */
 const STUDY_MODULES = [
   { title: '🟢 DELF A1 — Vocabulaire', level:'essential', topics: [
     "L'alphabet", "Les nombres", "Les noms et prénoms", "L'adresse", "Les objets personnels", "Les objets de la classe",
@@ -749,29 +733,24 @@ function renderTopics(){
     };
   });
 
-  // Launch writing task with selected theme
   container.querySelectorAll('.topic-write-btn').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
-      const topic = btn.dataset.topic;
       switchPane('writing');
-      setWritingTheme(topic);
+      setWritingTheme(btn.dataset.topic);
     };
   });
 
-  // Launch game with selected theme
   container.querySelectorAll('.topic-game-btn').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
-      const topic = btn.dataset.topic;
       switchPane('game');
-      setGameTheme(topic);
+      setGameTheme(btn.dataset.topic);
     };
   });
 }
 renderTopics();
 
-/* Pane Switching */
 const PANE_IDS = ['modules','vocab','reading','listening','writing','game'];
 function switchPane(target){
   PANE_IDS.forEach(id=>{
@@ -786,7 +765,6 @@ PANE_IDS.forEach(id=>{
   document.getElementById('paneBtn' + id[0].toUpperCase() + id.slice(1)).onclick = ()=> switchPane(id);
 });
 
-/* Vocab Module */
 const VOCAB_LEVELS = [
   { id:'essential', label:'🟢 Essentiel', range:[1,500] },
   { id:'common',    label:'🟡 Courant',   range:[501,1500] },
@@ -809,7 +787,7 @@ function parseCSV(text){
     }else{
       if(c==='"') inQuotes=true;
       else if(c===','){ row.push(field); field=''; }
-      else if(c===ch=㇂'\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
       else field += c;
     }
   }
@@ -902,7 +880,6 @@ document.getElementById('vocabListenBtn').onclick = ()=>{
 loadVocabProgress();
 initVocab();
 
-/* Reading & Listening Modules */
 const READING_PASSAGES = [
   { text: "Marie habite à Lyon depuis trois ans. Elle travaille dans une école comme professeure de mathématiques. Le week-end, elle aime faire du vélo avec ses amis.", question: "Où est-ce que Marie travaille ?", keywords: ['école','professeure'] }
 ];
@@ -943,9 +920,6 @@ document.getElementById('listeningCheckBtn').onclick = ()=>{
   }
 };
 
-/* ==========================================================
-   Writing Workshop: TCF Prompts & Real-time Google-style Help
-   ========================================================== */
 let currentWritingTheme = "Expression libre";
 
 function setWritingTheme(theme){
@@ -959,7 +933,7 @@ async function generateTCFPrompt(theme){
   box.textContent = `Génération d'un sujet d'examen TCF/TEF pour le thème "${theme}"...`;
   const cfg = getConfig();
   if(!cfg.baseUrl){
-    box.textContent = `Rédigez un court texte (60-80 mots) en français sur le thème : "${theme}", en expliquant votre point de vue personnel.`;
+    box.textContent = `Rédigez un court texte (60-80 mots) en français sur le thème : "${theme}".`;
     return;
   }
   try{
@@ -972,27 +946,20 @@ async function generateTCFPrompt(theme){
 
 document.getElementById('writingNewPromptBtn').onclick = ()=> generateTCFPrompt(currentWritingTheme);
 
-// Real-time Google Translate style inline helper as user types
 const writingInput = document.getElementById('writingInput');
 const writingHelper = document.getElementById('writingLiveHelper');
 const writingHelperText = document.getElementById('writingHelperText');
 
 writingInput.addEventListener('input', ()=>{
   const val = writingInput.value.trim();
-  if(val.length < 5){
-    writingHelper.classList.add('hidden');
-    return;
-  }
+  if(val.length < 5){ writingHelper.classList.add('hidden'); return; }
   writingHelper.classList.remove('hidden');
-  // Simple reactive grammar / vocab assistant logic
   if(/je veux/i.test(val)){
     writingHelperText.textContent = "💡 Astuce TCF : Préfère « Je voudrais » ou « J'aimerais » pour plus de politesse.";
   } else if(/parce que/i.test(val)){
     writingHelperText.textContent = "💡 Astuce : Excellent ! Tu peux aussi utiliser « étant donné que » ou « puisque ».";
-  } else if(/mais/i.test(val)){
-    writingHelperText.textContent = "💡 Astuce : Bon connecteur. Pense à essayer « cependant » ou « en revanche ».";
   } else {
-    writingHelperText.textContent = "🌐 En cours de frappe... Continuez, Plume analyse votre syntaxe.";
+    writingHelperText.textContent = "🌐 En cours de frappe... Plume analyse ta syntaxe.";
   }
 });
 
@@ -1008,13 +975,12 @@ document.getElementById('writingSubmitBtn').onclick = async ()=>{
   if(!cfg.baseUrl){ alert("Configure d'abord ton modèle dans les paramètres ⚙️."); return; }
   
   feedbackArea.classList.remove('hidden');
-  correctionContent.textContent = 'Plume analyse ton texte et prépare le corrigé type...';
-  sampleFr.textContent = '';
-  sampleEn.textContent = '';
+  correctionContent.textContent = 'Plume analyse ton texte...';
+  sampleFr.textContent = ''; sampleEn.textContent = '';
 
   try{
     const raw = await callLLM(cfg, [{ role:'user', content:
-      `Sujet: "${document.getElementById('writingPromptText').textContent}"\nTexte de l'étudiant: "${text}"\n\nDonne une correction détaillée des erreurs (en français avec explications en anglais), puis propose un exemple de corrigé type (en français avec traduction anglaise sur la ligne suivante).`
+      `Sujet: "${document.getElementById('writingPromptText').textContent}"\nTexte de l'étudiant: "${text}"\n\nDonne une correction détaillée des erreurs (en français avec explications en anglais), puis propose un exemple de corrigé type.`
     }], 450);
     
     correctionContent.innerHTML = escapeHtml(raw).replace(/\n/g,'<br>');
@@ -1025,11 +991,6 @@ document.getElementById('writingSubmitBtn').onclick = async ()=>{
     correctionContent.textContent = '⚠️ ' + safeErrorMessage(err);
   }
 };
-
-/* ==========================================================
-   Interactive Game: Left Sidebar Theme & Complete Pronoun Pool
-   ========================================================== */
-let currentGameTheme = "Général";
 
 const FULL_PRONOUNS = [
   ['Je', 'Je (I)'], ['Tu', 'Tu (You sg.)'], ['Il', 'Il (He)'], ['Elle', 'Elle (She)'], 
@@ -1064,10 +1025,8 @@ function setGameTheme(theme){
 }
 
 function renderGameBlocks(theme){
-  // Resolve theme or fallback to General
   let blocks = THEME_BLOCKS[theme];
   if(!blocks){
-    // Match partial keywords if custom topic clicked from left pane
     if(/profession/i.test(theme)) blocks = THEME_BLOCKS["Les professions"];
     else if(/famille/i.test(theme)) blocks = THEME_BLOCKS["La famille proche"];
     else blocks = THEME_BLOCKS["Général"];
@@ -1142,10 +1101,8 @@ document.getElementById('gameSubmitBtn').onclick = ()=>{
   sendLessonMessage();
 };
 
-// Initial game blocks render
 renderGameBlocks("Général");
 
-/* Audio & Export Controls */
 document.getElementById('speedToggleBtn').onclick = ()=>{
   currentSpeechRate = currentSpeechRate === 0.95 ? 0.7 : 0.95;
   document.getElementById('speedToggleBtn').textContent = currentSpeechRate === 0.95 ? '⚡ 1.0x' : '⚡ 0.7x';
@@ -1164,7 +1121,6 @@ document.getElementById('exportBtn').onclick = ()=>{
   URL.revokeObjectURL(url);
 };
 
-/* Startup */
 updateConnStatus();
 if(!getConfig().baseUrl){ setTimeout(()=>document.getElementById('settingsBtn').click(), 400); }
 </script>
